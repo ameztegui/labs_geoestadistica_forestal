@@ -5,10 +5,6 @@ author: "Aitor Ameztegui (UdL)"
 date: "last-modified"
 format: 
     html:
-        theme: cerulean
-        toc: true
-editor_options: 
-  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE, eval = F}
