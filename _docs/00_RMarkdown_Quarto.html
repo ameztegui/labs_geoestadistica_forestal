@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Aitor Ameztegui (UdL)">
+<meta name="dcterms.date" content="2024-08-22">
+
+<title>Apuntes y ejercicios de geoestadística para forestales - 3&nbsp; Introducción a Quarto y RMarkdown</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./01_RegresionLineal.html" rel="next">
+<link href="./00_Intro_R.html" rel="prev">
+<link href="./images/udl.png" rel="icon" type="image/png">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./00_Familiar_RStudio.html">UNIDAD 0: INTRODUCCION</a></li><li class="breadcrumb-item"><a href="./00_RMarkdown_Quarto.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Introducción a Quarto y RMarkdown</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Apuntes y ejercicios de geoestadística para forestales</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/hadley/r4ds/" rel="" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Presentación</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">UNIDAD 0: INTRODUCCION</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./00_Familiar_RStudio.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Familiarizándose con R y RStudio</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./00_Intro_R.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introducción a R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./00_RMarkdown_Quarto.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Introducción a Quarto y RMarkdown</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">UNIDAD 1: ANÁLISIS DE REGRESIÓN</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01_RegresionLineal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Regresión lineal en R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_GLM.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Regresión lineal generalizada (GLM) en R</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">UNIDAD 2: GEOESTADÍSTICA Y ANÁLISIS ESPACIAL</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03_DatosEspaciales.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Trabajando con datos espaciales en R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04_AutocorrelacionEspacial.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Autocorrelación espacial en ArcGIS y R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05_PatronPuntos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Análisis de patrón de puntos en R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06_InterpolacionEspacial.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Interpolación espacial en R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07_RegresionEspacial.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Regresión espacial en R</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introducción.-objetivo." id="toc-introducción.-objetivo." class="nav-link active" data-scroll-target="#introducción.-objetivo."><span class="header-section-number">3.1</span> Introducción. Objetivo.</a></li>
+  <li><a href="#qué-es-quarto-y-rmarkdown" id="toc-qué-es-quarto-y-rmarkdown" class="nav-link" data-scroll-target="#qué-es-quarto-y-rmarkdown"><span class="header-section-number">3.2</span> ¿Qué es Quarto? ¿Y RMarkdown?</a></li>
+  <li><a href="#usando-quarto-en-rstudio" id="toc-usando-quarto-en-rstudio" class="nav-link" data-scroll-target="#usando-quarto-en-rstudio"><span class="header-section-number">3.3</span> Usando Quarto en RStudio</a></li>
+  <li><a href="#añadiendo-y-formateando-texto" id="toc-añadiendo-y-formateando-texto" class="nav-link" data-scroll-target="#añadiendo-y-formateando-texto"><span class="header-section-number">3.4</span> Añadiendo y formateando texto</a></li>
+  <li><a href="#documentos-formateados" id="toc-documentos-formateados" class="nav-link" data-scroll-target="#documentos-formateados"><span class="header-section-number">3.5</span> Documentos formateados</a></li>
+  <li><a href="#usando-código-en-quarto-chunks" id="toc-usando-código-en-quarto-chunks" class="nav-link" data-scroll-target="#usando-código-en-quarto-chunks"><span class="header-section-number">3.6</span> Usando código en Quarto (chunks)</a>
+  <ul class="collapse">
+  <li><a href="#crear-chunks" id="toc-crear-chunks" class="nav-link" data-scroll-target="#crear-chunks"><span class="header-section-number">3.6.1</span> Crear chunks</a></li>
+  <li><a href="#etiquetando-los-chunks" id="toc-etiquetando-los-chunks" class="nav-link" data-scroll-target="#etiquetando-los-chunks"><span class="header-section-number">3.6.2</span> Etiquetando los chunks</a></li>
+  <li><a href="#opciones-de-los-chunks" id="toc-opciones-de-los-chunks" class="nav-link" data-scroll-target="#opciones-de-los-chunks"><span class="header-section-number">3.6.3</span> Opciones de los chunks</a></li>
+  </ul></li>
+  <li><a href="#figuras" id="toc-figuras" class="nav-link" data-scroll-target="#figuras"><span class="header-section-number">3.7</span> Figuras</a></li>
+  <li><a href="#tablas" id="toc-tablas" class="nav-link" data-scroll-target="#tablas"><span class="header-section-number">3.8</span> Tablas</a></li>
+  <li><a href="#para-saber-más" id="toc-para-saber-más" class="nav-link" data-scroll-target="#para-saber-más"><span class="header-section-number">3.9</span> Para saber más</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/hadley/r4ds/edit/main/00_RMarkdown_Quarto.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/hadley/r4ds/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Introducción a Quarto y RMarkdown</span></h1>
+<p class="subtitle lead">Geoestadística i Tècniques d’Observació Global (24/25)</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Aitor Ameztegui (UdL) </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">August 22, 2024</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="introducción.-objetivo." class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="introducción.-objetivo."><span class="header-section-number">3.1</span> Introducción. Objetivo.</h2>
+<p>El objetivo de este tutorial es introducirte los fundamentos de <code>RMarkdown</code> y <code>Quarto</code>, y ver cómo los puedes usar para combinar código y texto y crear los informes de las prácticas que realizaremos en el curso.</p>
+</section>
+<section id="qué-es-quarto-y-rmarkdown" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="qué-es-quarto-y-rmarkdown"><span class="header-section-number">3.2</span> ¿Qué es Quarto? ¿Y RMarkdown?</h2>
+<p>Quarto® es un sistema de publicación científica y técnica de código abierto. Puede combinar texto narrativo y código para producir resultados con un formato elegante en forma de documentos, páginas web, entradas de blog, libros y mucho más. Es un formato dinámico, que combina código, los resultados de ejecutarlo, y texto, en un único documento que admite decenas de formatos de salida, como PDF, archivos de Word, presentaciones y más.</p>
+<p>Quarto es de código 100% abierto, la versión 1.4 de Quarto está licenciada bajo la Licencia MIT. Quarto supone un paso más en el desarrollo de RMarkdown, un formato de fichero que creó la compañía RStudio (ahora Posit) hace casi 10 años para trabajar con código de R. Sin embargo, Quarto va un paso más allá, ya que añade a las funcionalidades que ya tenía RMarkdown, los más de 10 años de experiencia en su uso, y sobre todo la compatibilidad con otros lenguajes de programación como Julia, Python o JavaScript. Esto le ha dado una vuelta de tuerca a su versatilidad.</p>
+<p><code>RMarkdown</code>, el predecesor de Quarto, fue inicialmente creado para generar documentos que sirvan como registro de los análisis que se ejecutan, un poco como un cuaderno de laboratorio. Así que, en lugar de comentar el código, <code>Quarto</code> lo presenta junto con su salida (figuras, tablas…) y podemos añadir el texto que queramos, e incluso darle formato. Esto puede ser muy interesante en 3 casos:</p>
+<ol type="1">
+<li><p>Para comunicar nuestros resultados a los responsables de la toma de decisiones (gestores, ayuntamientos…), a clientes, socios o al público en general, que estarán interesados en el análisis y las conclusiones, pero no en el código que hay detrás del análisis.</p></li>
+<li><p>Para <strong>colaborar</strong> con otros colegas, incluyendo tu <em>yo</em> futuro, que están interesados tanto en tus conclusiones como en cómo has llegado a ellas (es decir, el código).</p></li>
+<li><p>Para <strong>registrar</strong> los análisis, como una especie de cuadernos de laboratorio en el que se anote no sólo qué análisis se han hecho, sino también los motivos que llevan a ello.</p></li>
+</ol>
+<p>Sin embargo, la versatilidad de <code>Quarto</code> hace que se pueda ir más allá, generando todo tipo de documentos: desde páginas web, ficheros pdf, presentaciones, libros online, blogs… De hecho, este documento que estás leyendo se ha generado con Quarto.</p>
+<center>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><video src="images/hero_animation.mp4" class="img-fluid" style="width:100.0%" controls=""><a href="images/hero_animation.mp4">Video</a></video></p>
+<figcaption class="figure-caption">Algunos de los lenguajes soportados por Quarto, y los tipos de ficheros de salida posibles</figcaption>
+</figure>
+</div>
+<p>Quarto se basa en el lenguaje <code>Markdown</code>, un lenguaje de código que permite la conversión texto-HTML. Es un lenguaje en realidad muy básico, por lo que necesitas aprender muy poco código para poder escribir en <code>Quarto</code>.</p>
+<p>En el contexto del curso, usaremos <code>Quarto</code> para generar los <strong>informes de prácticas</strong>, en los que poder mostrar el código que habéis escrito, su salida, así como vuestra interpretación de los resultados y los motivos para optar por una u otra función.</p>
+<center>
+<p><img src="images/02-intro-rmarkdown/chunk_quarto.png" class="img-fluid" alt="Ejemplo de un documento Quarto A la izquierda, el fichero .qmd. A la derecha, el html que se genera"> g){width=100%}</p>
+</center></center></section>
+<section id="usando-quarto-en-rstudio" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="usando-quarto-en-rstudio"><span class="header-section-number">3.3</span> Usando Quarto en RStudio</h2>
+<p>Los beneficios de Quarto se aprecian mejor cuando se usa en RStudio. Desde allí resulta muy sencillo crear un nuevo documento Quarto, ya que se carga juntamente. Simplemente debemos clicar en el icono “New File” en la esquina superior izquierda del menú, y seleccionar “Quarto document…”.</p>
+<p><img src="images/02-intro-rmarkdown/open_quarto.png" class="img-fluid"></p>
+<p>La siguiente ventana te pedirá un título, autor, y el formato en el quieras que se genere el documento final. Por defecto hay tres opciones: html, pdf, o word. El más versátil es html, que permite usar plantillas y generar presentaciones, páginas web, etc. De hecho este tutorial está hecho con <code>Quarto</code>. También se pueden usar plantillas con un formato predefinido. Todas estas decisiones se pueden cambiar después. De momento, daremos al documento un título, indicamos el autor, y elijamos “HTML” como formato de salida:</p>
+<center>
+<img src="images/02-intro-rmarkdown/title_quarto.png" class="img-fluid">
+</center>
+<p><br></p>
+<p>El nuevo fichero Quarto - que es de hecho un fichero de texto plano con la extensión <code>.qmd</code> se debería abrir en el lado izquierdo, encima del panel de consola.</p>
+<p><img src="images/02-intro-rmarkdown/start_quarto.png" class="img-fluid"></p>
+<p>El documento ya tiene algo de contenido, que sirve de ejemplo o “plantilla”. Tiene tres partes:</p>
+<ol type="1">
+<li>Una cabecera <strong>YAML</strong> en la parte superior, rodeada de dos líneas de tres guiones (<code>---</code>). Esto controla los metadatos (título, autor, fecha) y el tipo de formato de salida que queremos. Aquí tendremos la información que hayamos introducido antes, y la podremos modificar si queremos hacer cambios a posteriori.</li>
+<li><strong>Trozos de código R</strong> rodeado de tres guiones <code>```</code>. Al ejecutar el documento, se ejecutarán estos trozos de código y se mostrará el resultado debajo.</li>
+<li><strong>Texto</strong> al que se puede dar formato, como por ejemplo ponerlo en <code>**negrita**</code> o crear <code>## cabeceras</code>.</li>
+</ol>
+<p>En un documento <code>.qmd</code> el texto, el código y la salida están intermezclados. Puedes correr cada uno de los trozos de código haciendo click en “Run” (un botón de “play” situado en la parte superior de cada trozo de código), o bien presionando <kbd>Cmd/Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Enter</kbd>. RStudio ejecutará ese código y mostrará los resultados junto con el código:</p>
+<p><img src="images/02-intro-rmarkdown/run_chunk.png" class="img-fluid"></p>
+<p>Para producir un informe completo que contenga todo el código, texto etc debéis hacer click en “Render” o presionar <kbd>Cmd/Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>K</kbd>. Esto mostrará el informe en el panel de visualización, y creará un archivo - en el formato elegido - con el resultado, que puede ser compartido con otras personas.</p>
+</section>
+<section id="añadiendo-y-formateando-texto" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="añadiendo-y-formateando-texto"><span class="header-section-number">3.4</span> Añadiendo y formateando texto</h2>
+<p>Formatear texto en Quarto es muy sencillo. Los ficheros <code>.qmd</code> permiten indicar:</p>
+<ul>
+<li>texto en negrita y cursiva</li>
+<li>listas</li>
+<li>secciones y cabeceras (títulos de sección)</li>
+<li>enlaces</li>
+<li>imágenes</li>
+<li>y muchos más…</li>
+</ul>
+<p>El texto simple se escribe como cualquier otro documento. Pero formatearlo es igualmente sencillo:</p>
+<ul>
+<li><p>Para insertar un <strong>espacio entre párrafos</strong>, incluye una línea en blanco.</p></li>
+<li><p>Para forzar un <strong>salto de línea</strong>, pon dos espacios en blanco<br>
+al final de la línea.</p></li>
+<li><p><strong>Cursiva</strong>: pon tu texto entre asteriscos (<code>*texto en cursiva*</code>) o guiones bajos (<code>_Texto en cursiva_</code>).</p></li>
+<li><p><strong>Negrita</strong>: pon el texto entre dos asteriscos (<code>**ejemplo negrita**</code>) o dos guiones bajos (<code>__texto en negrita__</code>).</p></li>
+<li><p><strong>Superíndice</strong>: debes rodear el texto entre <code>^</code> como aquí: <code>X^2^</code>.</p></li>
+<li><p>También podemos hacer que el texto aparezca como <strong>código</strong> así: <code>code</code></p></li>
+<li><p><strong>Cabeceras de sección</strong> se pueden añadir poniendo el símbol del hashtag <code>#</code> antes del título (y dejando un espacio). Cuantos más # pongas, menor será el texto (nivel inferior)</p></li>
+</ul>
+<div class="sourceCode" id="cb1"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a> # Título nivel 1</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a> ## Título nivel 2</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a> ### Título nivel 3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>También podemos crear <strong>listas</strong> muy fácilmente. Las listas sin orden se crean con <code>-</code>, <code>*</code> o <code>+</code>, y las listas ordenadas con números.</li>
+</ul>
+<div class="sourceCode" id="cb2"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Lista sin orden</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Item 1</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Item 2</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>Item 2a</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>Item 2b</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Item 3</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="fu"># Lista ordenada</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Primer item</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Segundo item</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Tercer item</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Los <strong>Enlaces</strong> se asocian a un texto poniendo el texto entre corchetes <code>[]</code> y el enlace entre paréntesis <code>()</code>:</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>esto es un [ejemplo](http<span class="sc">:</span><span class="er">//</span>ejemplo.com)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>Para insertar <strong>imágenes</strong> (no generadas por código) empezaremos con un signo de exclamación <code>!</code> y luego el pie de foto, y finalmente la ruta a la imagen (respecto al directorio de tu documento <code>.qmd</code>) o la URL en el caso de una imagen externa. Aquí hay dos ejemplos, uno por una imagen local y el otro para una imagen externa</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="sc">!</span>[Imagen local](images<span class="sc">/</span><span class="dv">02</span><span class="sc">-</span>intro<span class="sc">-</span>rmarkdown<span class="sc">/</span>etsea.jpg)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="sc">!</span>[Imagen remota](https<span class="sc">:</span><span class="er">//</span>upload.wikimedia.org<span class="sc">/</span>wikipedia<span class="sc">/</span>commons<span class="sc">/</span>b<span class="sc">/</span>ba<span class="sc">/</span>Sagrada_Familia_nave_roof_detail.jpg)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/02-intro-rmarkdown/etsea.jpg" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Imagen local</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Sagrada_Familia_nave_roof_detail.jpg" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Imagen remota</figcaption>
+</figure>
+</div>
+</section>
+<section id="documentos-formateados" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="documentos-formateados"><span class="header-section-number">3.5</span> Documentos formateados</h2>
+<p>Podemos ver un ejemplo de formateado completo:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">## Mis series favoritas</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>Es muy difícil elegir mis series favoritas, hay tantas para elegir!</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>Quizá es más sencillo si las separamos en **dramas** y **comedias**.</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">### Mis series de darama favoritas</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Breaking bad</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>The West Wing</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Doctor en Alaska</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Better call Saul</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>The Expanse</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="fu">### Mis comedias favoritas:</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>En el caso de las comedias, se me hace imposible hacer un ránking, pero *entre* mis favoritas estarían seguro:</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Monty Python Flying Circus</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The Office</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>The Office versión UK</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>The Office version americana</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Seinfeld</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="fu">### Encontrar nuevas series</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>Para encontrar nuevas series, podemos consultar <span class="co">[</span><span class="ot">IMDB</span><span class="co">](https://www.imdb.com/chart/toptv/)</span></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>En función de las puntuaciones, esta debería ser la siguiente serie que vea:</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a><span class="al">![](images/02-intro-rmarkdown/got.jpg)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>El resultado de este código sería:</p>
+<p><img src="images/series.png" class="img-fluid"></p>
+<blockquote class="blockquote">
+<p><strong>Editor Visual de Quarto en RStudio</strong> <br> <br> Cuando abrimos un documento Quarto en RStudio, veremos que arriba se nos muestran 2 pestañas: “Source” y “Visual”. La primera nos permite visualizar el documento con el texto en formato Markdown. Es decir, veremos el texto formateado de la manera que hemos visto hasta ahora, y sólo veremos el resultado cuando ejecutemos el fichero. En la segunda opción, “Visual”, RStudio nos ofrece una interfaz visual WYSIWYG, donde puedes utilizar los botones de la barra de menú para formatar el texto, insertar imágenes, tablas, referencias cruzadas, etc. o puedes utilizar el atajo de teclado ⌘ + / o Ctrl + / para insertar casi cualquier cosa. <br> <br><br>
+Lo más importante es que, aunque el editor visual muestra el contenido con formato, en realidad guarda el contenido en Markdown sin formato y puedes alternar entre el editor visual y el de código fuente para ver y editar el contenido con cualquiera de las dos herramientas. Aunque al principio es lógico usar el editor visual, mi consejo es acostumbrarse a editar el documento de la forma tradicional, o al menos a alternar ambos, ya que eso nos dará un mayor control sobre lo que hacemos, y nos permitirá aprender el lenguaje Markdown, lo que puede ser útil para otras situaciones.</p>
+</blockquote>
+<div class="exercise">
+<p><strong>EJERCICIO:</strong><br></p>
+<ol type="1">
+<li><p>Descargad el fichero comprimido “series.zip”, abrid <code>series.qmd</code>, que contiene el código de arriba, y ejecutadlo. Comprobad que el resultado corresponde con lo que esperabais.</p></li>
+<li><p>Usando lo que habéis aprendido hasta ahora, cread un nuevo fichero Quarto, y generad un documento <strong>corto</strong> que contenga texto formateado, similar a <code>series.qmd</code>. El tema es libre, pero incluid al menos algo de texto en negrita, en cursiva, algunas cabeceras, una lista y un enlace. Guardadlo como ejercicio_quarto.qmd y ejecutadlo.</p></li>
+</ol>
+</div>
+</section>
+<section id="usando-código-en-quarto-chunks" class="level2" data-number="3.6">
+<h2 data-number="3.6" class="anchored" data-anchor-id="usando-código-en-quarto-chunks"><span class="header-section-number">3.6</span> Usando código en Quarto (chunks)</h2>
+<p>Para ejecutar código en un documento Quarto, debemos especificar que el texto que viene a continuación es código. Esto lo hacemos creando un <em>trozo</em> de código, también llamado “<em>chunk</em>”, que no es más que un fragmento de código que tiene entidad propia, es decir, que puede ser ejecutado y hace <em>algo</em>. Está precedido por <code>```{r}</code> debe comenzar en una linea nueva, y acaba con tres “acentos graves<code>```</code> . El código como tal va en medio. Aquí vemos como ejemplo un código que genera 1000 números aleatorios según una distribución normal de media = 0 y sd = 1, y después genera un histograma con esos números:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>numbers <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1000</span>, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(numbers)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Este código genera esta salida:</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="00_RMarkdown_Quarto_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Fijaos como el código que hemos escrito se incluye en el fichero de salida, con un formato similar al que vemos en R. También se incluye el resultado del código, debajo del mismo. Esto es muy útil porque nos permite ver en un mismo lugar el código que hemos generado, y su resultado.</p>
+<section id="crear-chunks" class="level3" data-number="3.6.1">
+<h3 data-number="3.6.1" class="anchored" data-anchor-id="crear-chunks"><span class="header-section-number">3.6.1</span> Crear chunks</h3>
+<p>Para ejecutar código dentro de un documento Quarto, debemos incluirlo en un chunk. Hay tres maneras de crear un chunk:</p>
+<ol type="1">
+<li><p>Las teclas <kbd>Cmd/Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>I</kbd></p></li>
+<li><p>El botón “Insert” en la barra de editor (sólo en la pestaña <code>Visual</code>)</p></li>
+<li><p>Tecleando a mano los delimitadores <code>```{r}</code> para comenzar el chunk y <code>```</code>para cerrarlo.</p></li>
+</ol>
+<p>Independientemente de cómo lo creemos, tiene este aspecto:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Y una vez creado, podemos teclear dentro el código que queramos:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a> norm <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">100</span>, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a> <span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Es importante señalar que el código dentro de un chunk se comporta como código “normal” de R. Eso quiere decir que cualquier objeto o paquete que sea necesario para ejecutar el código se tendrá que haber cargado en la sesión antes de intentar ejecutarlo. Lo mismo pasa con los datos, que se deben cargar antes de trabajar con ellos.</p>
+<p>El chunk tiene una cabecera, y dentro de las llaves (<code>{}</code>) es donde se especifica el lenguaje de programación (recuerda que Quarto funciona con R, Python, Julia…). Puedes ejecutar cada chunk individualmente en cualquier momento situando el cursos dentro del mismo y clickando Run &gt; Run Current Chunk (la flecha verde en la parte de arriba a la derecha). La salida se muestra justo debajo del chunk.</p>
+<p><img src="images/02-intro-rmarkdown/run_one_chunk.png" class="img-fluid"></p>
+<p>También podemos ejecutar todos los chunks a la vez. o todos los chunks por encima del actual. En cualquier caso, el código R de cada chunk se evalúa y ejecuta en orden al hacer “Render” en el documento. Si alguno de los chunks produce un error, R nos avisará, y el documento de salida no se generará.</p>
+</section>
+<section id="etiquetando-los-chunks" class="level3" data-number="3.6.2">
+<h3 data-number="3.6.2" class="anchored" data-anchor-id="etiquetando-los-chunks"><span class="header-section-number">3.6.2</span> Etiquetando los chunks</h3>
+<p>Como hemos descrito antes, la cabecera del chunk consiste en ``<code>{r}, seguido por una etiqueta opcional del chunk y varias otras opciones del chunk, cada una en su propia línea, marcada por</code>#|`. Por ejemplo, podemos dar un nombre al chunk:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">+</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2</code></pre>
+</div>
+</div>
+<p>Aunque no sea obligatorio, etiquetar los chunks es una buena práctica, ya que nos permite navegar entre los chunks en el menú de la derecha.</p>
+<p><img src="images/02-intro-rmarkdown/chunk_guide.png" class="img-fluid"></p>
+</section>
+<section id="opciones-de-los-chunks" class="level3" data-number="3.6.3">
+<h3 data-number="3.6.3" class="anchored" data-anchor-id="opciones-de-los-chunks"><span class="header-section-number">3.6.3</span> Opciones de los chunks</h3>
+<p>El comportamiento de los chunks se puede personalizar con <strong>opciones</strong>, que no son más que argumentos que podemos dar en la cabecera del chunk, cada uno en su linea, y empezando con <code>#|</code>. Hay casi 60 opciones diferentes, aquí solo mencionaremos las más importantes. El resto las podéis ver aquí: <a href="https://yihui.org/knitr/options/" class="uri">https://yihui.org/knitr/options/</a>.</p>
+<p>Las opciones más importantes controlan si el código del <em>chunk</em> se ejecuta y si se incluyen o no los resultados:</p>
+<ul>
+<li><p><code>eval: false</code> hace que el código no se evalúe (es decir, que no se ejecute, y por lo tanto no genere resultados). Es una manera cómoda de desactivar trozos largos de código (por ejemplo, análisis que al final descartamos, pero que queremos dejar por si acaso).</p></li>
+<li><p><code>include: false</code> hace que ni el código ni el resultado se muestren en el documento final. Sin embargo, sí que ejecuta el código en la sombra, de manera que los resultados se pueden usar por los siguientes chunks. Esto es útil, por ejemplo, para cargar datos y paquetes.</p></li>
+<li><p><code>echo: false</code> el resultado aparecerá, pero el código que lo generó no. Es útil para escribir informes destinados a gente que no está interesada en ver el código que hemos usado, pero si los resultados.</p></li>
+<li><p><code>message: false</code> o <code>warning: false</code> impide que aparezcan en el resultado final mensajes de error o avisos</p></li>
+</ul>
+<p>Cada una de estas opciones de chunk se añade a la cabecera del chunk, siguiendo a <code>#|</code>, por ejemplo, en el siguiente chunk el resultado no se imprime ya que <code>eval: false</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span> <span class="sc">*</span> <span class="dv">2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="figuras" class="level2" data-number="3.7">
+<h2 data-number="3.7" class="anchored" data-anchor-id="figuras"><span class="header-section-number">3.7</span> Figuras</h2>
+<p>Si un <em>chunk</em> prodice una figura, esta se mostrará inmediatamente debajo del chunk, y Quarto maximizará su altura, cumpliendo con los márgenes del documento y manteniendo el ratio de altura/anchura. Por lo tanto, algunas figuras pueden resultar enormes en el documento final. Para cambiar manualmente las dimensiones, podemos insertar instrucciones en la cabecera del chunk:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co">#|  fig-width: 4</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co">#|  fig-height: 3</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>norm <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">100</span>, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(rnorm)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="tablas" class="level2" data-number="3.8">
+<h2 data-number="3.8" class="anchored" data-anchor-id="tablas"><span class="header-section-number">3.8</span> Tablas</h2>
+<p>Por defecto, Quarto imprime los data frames y las matrices como las verías en la consola:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>iris[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, ]</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>  Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+1          5.1         3.5          1.4         0.2  setosa
+2          4.9         3.0          1.4         0.2  setosa
+3          4.7         3.2          1.3         0.2  setosa
+4          4.6         3.1          1.5         0.2  setosa
+5          5.0         3.6          1.4         0.2  setosa</code></pre>
+</div>
+</div>
+<p>para darles formato adicional, se puede usar la función <code>kable()</code> del paquete <code>knitr()</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(iris[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, ], </span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>      <span class="at">caption =</span> <span class="st">"Una tabla hecha con knitr. Queda mejor, ¿no?"</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<caption>Una tabla hecha con knitr. Queda mejor, ¿no?</caption>
+<thead>
+<tr class="header">
+<th style="text-align: right;">Sepal.Length</th>
+<th style="text-align: right;">Sepal.Width</th>
+<th style="text-align: right;">Petal.Length</th>
+<th style="text-align: right;">Petal.Width</th>
+<th style="text-align: left;">Species</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">5.1</td>
+<td style="text-align: right;">3.5</td>
+<td style="text-align: right;">1.4</td>
+<td style="text-align: right;">0.2</td>
+<td style="text-align: left;">setosa</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4.9</td>
+<td style="text-align: right;">3.0</td>
+<td style="text-align: right;">1.4</td>
+<td style="text-align: right;">0.2</td>
+<td style="text-align: left;">setosa</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">4.7</td>
+<td style="text-align: right;">3.2</td>
+<td style="text-align: right;">1.3</td>
+<td style="text-align: right;">0.2</td>
+<td style="text-align: left;">setosa</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4.6</td>
+<td style="text-align: right;">3.1</td>
+<td style="text-align: right;">1.5</td>
+<td style="text-align: right;">0.2</td>
+<td style="text-align: left;">setosa</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5.0</td>
+<td style="text-align: right;">3.6</td>
+<td style="text-align: right;">1.4</td>
+<td style="text-align: right;">0.2</td>
+<td style="text-align: left;">setosa</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><br> Hay numerosos paquetes destinados a generar tablas de alta calidad con R. Algunos son:</p>
+<ul>
+<li><a href="https://cran.r-project.org/web/packages/xtable/">xtable</a></li>
+<li><a href="https://cran.r-project.org/web/packages/stargazer/">stargazer</a></li>
+<li><a href="http://rapporter.github.io/pander/">pander</a></li>
+<li><a href="https://cran.r-project.org/web/packages/tables/">tables</a></li>
+<li><a href="http://eusebe.github.io/ascii/">ascii</a></li>
+</ul>
+<div class="exercise">
+<p><strong>EJERCICIO:</strong><br></p>
+<p>Ahora que sabéis como producir un documento Quarto completo, quiero que <strong>créeis uno</strong> usando el dataset <code>mtcars</code>que viene cargado por defecto en R. Este dataset contiene datos de consumo de combustible y otras 10 variables de diseño y prestaciones de 32 modelos de coche. Tiene por tanto 32 filas y 11 columnas. Teclea <code>?mtcars</code> en la consola para saber más del dataset y de las variables que contiene.</p>
+</div>
+</section>
+<section id="para-saber-más" class="level2" data-number="3.9">
+<h2 data-number="3.9" class="anchored" data-anchor-id="para-saber-más"><span class="header-section-number">3.9</span> Para saber más</h2>
+<p>Quarto es aún relativamente reciente, pero está creciendo muy muy rápido debido a su versatilidad. El mejor sitio para estar al día de las novedades es su página oficial: https://quarto.org/. Incluye una <a href="https://quarto.org/docs/guide/">Guía de Quarto</a>.</p>
+<p>RStudio también produce “chuletas” para la mayoría de sus productos, y Quarto no es una excepción. Incluye las principales funciones en un formato compacto, para tenerlo siempre a mano. Podéis encontrarlo <a href="https://rstudio.github.io/cheatsheets/quarto.pdf">aquí</a></p>
+<p><img src="images/02-intro-rmarkdown/cheatsheet_quarto.png" class="img-fluid"></p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./00_Intro_R.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introducción a R</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./01_RegresionLineal.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Regresión lineal en R</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">Apuntes y ejercicios de geoestadística para forestales. Aitor Ameztegui, Universitat de Lleida.</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">Este libro se ha elaborado con <a href="https://quarto.org/">Quarto</a>.</div>
+  </div>
+</footer>
+
+
+
+</body></html>
