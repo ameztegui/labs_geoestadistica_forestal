@@ -1,0 +1,643 @@
+---
+title: "Análisis de patrón de puntos en R"
+subtitle: "Geoestadística i Tècniques d'Observació Global (24/25)" 
+author: "Aitor Ameztegui (UdL)"
+date: "last-modified"
+format: 
+    html:
+        theme: cerulean
+        toc: true
+editor_options: 
+  chunk_output_type: console
+---
+
+## Introducción
+
+Como vimos en clase, un conjunto de datos de patrones de puntos contiene una serie de eventos (es decir, objetos de interés) que ocurren en una región de estudio definida. Estos eventos pueden representar cualquier cosa con una ubicación medible, incluyendo árboles, nidos de animales, ubicaciones de estaciones meteorológicas, ocurrencias de delitos, etc. sin que exista necesariamente una variable de interés. Es decir, lo que nos interesa es la ubicación de los eventos más que su valor.
+
+Como hemos visto, los patrones de puntos tienen propiedades de **primer orden**, que están relacionadas con la *intensidad* (es decir, la densidad) de los sucesos en la región de estudio, y propiedades de **segundo orden**, que están relacionadas con la *dependencia espacial* (es decir, la disposición espacial) de los sucesos en la zona de estudio.
+
+**Objetivo**
+
+El objetivo del lab de hoy es aprender algunos enfoques estadísticos espaciales para caracterizar las propiedades de primer y segundo orden de un patrón de puntos.
+
+**Datos y librerías**
+
+Para realizar un análisis de patrón de puntos utilizaremos fundamentalmente el paquete de R `spatstat`. Lo primero que debemos hacer es instalarlo - a no ser que ya lo tengamos instalado - y cargarlo:
+
+```{r, warning = F, message=FALSE, prompt=FALSE}
+#install.packages("spatstat") (sólo si no está ya instalado)
+library(spatstat)
+```
+
+Además, vamos a utilizar tres de los datasets que vienen cargados por defecto por la librería `spatstat`. El primero, llamado `bei`, contiene la localización de 3605 árboles en una parcela de bosque tropical. Además, viene acompañado del fichero `bei.extra`, que contiene información continua acerca de la altitud y la pendiente en la parcela de estudio. El segundo dataset que usaremos se llama `longleaf`, y es un fichero de patrón de puntos "marcado", es decir que contiene la localización de una serie de pinos de Virginia (longleaf pine), una especie común en el sudeste de EEUU, pero también contiene su diámetro, por eso decimos que es un fichero "marcado". Finalmente, el fichero llamado `lansing` contiene la ubicación de una serie de 5 especies de árboles en una parcela de Lansing, en el estado de Michigan.
+
+```{r, echo = F}
+
+data(bei)
+plot(bei.extra$elev, main = "Bei dataset")
+plot(bei, add=TRUE, pch=16, cex=0.5)
+
+data(longleaf)
+plot(longleaf)
+
+data(lansing)
+plot(lansing, cex = 0.7, cols = "dark gray")
+
+```
+
+**NOTA:** al plotear los ficheros precargados del paquete `spatstat` podemos definir algunos parámetros de los puntos, como hacemos con un scatterplot normal. En este caso hemos modificado el tipo de puntos, su tamaño y el color, mediante los comandos `pch` ,`cex`, y `cols`, respectivamente. Podéis encontrar más información de como modificar los parámetros de un gráfico [aquí](https://www.statmethods.net/advgraphs/parameters.html)
+
+## Familiarizándose con los objetos \`ppp\`
+
+El paquete `spatstat` usa una clase específica de objetos de R llamados ppp (planar point pattern). Los datos que vamos a usar, que se cargan automáticamente al instalar `spatstat` son objetos de esa clase.
+
+Examinemos el dataset `bei`. Para ello devemos abrirlo tecleando:
+
+```{r}
+data(bei)
+```
+
+Y podemos ver su contenido tecleando su nombre:
+
+```{r}
+bei
+```
+
+Vemos que es un archivo de patrón de puntos con 3604 observaciones. El objeto `ppp` también contiene información sobre la región que contiene los eventos. En este caso, es un rectángulo con un rango de coordenadas $x$ de entre 0 y 1000 , y un rango de $y$ de entre 0 y 500, y las unidades en metros.
+
+Podemos visualizar el objeto `bei` escribiendo:
+
+```{r}
+plot(bei)
+```
+
+Igual que hemos hecho hasta ahora, podemos cambiar el color, formato de los puntos, y otras características del plot
+
+```{r}
+plot(bei, pch = 20, cols = "dark blue")
+```
+
+<!-- Tratemos ahora de responder a las siguientes preguntas -->
+
+<!-- -   ¿Qué tipo de objeto es `lansing`? ¿Y `bei`? -->
+
+<!-- -   ¿Cuántos objetos tiene cada uno de ellos? -->
+
+<!-- -   ¿De qué tamaño es la "ventana" de `lansing`? ¿Y la de bei? -->
+
+<!-- -   Realiza un plot donde se vea el objeto `bei`, y cambia el color de los puntos -->
+
+```{r, echo = FALSE, eval = FALSE}
+lansing
+bei
+plot(lansing, cols = c("red", "blue", "green", "dark orange", "purple"), pch = 20)
+plot(bei, cols = "dark orange", pch = 20)
+
+```
+
+## Estadísticas descriptivas (centrografía)
+
+Los estadísticos centrográficos son estadísticos descriptivos simples que se utilizan a menudo para el análisis exploratorio de datos en la estadística espacial. Los estadísticos centrográficos, como la posición central, la desviación estándar, la elipse de desviación estándar pueden utilizarse para ayudar a la caracterización de la distribución espacial de los conjuntos de datos referenciados espacialmente.
+
+En $R$ podemos calcular por ejemplo la posición media y mediana de los puntos, lo haremos con el dataset `bei`:
+
+```{r}
+
+x_media <- mean(bei$x)
+y_media <- mean(bei$y)
+
+x_mediana <- median(bei$x)
+y_mediana <- median(bei$y)
+```
+
+y representarlo gráficamente sobre los puntos:
+
+```{r}
+plot(bei, pch = 20, cex = 0.5)
+points(x_media, y_media, col = "red", pch = 3, lwd=2)
+points(x_mediana, y_mediana, col = "green", pch = 4, lwd= 2)
+```
+
+También podemos calcular la desviación estándard y usarla para construir un círculo con ese radio:
+
+```{r}
+x_sd <- sd(bei$x)
+y_sd <- sd(bei$y)
+
+sd_bei = mean(x_sd, y_sd)
+```
+
+Y plotearlo, pero para dibujar un círculo necesitamos la función `draw.circle()` del paquete `plotrix`:
+
+```{r, message=FALSE}
+library(plotrix)
+plot(bei, pch = 20, cex = 0.5)
+points(x_media, y_media, col = "red", pch = 3, lwd=2)
+draw.circle(x= x_media, y = y_media, border = "red", 
+            radius = sd_bei, lwd = 2)
+```
+
+En ArcGis Pro y QGis también existen funciones para realizar este tipo de análisis y visualización. En concreto, podemos usar las funciones `mean center`, o `standard distance` dentro del toolbox `Spatial Statistics`. Incluso podemos dibujar la elipse de desviación estandard mediante la función `directional distribution`.
+
+## Análisis basados en densidad
+
+### Intensidad global
+
+Como hemos visto en la teoría, la intensidad de un proceso expresado en patrón de puntos puede calcularse a través de la siguiente ecuación:
+
+$\lambda = {n}/{a}$
+
+donde $\lambda$ es la intensidad, $n$ es el número de observaciones y $a$ la superficie considerada como área de estudio. Conociendo estos dos parámetros podemos calcular la intensidad:
+
+El número de observaciones es un parámetro del objeto `ppp`:
+
+```{r}
+n_obs <- bei$n
+```
+
+y el área lo podemos obtener también de un objeto `ppp`:
+
+```{r}
+bei$window
+superf <- area(bei$window)
+superf
+```
+
+Por tanto la intensidad será:
+
+```{r}
+intens_bei <- n_obs / superf
+intens_bei
+```
+
+Sin embargo, `spatstat` ya proporciona una función `summary()` que nos proporciona información de la muestra, entre ella la intensidad:
+
+```{r}
+summary(bei)
+```
+
+También podemos acceder a la intensidad de forma directa:
+
+```{r}
+summary(bei)$intensity
+```
+
+<!-- Calcula la intensidad global de eventos en el objeto `longleaf` y en `lansing`. Recuerda tener en cuenta las unidades de área. -->
+
+```{r, echo = FALSE, eval = FALSE}
+summary(longleaf)$intensity
+summary(lansing)$intensity
+
+```
+
+### Análisis de cuadrículas
+
+Calcular la intensidad global de un proceso de puntos puede tener interés para comparar dos muestras diferentes, o cambios temporales, pero para caracterizar de forma más completa la muestra debemos determinar cómo varía la intensidad en el espacio. Una forma sencilla es a través del conteo por cuadrículas. Consiste en dividir el área de estudio en una serie de cuadrículas de tamaño constante, y calcular la intensidad en cada una de ellas. El resultado nos puede ayudar a determinar si el patrón de eventos está distribuido regularmente o de manera agrupada. `spatstat` contiene una función (`quadratcount()`) que nos permite calcularlo de manera muy sencilla.
+
+```{r}
+q <- quadratcount(bei, nx= 4, ny = 4)
+q
+```
+
+También podemos visualizarlo:
+
+```{r}
+plot(bei, cols = "gray", pch = 20, cex = 0.5)
+plot(q, add = T)
+```
+
+En las sesiones teóricas vimos que la hipótesis nula en el caso de una distrbución de puntos es que estos se encuentran repartidos aleatoriamente en las cuadrículas. Sabiendo la intensidad de la muestra, podemos generar una serie de puntos aleatorios, que sigan una distribución de Poisson. Este numero de eventos, que sería el esperado en una muestra que cumpla la aleatoriedad, se compara con lo que realmente tenemos (observado) mediante un test de Chi-cuadrado, que en `spatstat` viene implementado en la función `quadrat.test()`, que se puede usar con el objeto `ppp` o con el resultado de `quadratcount()`:
+
+```{r}
+quadrat.test(bei, nx= 4, ny = 4)
+quadrat.test(q)
+```
+
+En este caso, vemos que el p-valor es claramente inferior a 0.05, por lo que podemos rechazar la hipótesis nula, y por tanto decidir que los puntos no se distribuyen aleatoriamente. También podemos ver este resultado de manera gráfica:
+
+```{r}
+plot(quadrat.test(bei, nx = 4, ny = 4))
+```
+
+Podemos por supuesto cambiar el número de cuadrículas a nuestro antojo:
+
+```{r}
+Q9 <- quadratcount(bei, nx = 3, ny = 3)
+plot(bei, cex = 0.5, pch = "+")
+plot(Q9, add = TRUE, cex = 2)
+quadrat.test(Q9)
+
+Q24 <- quadratcount(bei, nx = 6, ny = 4)
+plot(bei,  cex = 0.5, pch = "+")
+plot(Q24, add = TRUE, cex = 1.5)
+quadrat.test(Q24)
+
+Q120 <- quadratcount(bei, nx = 10, ny = 12)
+plot(bei, use.marks = F, cex = 0.5, pch = "+")
+plot(Q120, add = TRUE, cex = 0.8)
+quadrat.test(Q120)
+
+
+
+```
+
+También podemos calcular la **densidad** de puntos en cada cuadrado, en vez del número total:
+
+```{r}
+q_dens <- intensity(Q9)
+q_dens
+
+```
+
+Y plotearlo:
+
+```{r}
+plot(intensity(Q9, image=TRUE))  
+plot(bei, use.marks = F, pch=20, add=TRUE)  
+```
+
+<!-- Prueba ahora a plotear la intensidad de otro del dataset `lansing`, usando 16 cuadrículas.  ¿Qué cuadriculas tienen mayor o menor intensidad? Basándote en este análisis, podemos rechazar o no la hipótesis de aleatoriedad en la distribución de la muestra? ¿Por qué o por qué no?  -->
+
+```{r, echo = F, eval = F}
+q_lansing <- quadratcount(lansing, nx = 4, ny = 4)
+plot(intensity(q_lansing, image=TRUE))  
+plot(lansing, add=TRUE)
+quadrat.test(q_lansing)
+```
+
+### Análisis de cuadrículas basadas en covariable
+
+A menudo, más que dividir el terreno en un número de cuadrículas regulares, nos interesa dividirlo según alguna variable continua de interés, que pensemos que puede explicar la distribución. Ya comentamos que `spatstat` proporciona, junto con el dataset `bei`, otro llamado `bei.extra` que contiene los valores de altitud y pendiente en la misma parcela. Echémosles un vistazo:
+
+```{r}
+bei.extra
+
+plot(bei.extra$elev)
+plot(bei.extra$grad)
+
+```
+
+Veamos como se distribuyen los puntos en clases de pendiente. Para ello debemos reclasificar el raster de elevaciones en 5 clases: \<130, 130 a 140, de 140 a 150, de 150 a 160, y \>160. Para ello usaremos la función `cut()`:
+
+```{r}
+
+plot(bei.extra$elev)
+clases_elev <- cut(bei.extra$elev, breaks = c( -Inf, 130, 140, 150, 160 , Inf), 
+              labels=1:5)  # Classify the raster
+plot(clases_elev)
+
+```
+
+<!-- Ahora creamos una superficie teselada - un tipo especial de objeto espacial - usando `tess()`: -->
+
+<!-- ```{r} -->
+
+<!-- E <- tess(image=clases_elev)  # Create a tesselated surface -->
+
+<!-- plot(E) -->
+
+<!-- ``` -->
+
+Ahora usamos de nuevo la función `quadratcount`. pero indicando que queremos "teselar" por las clases de elevación:
+
+```{r}
+Q_tes   <- quadratcount(bei, tess = clases_elev)  
+I_tes <- intensity(Q_tes)  # Compute density
+I_tes
+```
+
+Estos números son el número de puntos por metro cuadrado en cada clase de elevación. Podemos visualizarlo como antes:
+
+```{r}
+plot(intensity(Q_tes, image=TRUE))
+plot(bei, pch=20, add=TRUE)
+
+
+```
+
+Y también podemos realizar un test estadístico de este conteo:
+
+```{r}
+quadrat.test(Q_tes)
+```
+
+<!-- ¿Qué podemos decir del test en este caso? Se distribuyen los puntos de manera homogénea por las cuadrículas de elevación. Si tienes tiempo, evalúa si pasa lo mismo con la pendiente. -->
+
+### Densidad en kernel
+
+El recuento de cuadrículas es útil para caracterizar la intensidad de un proceso puntual no homogéneo, pero tiene sus limitaciones:
+
+-   La elección del origen, la orientación de las cuadrículas y el tamaño de los mismos afecta a la distribución de frecuencias observada, y no deja de ser una decisión arbitraria.
+-   Se pierde una cantidad significativa de información de detalle
+
+Para evitar el problema podemos hacer un análisis mediante algoritmos KDE (kernel density estimation), que utilizan un enfoque de ventana móvil para caracterizar la intensidad. Este enfoque tiende a preservar una mayor cantidad de detalles espaciales y no sufre tanto por la elección del origen, la orientación y el tamaño de las cuadrículas.
+
+El paquete `spatstat` tiene una función (`density`) que calcula un kernel a partir del patrón de puntos, y determina la densidad de puntos de cada celda del área de estudio según ese kernel.
+
+```{r}
+K1 <- density(bei) 
+plot(K1)
+```
+
+Para mejorar la visualización podemos añadirles las isolíneas de densidad, y los puntos, para comprobar el resultado:
+
+```{r}
+plot(K1)
+contour(K1, add=TRUE)
+plot(bei, pch=20, add=TRUE)
+
+```
+
+El ancho de banda (es decir, el radio) de la función kernel se define automáticamente en función del área de estudio, pero se puede personalizar también, usando el parámetro `sigma`:
+
+```{r}
+K2 <- density(bei, sigma=200) 
+plot(K2, main=NULL)
+contour(K2, add=TRUE)
+plot(bei, pch=20, add=TRUE)
+
+```
+
+<!-- Prueba a modificar el ancho de banda a los siguientes valores: 10, 20, 50, 100, 200, 500. ¿Cómo influye incrementar y reducir el ancho de banda en las estimaciones de densidad? ¿Cuál produce mejores estimaciones de densidad? ¿Por qué? -->
+
+Antes hemos visto cómo crear cuadrículas en función de los valores de una covariable. Podemos aprovechar las funcionalidades de los cálculos de intensidad con kernel para determinar de manera directa si la intensidad de un proceso de patrón de puntos depende de alguna covariable. Podemos usar la función `rhohat()`, indicando qué dataset queremos analizar, y con qué variable se quiere evaluar:
+
+```{r}
+rhohat(bei, bei.extra$grad)
+```
+
+La salida de la función `rhohat()` no es muy clara, pero podemos plotearla:
+
+```{r}
+plot(rhohat(bei, bei.extra$grad))
+```
+
+El plot es una estimación de la intensidad en función de la pendiente del terreno. Indica que es más infrecuente encontrar árboles en terrenos llanos (pendiente \< 0.05) que en zonas de pendientes más altas. La linea negra $\rho$ es la intensidad estimada, mientras que la región en gris representa el intervalo de confianza.
+
+## Análisis basados en la distancia
+
+Los análisis basados en la distancia están relacionados con las propiedades de segundo orden de los puntos, es decir, con la dependencia espacial entre ellos. Existen varios métodos, que evaluaremos de nuevo sobre el fichero `bei`:
+
+### Vecinos más próximos (ANN)
+
+Podemos calcular la distancia entre cada árbol y su vecino más próximo, usando `nndist()` y fijando `k = 1` (para extraer la distancia al más próximo), y calculamos la media de todas las distancias:
+
+```{r}
+dist1 <- nndist(bei, k=1)
+head(dist1)
+mean(dist1)
+```
+
+También podemos calcularlo con el segundo vecino de cada árbol, o con el tercero, o el n-ésimo...
+
+```{r}
+mean(nndist(bei, k=2))
+mean(nndist(bei, k=3))
+mean(nndist(bei, k=15))
+```
+
+Con una función podemos calcular NN para cualquier valor de vecino deseado, y luego calcular la media:
+
+```{r}
+ANN <- apply(nndist(bei, k=1:200),2,FUN=mean)
+```
+
+Después ploteamos la distancia media al vecino k-ésimo, que nos da información sobre cómo se distribuyen los puntos.
+
+```{r}
+plot(seq(1:200), ANN)
+
+```
+
+### Función $G$ y función $F$
+
+Podemos realizar un test más formal de cómo varía la distancia al vecino más próximo, usando la función `G(r)`, que calcula la distribución acumulada de la distancia de un punto cualquiera `x` a su punto más próximo. El valor de $G(r)$ es la proporción de puntos que tienen su vecino más cercano a una distancia igual o inferior a $r$. Esta función viene implementada en `spatstat` como `Gest()`:
+
+```{r}
+G_bei <- Gest(bei)
+plot(G_bei)
+```
+
+El comando de arriba produce un gráfico que compara la función *G* observada o empírica y la esperada si la distribución fuera aleatoria (linea azul). En este caso, los valores empíricos son muy superiores, lo que indica agrupación en los puntos.
+
+Para poder saber si las diferencias entre la función empírica y la teórica son significativas (es decir, si realmente podemos rechazar que los puntos se distribuyan al azar), podemos usar la función `envelope()`. Esta función genera un número de muestras con la misma cantidad de puntos pero distribución aleatoria, y compara nuestra muestra a ellas.
+
+```{r}
+g_bei_env <- envelope(bei, Gest, nsim = 100)
+plot(g_bei_env)
+```
+
+Vemos que ahora se ha representado una banda gris alrededor de la función G teórica, que indica el intervalo de confianza generado a partir de las 100 simulaciones que hemos realizado (`nsim = 100`)
+
+De manera análoga, la función `F` representa la frecuencia acumulada de la distancia más corta entre un punto y un conjunto de puntos aleatoriamente localizados en el área de estudio:
+
+```{r}
+f_bei_env <- envelope(bei, Fest, nsim = 100)
+plot(f_bei_env)
+```
+
+En este caso, valores más altos que los teóricos indican patrones regulares (mayor distancia entre puntos), mientras que los más bajos indican agrupación. Como la linea observada va muy por debajo de la teórica, podemos concluir que nuestros puntos están agrupados.
+
+### Función $K$ y función $L$
+
+La función $K$ calcula, para una serie de bandas concéntricas a cada punto de la muestra, el número de puntos que cae dentro de la banda. Esto nos da un valor de $K$ para cada distancia, valor que siempre debe aumentar con la distancia. Para calcular la función $K$ podemos usar la función de R `Kest()`:
+
+```{r}
+K <- Kest(bei)
+plot(K)
+```
+
+En este caso, la curva por encima de la teórica (Poisson) indica agrupación de puntos. Podemos calcular el intervalo de confianza igual que hemos hecho antes:
+
+```{r}
+k_bei_env <- envelope(bei, Kest, nsim = 30)
+plot(k_bei_env)
+```
+
+La función $L$, que es sólo una modificación de $K$, se calcula fácilmente, casi de la misma manera:
+
+```{r}
+L <- Lest(bei)
+plot(L, . -r ~ r)
+
+L_bei_env <- envelope(bei, Lest, nsim = 99)
+plot(L_bei_env, . -r ~ r)
+```
+
+### Función de correlación de pares
+
+La función de correlación de pares no es más que una version modificada de K en la que se hacen bandas anulares concéntricas.
+
+```{r}
+pcf_bei  <- pcf(bei)
+plot(pcf_bei)
+
+pcf_bei_env <- envelope(bei, pcf, nsim = 10)
+plot(pcf_bei_env)
+```
+
+## Análisis de patrones de puntos "marcados"
+
+Como vimos en la sesión teórica, un dataset de patrón de puntos contiene una serie de eventos, que son los objetos de interés (árboles, muestras de suelo, nidos, crímenes). Sin embargo a menudo estos puntos llevan asociada alguna variable de interés, que puede ser numérica (diámetro, pH del suelo...) o categórica (especie, tipo de suelo...). Estas variables se llaman *marcas* y los objetos que contienen puntos con marcas asociadas se llaman patrones de puntos *marcados*.
+
+Recordemos que los patrones de puntos tienen propiedades *de primer orden*, relacionadas con la intensidad (o densidad) de eventos a lo largo y ancho del área de estudio, y propiedades *de segundo orden*, que hacen referencia a la dependencia espacial entre los eventos.
+
+Al entrar en juego las marcas, el tipo de preguntas que nos podemos hacer cuando tenemos puntos marcados es variado. Por ejemplo: ¿están relacionadas las ocurrencias de un tipo de evento (por ejemplo, una especie) con las de otro? La distribución de uno de los tipos de evento explica la de otro?
+
+Ahora veremos cómo calcular modelos dependientes de la densidad (mediante kernel) para puntos con diferentes marcas, así como las variantes de los principales métodos dependientes de la distancia (funciones $F$, $G$, $K$ y $L$). Pero antes, veamos algo más sobre los ficheros de patrón de puntos marcados:
+
+### Marcas numéricas
+
+Las marcas de un fichero de patrón de puntos pueden ser de tipo numérico o categórico. Si recordamos del inicio, el fichero `longleaf` contiene valores de diámetro de los árboles, y R ya nos indica que contiene marcas numéricas:
+
+```{r}
+longleaf
+```
+
+Además, ahora podemos acceder a los valores de las marcas dentro de `longleaf`:
+
+```{r}
+    longleaf$marks
+```
+
+Y si ploteamos:
+
+```{r}
+plot(longleaf)
+```
+
+Vemos que por defecto, el tamaño de los círculos es proporcional a la variable de "marca", en este caso el diámetro. Podemos cambiar este comportamiento por defecto marcando la opción `use.marks` a `FALSE`
+
+```{r}
+plot(longleaf, use.marks = FALSE)
+```
+
+Aunque se pueden realizar algunos cálculos con ficheros ppp con marcas numéricas, en realidad esto cae más dentro del campo de la autocorrelación espacial, por lo que no lo trataremos aquí.
+
+### Marcas categóricas
+
+El segundo tipo de marcas posible que podemos encontrar son las marcas categóricas. Es el caso del fichero `lansing`:
+
+```{r}
+lansing
+
+head(lansing$marks)
+
+plot(lansing)
+```
+
+Por defecto nos separa los distintos niveles de la marca (en este caso la especie) mediante símbolos, pero podemos modificarlo:
+
+```{r}
+
+plot(lansing, cex = 0.7, pch = 21, bg = c("red", "purple", "green", "blue", "orange", "yellow"))
+```
+
+También podemos obviarlo con la opción `use.marks = FALSE`
+
+```{r}
+plot(lansing, use.marks = FALSE, pch =19, cex = 0.5)
+```
+
+### Crear objetos ppp con marcas
+
+Como hemos comentado, las funciones con las que trabajaremos no utilizan ninguno de los formatos de ráster o vectorial que conocemos, sino que utilizan objetos de clase `ppp` (planar point pattern). Los datasets que usaremos ya vienen en este formato, pero esto no es lo habitual, por lo que en esta sección veremos cómo generar objetos de este tipo a partir de datasets normales.
+
+Un objeto `ppp` contiene las coordenadas de los puntos y una"ventana" de análisis (área de estudio). Vamos a cargar los datos ya en el formato necesario. En este caso cargaremos los puntos de un fichero separado por comas disponible en el campus virtual, y llamado `finland.csv`, que contiene la ubicación de árboles de 4 especies en una parcela de 20x20 m en Finlandia.
+
+```{r}
+finland_trees <- read.csv("./data/finland/finland.csv")
+```
+
+Podemos ver que el objeto `finland_trees` tiene 3 columnas, una contiene las coordenadas X, otra las Y, y el tercero contiene la especie de cada árbol. Podemos observarlo mediante:
+
+```{r}
+head(finland_trees)
+```
+
+Para crear un objeto `ppp` necesitamos usar la función `ppp()`. Si miramos la ayuda de la función (`?ppp`) vemos que esta función requiere 4 tipos de información: las coordenadas X, las Y, el tamaño de la "ventana" (la región a estudiar) y las marcas, si es que las hay (los valores asociados a cada evento). Vamos a crear un objeto `ppp` a partir de `finland_trees`:
+
+```{r}
+finland <- ppp(x = finland_trees$x, y = finland_trees$y, 
+               window = owin(c(0,20), c(0,20), unitname = "meters"),
+               marks = factor(finland_trees$species))
+```
+
+Con el código de arriba definimos las coordenadas x e y para el objeto ppp a partir de las columnas del data frame. La parte del código que dice `window = owin` define el rango de x e y alrededor de los puntos, y el comando `marks =` define los valores de las marcas, aunque esto último es opcional.
+
+### Análisis exploratorio/descriptivo
+
+¿Cuántos eventos tiene el dataset `finland`? ¿Cuál es el área de estudio? ¿Cuántas especies diferentes contiene la parcela? ¿Cuál es la densidad relativa de cada una de ellas?
+
+Las dos primeras son preguntas que ya sabemos responder de ejercicios anteriores. Sin embargo ahora vemos que la función `summary()` nos devuelve información por marcas:
+
+```{r}
+summary(finland)
+```
+
+Del mismo modo, el plot "normal" puede resultar confuso, pero podemos pedirle que nos represente la distribución de cada tipo de evento (en este caso, cada especie):
+
+```{r}
+plot(finland)
+plot(split(finland))
+```
+
+### Efectos de primer orden (dependientes de la densidad)
+
+Vamos a ajustar un análisis de densidad en kernel (ventana móvil para las especies diferentes de las contenidas en nuestra muestra). En realidad es muy sencillo, aprovechando la función `split()` que hemos visto antes:
+
+```{r}
+plot(density(split(finland)))
+```
+
+La proporción relativa de la intensidad de cada especie se puede calcular, para hacer que las intensidades estén todas en la misma escala y se puedan comparar los valores:
+
+```{r}
+plot(relrisk(finland), zlim = c(0, 1))
+```
+
+Ahora los valores son más comparables entre especies, y vemos de manera muy clara la abundancia de pinos, y los pocos chopos (aspen) que hay. Basado en los mapas de densidad, ¿véis alguna especie que se asocie con otra? ¿Y algún tipo de proceso de segregación entre especies?
+
+### Efectos de segundo orden (dependientes de la distancia)
+
+Igual que en los eventos de puntos sin marcas, podemos testar las asociaciones entre los distintos tipos de eventos de manera más formal mediante las funciones $G$, $F$, $K$ y $L$. Para cada una de las funciones vistas antes (`Gest`, `Fest`, `Kest` y `Lest`) existe su variante de tipo cruzado (cross-type), que compara las distribuciones para dos valores de la variable de marca.
+
+Por ejemplo, para correr un análisis de función G y ver si hay indepencia entre las ubicaciones de pinos y abedules podemos hacer:
+
+```{r}
+plot(Gcross(finland, i = "birch", j = "rowan"))
+
+```
+
+La interpretación es similar a la que hemos visto hasta ahora, de manera que los valores por debajo de la curva teórica indica segregación entre las especies, mientras que valores por encima indican agrupación.
+
+Nótese que debemos especificar los niveles de la muestra a comparar, si no tomará por defecto los dos primeros (ya que las comparaciones sólo pueden hacerse dos a dos)
+
+También podemos construir los intervalos de confianza de manera análoga:
+
+```{r}
+ G <- envelope(finland, Gcross, i= "birch", j = "rowan",
+               nsim = 10)
+plot(G)
+```
+
+El resto de funciones asociadas a las propiedades de segundo orden pueden construirse de forma análoga:
+
+```{r}
+# Función K
+ K <- envelope(finland, Kcross, i= "birch", j = "rowan",nsim = 10)
+plot(K)
+
+# Función L
+L <- envelope(finland, Lcross, i= "birch", j = "rowan", nsim = 10)
+plot(L)
+
+# Función de correlación de pares
+plot(pcfcross(finland))
+
+```
+
+## Conclusiones
+
+Hemos visto como analizar patrones de puntos tanto univariantes como multivariantes (con varios niveles), de manera que hemos aprendido a determinar si la distribución de una serie de puntos es aleatoria, agrupada o dispersa, y a comparar las distribuciones de dos especies mediante diversos estadísticos. Por supuesto, esto es sólo la punta del iceberg de la potencialidad de este tipo de análisis, pero supone una buena base que podemos utilizar para analizar diferentes tipos de datos.

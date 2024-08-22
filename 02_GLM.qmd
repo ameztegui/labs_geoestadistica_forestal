@@ -1,0 +1,189 @@
+---
+title: "Regresión lineal generalizada (GLM) en R"
+subtitle: "Geoestadística i Tècniques d'Observació Global (24/25)" 
+author: "Aitor Ameztegui (UdL)"
+date: "last-modified"
+format: 
+    html:
+        theme: cerulean
+        toc: true
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE, eval = F}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+## Introducción: los modelos lineales generalizados (GLMs)
+
+Ya hemos visto en las clases teóricas que la regresión lineal generalizada (o modelos lineales generalizados, GLM) son una alternativa sólida a los casos en los que nuestra variable dependiente no sigue una distribución normal, y por tanto, los residuos de la regresión lineal no cumplirán los supuestos de la misma. Los GLM abordan estos problemas flexibilizando la distribución de la variable respuesta, y conectándola con un predictor lineal a través de una función de enlace (*link function*). Vamos a ver ahora ejemplos con algunas de las distribuciones más habituales - más allá de la normal:
+
+## Regresión de conteos: la distribución de Poisson
+
+Uno de los casos más habituales en los que debemos usar los GLM es cuando nuestra variable dependiente son conteos. En este caso seguirán una distribución de Poisson, que se caracteriza como el número de veces que un determinado evento ocurrirá en un intervalo de tiempo. Si es un conteo de abundancia, por ejemplo, la variable dependiente será el número de plantas (eventos) en un muestreo. La distribución de Poisson tiene un sólo parámetro $\lambda$, que es la media de eventos esperada. Así, si generamos una serie de 100 observacions con $\lambda$ = 5:
+
+```{r}
+poisson <- rpois(500,5)
+hist(poisson, breaks = 20, main = "Histograma de dist. Poisson de media 5", xlab = "Número de eventos")
+```
+
+vemos que todos los valores son números enteros, ya que no puede haber, lógicamente, valores como *3,56 plantas*.
+
+Para ajustar cualquier GLM usaremos la función `glm`, que viene cargada por defecto en R y que tiene tres argumentos principales:
+
+-   **Formula**: la ecuación que define la variable dependiente y las independientes. Es igual que en la regresión lineal.
+-   **data**: el data frame que contiene las variables
+-   **family**: una descripción de la distribución que sigue el error y la función de enlace a usar. En el caso de conteos debe tomar el valor `"poisson"`
+
+Vamos a ajustar una sencilla regresión Poisson usando datos de:
+
+https://stats.idre.ucla.edu/stat/data/poisson_sim.csv
+
+En este ejemplo, `num_awards` es el número de premios ganados por los alumnos de un instituto en un año, `math` es una variable continua que representa la nota obtenida por los estudiantes en el examen final de matemáticas, y `prog` es una variable categórica con tres niveles que indica el tipo de programa en el que están matriculados: 1 = “General”, 2 = “Academic” y 3 = “Vocational”.
+
+Como siempre, carguemos los datos y echémosles un vistazo:
+
+```{r}
+premios <- read.csv('https://stats.idre.ucla.edu/stat/data/poisson_sim.csv')
+str(premios)
+```
+
+```{r}
+head(premios)
+```
+
+Ahora podemos ajustar un modelo de Poisson. Para ello:
+
+```{r}
+mod.poisson <- glm(num_awards ~ math + prog,  data = premios, family = "poisson")
+summary(mod.poisson)
+```
+
+### Interpretando los resultados de un GLM de Poisson
+
+La salida de resultados cuando ejecutamos la orden `summary()` en un GLM es muy parecida al de los modelos de regresión lineal, aunque con algunos matices. Por ejemplo, ahora no nos proporciona el R2 del modelo, ya que su cálculo no es posible. Además, si bien la significación de los coeficientes estimados tiene la misma interpretación que en modelos lineales (si p\< 0.05 podemos rechazar que esa variable no tenga un efecto), los valores de los coeficientes no pueden interpretarse de manera directa.
+
+Por ejemplo, en el modelo ajustado más arriba vemos que, cuanto mayor es la nota en matemáticas, más premios han recibido, ya que el coeficiente de `math` es positivo y altamente significativo. Pero no podemos concluir que por cada punto que suba la nota de mates, se aumente en 0.086 el número de premios.
+
+La manera de intepretar la salida es la siguiente: cuando $x=0$, entonces el valor esperado es la media de $y$ y toma una valor de $e^\alpha$, donde $\alpha$ es el intercepto. Con cada unidad de incremento en $x$, el valor predicho tiene un efecto multiplicativo de $e^\beta$ en la media de $y$, por lo tanto $y=e^\alpha*e^{\beta*X}$, y si $X = 0$ entonces $y = e^\alpha$
+
+En el ejemplo de arriba, el número medio de premios esperados es $e^{-5.578057} = 0.00378$, y con cada punto de más que el alumno obtiene en mates, este número esperado de premios aumenta $e^{0.086121} = 1.08$ veces, es decir, aumenta un 8%.
+
+### Haciendo predicciones con GLMs de Poisson
+
+Igual que hicimos con la regresión lineal, podemos obtener los valores predichos por el modelo, exactamente de la misma manera, con la función `predict()`. La única salvedad es que aquí tenemos que especificar el tipo de respuesta que queremos, con el argumento `type`. Esto es porque la función `predict()`, cuando el modelo es de tipo GLM, nos permite obtener el valor predicho para la variable respuesta (`type = "response"`) o el valor del predictor lineal que nos servía de enlace (`type = "link"`). En este caso - y casi siempre - nos interesa el primero, así que:
+
+```{r}
+predict(mod.poisson, premios, type = 'response')
+```
+
+Y como hicimos con la regresión lineal, podemos guardar estos datos como una columna en nuestro data frame `premios`:
+
+```{r}
+premios$pred <-  predict(mod.poisson, premios, type = 'response')
+head(premios)
+```
+
+Y ahora podríamos generar una figura de valores predichos vs. observados
+
+```{r}
+plot(num_awards ~ pred, data = premios, pch = 19) 
+```
+
+Vemos que el ajuste no parece demasiado bueno. Esto nos indica que, si bien la nota de matemáticas es un buen predictor del número de premios obtenido, no parece que sea el único factor a tener en cuenta (lo cual es lógico).
+
+## Regresión de eventos binomiales: regresión logística
+
+Vamos ahora a trabajar con la regresión logística, que es aquella que se usa cuando la variable respuesta es binomial, es decir, que sólo puede tomar valores 0 y 1. En este caso trabajaremos con el fichero `logit.csv` que incluye datos sobre incendios en España, y posibles factores causantes, entre 1988 y 2008. El fichero lo podéis encontrar en el campus virtual, y contiene las siguientes variables:
+
+```{r}
+datos_iiff <- read.csv2("./data/glm/iiff_logit.csv")
+```
+
+-   `logit_1_0`: la variable dependiente, codificada como 1 (fuego) y 0 (no fuego)
+-   `Cattle`: el número de cabezas de ganado ovino
+-   `Prot_area`: el area (en m\^2) cubierta por figuras de protección
+-   `Powerlines`: área cubierta por líneas de alta tensión a menos de 200 m de zonas de bosque
+-   `Railroads`: area (en m\^2) cubierta por líneas de ferrocarril a menos de 200 m de zonas boscosas
+-   `WAI`: Wildland-Agricultural interface es el área (en m\^2) cubierta por la frontera entre bosques y cultivos.
+-   `WGI`: Wildland-Grassland interface es el área (en m\^2) cubierta por la frontera entre bosques y pastos.
+-   `WUI`: Wildland-Urban Interface es el área (en m\^2) cubierta por la frontera entre bosques y asentamientos urbanos
+-   `Machinery`: densidad de maquinaria agrícola
+-   `Tracks`: area cubierta por caminos a menos de 200 m de zonas boscosas.
+-   `Change_pop`: cambio relativo de población entre 1990 y 2010
+
+En principio, todos estos factores deberían tener un efecto positivo, es decir, cuanto mayor su valor, mayor probabilidad de ocurrencia de incendio - con la excepción probablemente de `Prot_area`.
+
+Ajustemos por tanto el modelo de regresión. En realidad tenemos ya todo lo que necesitamos, excepto conocer la función de enlace a usar. En el caso de una regresión de este tipo, donde la variable respuesta es binomial, el argumento `family` debe tomar el valor `family = "binomial"`.
+
+```{r}
+mod.logit <- glm(logit_1_0 ~ ., data = datos_iiff, family = binomial)
+summary(mod.logit)
+```
+
+Vemos aquí qué variables efectivamente tienen un efecto significativo. ¿Es en todos los casos en el sentido esperado?
+
+### Interpretando los resultados de un GLM logístico
+
+Igual que hemos comentado antes, los p-valores de las variables, así como el signo del coeficiente, tienen una interpretación directa. Sin embargo, el valor del coeficiente es más complejo de interpretar. En el caso de una regresón logística, la interpretación es similar a la regresión de Poisson. Cada aumento en una unidad de una variable $x$ multiplica la media predicha por $e^\beta$, donde $\beta$ es el coeficiente de dicha variable explicativa. En el ejemplo de arriba, si aumenta el cambio de población en una unidad, el valor de probabilidad esperado se multiplicará por $e^{-2.010} = 0.134$, es decir que la probabilidad de incendio disminuirá un $1-0.134 = 0.86 = 86\%$ respecto la media En el caso de los ferrocarriles, un aumento en la superficie de ferrocarril de 1m2 generará un cambio de $e^{2.070e-06}= 1.000002076$ en la probabilidad de incendio media. Como vemos, a pesar de que la variable es significativa, las magnitudes son pequeñas - lo cual es lógico si pensamos que la variable explicativa representa la superficie de ferrocarril en m2, no es esperable que un metro cuadrado de más aumente de manera brusca el riesgo de incendio.
+
+### Haciendo predicciones con GLM logístico
+
+La manera de realizar las predicciones es la misma que hemos visto en el modelo de Poisson, con una salvedad:
+
+```{r}
+mod.logit.pred <- predict(mod.logit, datos_iiff, type = 'response')
+```
+
+Puesto que la variable respuesta era binomial, lo que cabría obtener son predicciones binarias, es decir, que sólo tomen valores de 0 o 1. Sin embargo, las predicciones son continuas. Esto es así porque lo que calcula es una *probabilidad* de que esa observación haya sufrido o no un incendio. Cuanto más cerca de uno, mayor es la probabilidad. Esta distribución se llama distribución **logística**, y por ello la regresión de eventos de salida binaria (si/no, hombre/mujer, etc.) a menudo se llama **regresión logística.** No obstante, si el modelo es bueno, la mayoría de los valores predichos deberían estar cerca de 0 o cerca de 1:
+
+```{r}
+hist(mod.logit.pred, col='steelblue',breaks = 15, xlab = 'Predicted probability')
+
+```
+
+Guardemos las predicciones como una columna de nuestra tabla de datos:
+
+```{r}
+datos_iiff$predicted <- predict(mod.logit, datos_iiff, type = 'response')
+```
+
+Ahora podríamos, por ejemplo, ver la distribución de valores predichos (que son continuos) respecto a los observados (que son binarios).
+
+```{r}
+boxplot(predicted ~ logit_1_0, data = datos_iiff, col = c("darkgreen", "darkred"), xlab= "Observados")
+```
+
+Vemos que en general, los casos donde no ha habido incendio (logit_1_0 = 0) tienen predicciones más bajas, lo que sugiere que el modelo ha funcionado bastante bien. Una opción de determinar el grado de acierto del modelo (ya que aquí no tenemos R\^2) es calcular una *tabla de contingencia*, que es una tabla de aciertos y errores. Para ello debemos convertir nuestras predicciones en una variable binaria, definiendo un *umbral* o punto de corte, que por lógica podemos establecer en 0.5. De esta manera, todos los casos en los que la probabilidad predicha sea \> 0.5, los asignaremos a una predicción de que **sí** ha habido incendio, y al contrario:
+
+```{r}
+datos_iiff$pred_bin = ifelse(test = datos_iiff$predicted > 0.5,
+                             yes = 1, 
+                             no = 0)
+
+```
+
+Ahora podemos construir una tabla de contingencia, usando la función `table()`:
+
+```{r}
+accuracy <- table(datos_iiff$logit_1_0, datos_iiff$pred_bin)
+print(accuracy)
+```
+
+Y calcular el porcentaje de aciertos como la suma de la diagonal de esta tabla dividida entre el total de casos:
+
+```{r}
+correctos <- sum(diag(accuracy))
+total <- sum(accuracy)
+
+porc_correctos <- 100*correctos/total
+porc_correctos
+```
+
+En este caso hemos obtenido un 88% de aciertos, es decir que el modelo clasifica bien el 88% de los eventos. Esta medida no se puede interpretar de la misma manera que un coeficiente de determinación (R^2^) pero sí nos da una idea de la bondad de nuestro modelo.
+
+## Conclusiones
+
+Hemos visto como el ajuste de un modelo lineal generalizado en R no presenta mayor dificultad respecto a los modelos lineales. Sin embargo, hay que tener cuidado con la interpretación, que no es tan directa. Igualmente, cuando generemos predicciones debemos tener siempre en cuenta de indicar `type = "response"` para obtener los valores predichos para la variable dependiente. Aquí hemos visto cómo ajustar modelos de Poisson y logísticos, que son los más habituales, pero los GLMs incluyen otros como Gamma, Gaussiano, etc. Para saber más sobre GLMs y R os invito a consultar esta web: https://rpubs.com/JessicaP/459130

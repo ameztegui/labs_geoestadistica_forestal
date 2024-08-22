@@ -1,0 +1,574 @@
+---
+title: "Introducción a R"
+subtitle: "Geoestadística i Tècniques d'Observació Global (24/25)" 
+author: "Aitor Ameztegui (UdL)"
+date: "last-modified"
+
+format: 
+    html:
+        theme: cerulean
+        toc: true
+---
+
+```{r include=FALSE}
+library(tidyverse)
+```
+
+## Introducción. Objetivo.
+
+En el tutorial anterior vimos cómo instalar R y RStudio, así como alguna de sus principales características. Una vez familiarizados con el entorno en el que trabajaremos, es el momento de empezar a trabajar *realmente* con R. Como ya dijimos en la presentación de la asignatura, R es una herramienta muy versátil, ya que podemos usarlo de maneras muy distintas: puede ser desde una herramienta estadística hasta un lenguaje de programación compleja. Vamos a ver a continuación algunos de sus usos más básicos, y en el proceso iremos comentando algunas de las particularidades de cómo funciona R. Como ya dijimos en el tutorial anterior, si ya tienes experiencia usando R, puedes saltarte las partes que ya domines.
+
+## Usando R como una calculadora
+
+Lo más sencillo que puedes hacer con R es utilizarlo como una calculadora, es decir, para hacer aritmética. Por ejemplo, si escribimos la siguiente expresión:
+
+```{r}
+156 * 35
+```
+
+Vemos que R imprimirá la respuesta, con un \[1\] precedente. No te preocupes por esto por ahora, lo explicaremos más adelante. Por ahora piensa en esto como una indicación de salida de resultados.
+
+Si escribimos un comando incompleto, R esperará que lo completemos. Por ejemplo, intenta escribir en la consola
+
+`1 +`
+
+Cuando aprietes <kbd>Return</kbd> y la sesión de R muestre un `+` en vez de `>`, quiere decir que está esperando a que completemos el comando. Si queremos cancelar una orden incompleta podemos clicar <kbd>Escape</kbd> y RStudio volverá a mostrar el icono `>`. Esto también se puede usar para interrumpir un proceso que se quede colgado o lleve demasiado tiempo.
+
+Cuando se utiliza R como calculadora, el orden de las operaciones es el mismo que aprendimos en el colegio. De mayor a menor precedencia:
+
+-   Paréntesis: `(`, `)`
+-   Exponentes: `^` or `**`
+-   División: `/`
+-   Multiplicación: `*`
+-   Suma: `+`
+-   Resta: `-`
+
+Por ejemplo:
+
+```{r}
+3 + 2 * 5
+
+(3 + 2) * 5
+
+```
+
+Los paréntesis pueden utilizarse para aclarar el sentido del código. Sin embargo, puede resultar difícil de leer cuando hay muchos o cuando realmente no es necesario. Recuerda que otros (¡o incluso tú mismo!) pueden leer tu código más adelante, y es conveniente que sea lo más inteligible posible.
+
+```{r}
+3 + 2 * 5 ^ 2       # claro, si recuerdas las reglas
+3 + 2 * (5 ^ 2)     # probablemente más claro
+(3 + (2 * (5 ^ 2))) # más difícil de leer
+
+```
+
+Puede que hayas notado que parte del texto anterior no ha sido procesado por R. En realidad, todo lo que sigue después del símbolo hash `#` es ignorado por R cuando ejecuta el código. El texto que sigue a `#` se llama "comentario", y puede ser muy útil para recordar el propósito y los pasos de un determinado análisis.
+
+### Funciones matemáticas
+
+R tiene muchas funciones matemáticas incorporadas. Para llamar a una función, simplemente escribimos su nombre, seguido de los paréntesis de apertura y cierre. Recuerda que todo lo que escribimos dentro de los paréntesis se llama *argumentos* de la función (los inputs que requiere para funcionar).
+
+```{r}
+
+# Veamos algunas funciones trigonométricas
+
+sin(1)  # seno de un número
+
+log(1)  # logaritmo natural de un número
+
+log10(10) # logaritmo base 10
+
+exp(0.5) # e^(1/2)
+```
+
+También podemos utilizar las funciones de R para calcular el máximo, mínimo o media de una serie de valores, para obtener los elementos distintos de una serie de elementos o para extraer elementos de una cadena de caracteres.
+
+```{r}
+max(c(1,2,5,6,7,9,12))
+
+mean(1:10)
+
+unique(c(3,3,4,5,6,6))
+
+substr("abcdef", 2,4)
+```
+
+> **Series de valores (vectores):** Has visto aquí arriba las dos formas principales de crear vectores numéricos en R: concatenando diferentes elementos dentro de la función `c()`, o definiendo un intervalo mediante `1:10`, que equivaldría a decir `de 1 a 10`. Los vectores pueden contener valores numéricos o caracteres, pero todos los elementos deben ser del mismo tipo. Veremos más sobre vectores más adelante.
+
+> **Recordando los nombres de las funciones y los argumentos:** </br></br> Como hemos dicho, R tiene multitud de funciones matemáticas, y muchas más están incluidas en los paquetes. Una buena función tendrá un nombre autoexplicativo que será fácil de recordar (por ejemplo, `mean()`, `max()`...). Sin embargo, no os preocupéis por intentar recordar todas las funciones de R. Podéis simplemente buscarlas en Google, o si recordáis el comienzo del nombre de la función, escribidlo y pulsad la tecla <kbd>Tab</kbd>. Esto mostrará una lista de funciones cuyo nombre coincide con lo que has escrito hasta ahora. Esto se conoce como `completar con tabulador`, y puede ahorrar mucho tiempo de escritura (y reducir el riesgo de errores de escritura). El completado de tabulador funciona tanto en R como en RStudio. En RStudio esta característica es aún más útil; un extracto del archivo de ayuda de la función se mostrará junto al nombre de la función. Prueba a escribir `me` y pulsa <kbd>tab</kbd>.</br> </br> Además, si pulsas <kbd>Tab</kbd> después de especificar el nombre de la función y el paréntesis de apertura, RStudio proporciona una lista de los argumentos que necesita esa función. Y si se pulsa <kbd>Tab</kbd> cuando el cursor está entre dos comillas, proporcionará una lista con las carpetas de tu directorio actual. Además, si escribes un `?` antes del nombre de una función, se abrirá la página de ayuda de esa función, que además de proporcionar una descripción detallada de la función y de su funcionamiento, suele mostrar una colección de ejemplos de código que ilustran el uso de la función. Al principio puede que no encuentres estas características tan útiles, pero a medida que escribas más código te encontrarás utilizándolas ampliamente.
+
+### Comparando objetos
+
+También podemos hacer comparaciones en R, y nos dirá si la comparación que estamos probando es cierta (`TRUE`) o falsa (`FALSE`). Por ejemplo, prueba las siguientes comparaciones:
+
+```{r}
+1 == 1    # igualdad (se usan dos signos de igual, para diferenciarlo del `=` como asignación)
+1 != 2    # desigualdad (se lee como "no es igual a")
+2 < 1     # menor que
+1 > 0     # mayor que
+6 <= 6    # menor o igual que
+1 >= -9   # mayor o igual que
+```
+
+## Objetos en R
+
+Cada vez que almacenamos un determinado valor en la memoria de R, estamos creando un *objeto*. Esto es realmente importante, ya que si no guardamos las operaciones, o los valores, como objetos, estos no estarán disponibles más adelante. Es decir, R simplemente los imprimirá en la consola pero no los almacenará en memoria. Vamos a crear un objeto llamado `x`. Utilizamos `<-` para asignar valores a un determinado objeto.
+
+```{r}
+x <- 3
+
+```
+
+`x` contiene ahora el valor `3`. Si buscamos la pestaña *Environment* en uno de los paneles de RStudio, veremos que han aparecido `x` y su valor. Sin embargo, R no imprime nada cuando hacemos esta asignación. En su lugar, lo almacena para más tarde en algo llamado *variable*, que es el tipo de objeto más simple en R. Las variables se muestran en la pestaña `Environment` de RStudio, y se almacenan en la memoria hasta que terminamos la sesión actual de R. Para ver el valor almacenado en un objeto, simplemente pedimos a R que evalúe `x` y nos muestra el valor almacenado:
+
+```{r}
+x
+```
+
+Una forma más explícita de pedirle a R que nos muestre el valor almacenado en `x` es utilizando `print` de esta manera:
+
+```{r}
+print(x)
+```
+
+Los objetos más sencillos en R son las variables como `x`, pero en realidad, cualquier entidad que se cree y manipule en R puede ser almacenada como objeto, incluyendo datos, funciones, modelos, gráficos... Para crear un objeto sólo tenemos que asignarle un nombre. Ya hemos mencionado anteriormente que R es un lenguaje orientado a objetos. Esto significa básicamente que está diseñado para utilizar objetos como base de todas las tareas.
+
+> **Consejo: asignación** </br> También es posible utilizar el operador `=` para la asignación, como en: `x = 1/40`. Esto es mucho menos común entre los usuarios de R, y más adelante veremos por qué no es buena idea utilizarlo. Si lo usas, trata de cambiar tus hábitos lo antes posible.
+
+### Trabajando con variables
+
+Lo interesante es que nuestra variable `x` está ahora almacenada en memoria, por lo que puede utilizarse en lugar de un número en cualquier cálculo que espere un número. Por ejemplo, prueba esto:
+
+```{r}
+x + 3
+log(x)
+```
+
+Las variables se pueden reasignar tantas veces como se desee, pero eso significa que su valor anterior se borrará de la memoria:
+
+```{r}
+x <- 100
+```
+
+`x` solía contener el valor `3` y ahora tiene el valor `100` (ver la pestaña `Environment` en RStudio).
+
+Las asignaciones pueden contener la variable a la que se asigna, y en este caso tomarán el valor almacenado actualmente, calcularán lo que contenga el código y sobrescribirán el valor anterior con el nuevo.
+
+```{r}
+
+x <- x *2 # observa cómo RStudio actualiza su descripción de x en la pestaña Environment
+
+```
+
+> **Atención:** </br> Aunque la posibilidad de sobreescribir una variable como resultado de una operación es una de las características más útiles de R, tiene su peligro. Al realizar tareas complejas, es **extremadamente fácil** sobrescribir una variable sin querer, y todos nuestros cálculos a partir de ese momento corren el riesgo de ser erróneos. Por ejemplo, si ejecutas el código anterior dos veces en lugar de una, `x` obtendrá un valor de `400` en lugar de `200`. Si haces esto sin darte cuenta, `x` no tendrá el valor que esperas que tenga. Además, si te equivocas en el código anterior y R devuelve un mensaje de error, eso significa que no habrás sobrescrito el valor de `x`, que seguirá siendo `100`. </br> Por lo tanto, **siempre** comprueba el valor actual de una variable (en el panel "Environment") antes de realizar operaciones con ella.
+
+## Tipos de datos
+
+Las variables en R pueden ser de diferentes tipos. La función `class` nos ayuda a determinar qué tipo de objeto tenemos:
+
+```{r}
+x <- 100
+class(x)
+```
+
+Para trabajar eficientemente en R, es importante aprender los diferentes tipos de variables y lo que podemos hacer con ellas. Estas son:
+
+-   **Numeric:** un número entero o decimal dependiendo de si especificamos cifras decimales.
+
+-   **Character:** una variable categórica o un texto.
+
+-   **Vector:** una lista de valores del mismo tipo.
+
+-   **Factor:** los factores son variables en R que toman un número limitado de valores diferentes; tales variables se denominan a menudo *variables categóricas*.
+
+-   **Data frame:** tabla compuesta por vectores como columnas. Todas las columnas deben tener la misma longitud (número de elementos)
+
+-   **List:** vector con valores de diferentes tipos.
+
+-   **Matrix:** objeto bidimensional (como los data frame) donde los elementos se organizan en filas y columnas, y todos son del mismo tipo.
+
+Hay muchos otros tipos de objetos en R, pero estos son los principales. Por ejemplo, otro objeto con el que vamos a trabajar son los objetos `model`, que almacenan la salida de un determinado modelo estadístico, como un modelo de regresión lineal. Trabajaremos con ellos más adelante. Por ahora, veamos en detalle los principales tipos de datos:
+
+### Vectores
+
+Los **vectores** son uno de los tipos de objetos más comunes en R. Los vectores pueden almacenar varios valores, pero **deben** ser necesariamente de la **misma clase** (todos números, todos texto, etc.). Las **listas** son un tipo específico de vector que puede contener elementos de diferentes clases.
+
+Todo vector tiene dos propiedades:
+
+1.  Su tipo (character, integer, double...), que puede determinarse mediante la función `typeof()`.
+2.  Su longitud, que podemos determinar con `length()`.
+
+Hay varias formas de crear vectores. La más común es utilizar la función `c()` que nos permite introducir valores manualmente separándolos con `,`.
+
+```{r}
+v1 <- c(1, 2, 3, 4, 5)
+v1
+
+v2 <- c('my','name','is', 'Aitor')
+v2
+```
+
+Como ves, los vectores no se limitan a almacenar números. Sin embargo, volvamos a insistir en que todos los datos de un vector tienen que ser del mismo tipo: deben ser o bien caracteres, o bien números, o todos han de ser lógicos (TRUE/FALSE)). Esta es una propiedad importante de los vectores: el tipo de datos que contiene el vector es una propiedad del vector, no de cada elemento. Veamos qué ocurre si intentamos crear un vector de datos numéricos y de caracteres:
+
+```{r}
+c(1, 2, "three", "four", 5)
+
+```
+
+Vemos que R ha coercionado los elementos que contienen números a caracteres de texto, de modo que todos los elementos tienen el mismo tipo (carácter).
+
+#### Principales tipos de vectores
+
+Veamos con más detalle los principales tipos de vectores:
+
+##### Vectores lógicos
+
+Los vectores lógicos sólo pueden tomar tres valores posibles: `FALSE`, `TRUE`, y `NA` (no disponible, lo veremos más adelante). Los vectores lógicos se construyen normalmente con operadores de comparación:
+
+```{r}
+c(1,2,8,4,5,3,7,8,9) >= 5   # Qué elementos son mayores o iguales que 5
+```
+
+Los vectores lógicos tienen la particularidad de que `TRUE` tiene un valor de 1, y `FALSE` de 0, así que la suma del vector nos dará el número de `TRUE` y la media nos dará la proporción de `TRUE`.
+
+##### Vectores numéricos
+
+Los vectores`integer` y `doubles` se conocen colectivamente como **vectores numéricos**. En R, los números son `doubles` (con decimales) por defecto. De todos modos, la diferencia entre entero y decimal no suele ser importante, así que no entraremos en más detalles aquí. Para construir vectores numéricos podemos utilizar la función `c()` vista anteriormente, pero hay otras dos opciones. Podemos usar `:`, que produce una secuencia ordenada de números empezando por el primer valor y sumando de uno en uno hasta el último.
+
+```{r}
+v3 <- 1:10
+v3
+
+v4 <- -5:3
+v4
+
+```
+
+También podemos usar `seq()`, que produce una secuencia de números:
+
+```{r}
+seq(1, 10)
+
+```
+
+El primer argumento define el inicio, y el segundo define el final, que está incluido. El valor por defecto es subir en incrementos de 1, pero un tercer argumento nos permite decirle cuánto debe saltar:
+
+```{r}
+seq(1, 10, 2)
+```
+
+##### Vectores de carácter
+
+Los vectores de caracteres son el tipo más complejo de vector atómico, porque cada elemento de un vector de caracteres es una cadena, y una cadena puede contener una cantidad arbitraria de datos.
+
+```{r}
+
+v5 <- c("Lleida", "Lleida", "Barcelona", "Madrid", "Lleida", "Madrid")
+v5
+
+```
+
+##### Valores no presentes (missing values)
+
+Los vectores, como casi cualquier objeto de datos en R, pueden contener valores perdidos. Estos se indican como `NA` (no disponible). Sin embargo, ten en cuenta que `NA` hereda la clase del vector, por lo que un `NA` dentro de un vector numérico seguirá siendo numérico, mientras que un `NA` en un vector de caracteres será de tipo carácter.
+
+#### Trabajando con vectores
+
+A continuación veremos algunas de las operaciones que podemos hacer con los vectores, y las herramientas que tenemos para trabajar con ellos
+
+##### Funciones de longitud y test
+
+Como hemos dicho anteriormente, las dos características principales de un vector son su tipo y su longitud. Podemos calcular cuántos elementos contiene un vector utilizando la función `length()`:
+
+```{r}
+length(x)
+length(letters)
+```
+
+##### Coerción
+
+Podemos querer forzar (coaccionar) un vector para que sea de un tipo determinado. Podemos hacerlo llamando a una función como `as.logical()`, `as.integer()`, `as.double()`, o `as.character()`.
+
+```{r}
+as.character(c(1,2,3,4))
+
+
+as.integer(c(3.5, 4.3, 6.4, 5.0))
+
+```
+
+##### Nombrando vectores
+
+Por supuesto, también podemos asignar un vector a un objeto, de manera que lo guardemos en memoria. Como se ha visto anteriormente, basta con darle un nombre:
+
+```{r}
+x <- 5:10
+```
+
+R viene con algunos vectores incorporados, que contienen valores comunes útiles. Prueba estos:
+
+```{r}
+
+LETTERS
+letters
+month.abb
+month.name
+```
+
+Lógicamente, el tipo de datos que se almacena en una variable afecta a lo que podemos hacer con ella:
+
+```{r, error = T}
+LETTERS + 1
+```
+
+##### Submuestreando vectores
+
+Una vez definido un vector, a menudo es útil extraer partes de un vector. Lo hacemos con el operador `[]`. Por ejemplo, podemos extraer el segundo elemento del vector `month.name`:
+
+```{r}
+month.name[2]
+```
+
+o podemos extraer los meses del 2º al 4º:
+
+```{r}
+month.name[2:4]
+```
+
+Desenmascaremos el segundo ejemplo; `2:4` genera la secuencia `2,3,4`. Esta secuencia se pasa al operador de extracción `[]`, por lo que extraerá el segundo, tercer y cuarto elemento. También podemos generar esta secuencia utilizando la función `c()`:
+
+```{r}
+month.name[c(2,3,6)]
+```
+
+Los valores se devuelven en el orden en que especificamos los índices.
+
+```{r}
+
+month.name[4:2]
+```
+
+También podemos extraer el mismo elemento más de una vez:
+
+```{r}
+month.name[c(1,1,2,2,2,4)]
+```
+
+También es posible modificar la información de una posición concreta utilizando la combinación `nombre[posición]` y el operador de asignación `<-`. Por ejemplo:
+
+```{r}
+month.name[12] <- "Navidades!"
+month.name
+```
+
+Si utilizamos un número negativo como índice de un vector, R devolverá todos los elementos excepto el especificado:
+
+```{r}
+month.name[-2]
+
+```
+
+También podemos omitir varios elementos:
+
+```{r}
+month.name[c(-1, -5)]  # o 
+month.name[-c(1,5)]
+```
+
+Además de proporcionar una lista de índices que queremos conservar (o eliminar, si les ponemos el prefijo `-`), podemos pasar un vector lógico a R indicando los índices que queremos seleccionar:
+
+```{r}
+month.name[c(TRUE, FALSE, TRUE, TRUE, FALSE, FALSE,
+             FALSE, TRUE, TRUE, FALSE, FALSE, TRUE)]
+
+```
+
+La idea de seleccionar elementos de un vector utilizando un vector lógico de subconjuntos puede parecer un poco esotérica, y mucho más teclear que simplemente seleccionar los elementos que queremos por índice, pero se vuelve realmente útil cuando escribimos código para generar el vector lógico:
+
+```{r}
+my_vector <- c(10, 3, 6, 7, 9)
+my_vector > 6
+
+```
+
+```{r}
+my_vector[my_vector > 6]
+
+```
+
+> **Consejo: Combinando condiciones lógicas** </br> Hay muchas situaciones en las que podemos querer combinar varios criterios lógicos. Por ejemplo, podríamos querer encontrar todos los elementos que están entre dos valores. En R existen varias operaciones para combinar vectores lógicos:
+
+\-`&`, el operador lógico "Y": devuelve `TRUE` si tanto la izquierda como la derecha son `TRUE`.
+
+\-`|`, el operador lógico "O": devuelve `TRUE`, si la izquierda o la derecha (o ambas) son `TRUE`.
+
+\- `!` El operador lógico "NOT": convierte "TRUE" en "FALSE" y "FALSE" en "TRUE". Puede negar una sola condición lógica (por ejemplo, `!TRUE` se convierte en `FALSE`), o todo un vector de condiciones (por ejemplo, `!c(TRUE, FALSE)` se convierte en `c(FALSE, TRUE)`).
+
+Además, puede comparar los elementos de un mismo vector utilizando la función `all` (que devuelve `TRUE` si todos los elementos del vector son `TRUE`) y la función `any` (que devuelve `TRUE` si uno o más elementos del vector son `TRUE`).
+
+### Factores
+
+Los factores son un tipo específico de vector de caracteres, en el que los elementos sólo pueden tomar un número predefinido y finito de valores, llamados niveles, *levels*. Por ejemplo: un campo de datos como el estado civil puede contener sólo valores de soltero, casado, separado, divorciado o viudo.
+
+Podemos crear un factor utilizando la función `factor()`. Podemos proporcionar los posibles niveles de un factor. Se inferirán de los datos si no se proporcionan.
+
+```{r}
+estado <- factor(c("soltero", "casado", "casado", "divorciado", "viudo"))
+
+levels(estado)
+```
+
+### Data frames
+
+Los `data frame` son el objeto más común para almacenar datos en R. Un `data frame` es una tabla o una estructura bidimensional (tiene filas y columnas). Cada columna suele contener valores de una variable, por lo que podríamos considerar que un `data frame` es un conjunto de vectores de igual longitud. Cada fila contiene un valor de cada columna.
+
+Los `data frame` deben tener ciertas características:
+
+-   Los nombres de las columnas deben ser no vacíos.
+
+\- Los nombres de las filas (si existen) deben ser únicos.
+
+\- Cada columna debe contener el mismo número de elementos.
+
+Para crear un `data frame` podemos utilizar la función `data.frame` y proporcionar una lista de vectores con nombre:
+
+```{r}
+grades <- data.frame(Name = c("Mark", "Lewis", "Brian", "Matthew"),
+                     Course = c(2, 2, 1, 2),
+                     Grade = c("A", "B", "A+", "C"))
+
+```
+
+Sin embargo, raramente crearemos un `data frame` manualmente. Normalmente, llamaremos a una instrucción para leer archivos de texto que contengan datos o llamaremos a objetos de datos disponibles en algunos paquetes. Por ejemplo, consideremos el siguiente marco de datos, disponible en el paquete `tidyverse` (puede que necesites instalar y cargar el paquete):
+
+```{r}
+starwars
+```
+
+Este conjunto de datos contiene los nombres y características (nombre, altura, masa, vehículos... hasta 13 variables) de 87 personajes que participan en la saga de Star Wars. Hay columnas numéricas y de caracteres, pero todas las variables tienen 87 elementos.
+
+Para subconjuntar un marco de datos, podemos utilizar el operador `[`, pero ahora indicando dos dimensiones: qué fila(s) queremos subconjuntar, y qué columna(s):
+
+```{r}
+starwars[1,4]
+starwars[4,3]
+```
+
+Si nos dejamos una de las dimensiones, obtendremos un mensaje de error. Sin embargo, si dejamos un espacio vacío, R entenderá que queremos mantener todos los elementos de la fila o columna seleccionada:
+
+```{r}
+starwars[, 3]   # Seleccionará todos los valores de la columna 3
+starwars[4, ]   # Seleccionará todas las columnas para la fila 4
+```
+
+Como los `data frame` son una sucesión de vectores con nombre, podemos utilizar el nombre de la columna para extraer las columnas deseadas:
+
+```{r}
+starwars[ , "gender"]
+starwars[ , c("gender", "birth_year")]
+starwars[2, "homeworld"]
+
+```
+
+También podemos utilizar el operador `$` para extraer una columna completa:
+
+```{r}
+starwars$gender
+```
+
+Algunas funciones útiles para utilizar con los marcos de datos son `str()` para obtener los nombres, tipos y primeros valores de las columnas; y `summary()` para obtener las estadísticas descriptivas de las variables numéricas.
+
+```{r}
+str(starwars)
+summary(starwars)
+```
+
+### Listas
+
+Las listas, a veces también llamadas vectores recursivos, son objetos similares a los vectores "normales", con la diferencia de que las listas **permiten almacenar valores de distinto tipo**. Incluso pueden contener otras listas. Las listas se crean con la función `list(valor1, valor2, ...)`. Por ejemplo:
+
+```{r}
+list1 <- list("Harry", "Potter", "Wizard", 24,"Hogwarts")
+list1
+```
+
+#### Submuestreando listas
+
+Para acceder a los valores almacenados en las distintas posiciones se procede de la misma manera que con los vectores, es decir, `nombre[posición]`. Sin embargo, `[` extrae una sublista, por lo que el resultado será siempre una lista.
+
+```{r}
+list1[3]
+typeof(list1[3])
+
+
+```
+
+A diferencia de `[`, `[[`extrae un solo componente de una lista. Elimina un nivel de jerarquía de la lista:
+
+```{r}
+list1[[3]]
+typeof(list1[[3]])
+
+```
+
+También podemos nombrar los elementos de una lista
+
+```{r}
+list2 <- list(Name = "Harry", Surname = "Potter", Profession = "Wizard", Age = 24,
+              College = "Hogwarts")
+```
+
+Las listas son un poco más difíciles de trabajar que los vectores y los data frames. Apenas las utilizaremos en este curso, aunque trabajar con listas puede ser realmente útil y eficiente.
+
+## Gestión de objetos
+
+### Creando objetos
+
+También podemos almacenar en un objeto el resultado de cualquier operación, o hacer referencia a otro objeto
+
+```{r}
+p <- 10+2
+q <- mean(vector)
+```
+
+Algunas consideraciones a tener en cuenta a la hora de crear objetos o trabajar con R en líneas generales:
+
+-   R distingue entre mayúsculas y minúsculas por lo que `radio` ≠ `Radio`
+-   Si se asigna un nuevo valor a un objeto, éste se sobrescribe y borra el valor anterior.
+-   La información de texto (también conocida como cadena o carácter) se introduce entre comillas, ya sea simple (`"texto"`) o doble (`'texto'`).
+-   Si el valor obtenido de una instrucción no se asigna a un objeto, se mostrará en el terminal, pero **NO SE ALMACENARÁ**.
+
+## Funciones y argumentos
+
+Hasta aquí hemos visto y ejecutado algunas instrucciones en R, generalmente orientadas a la creación de objetos o realización de operaciones aritméticas sencillas.
+
+Sin embargo, también hemos ejecutado algunas instrucciones de tipo función, como `length()`. Una función puede definirse como un grupo de instrucciones que toma una entrada, utiliza esta entrada para calcular otros valores y devuelve un resultado o salida. No entraremos en detalles por ahora. Basta con saber que para ejecutar una función basta con invocar la instrucción que llama a la función deseada y especificar las entradas necesarias (*argumentos*). Los argumentos se incluyen siempre entre los paréntesis de la instrucción, como en `length(vector)`. Si se necesitan varios argumentos los separamos utilizando `,`.
+
+Los argumentos de una función tienen nombre, y podemos indicarlos explícitamente al ejecutar la función. Si no proporcionamos los nombres de los argumentos, R los asignará en orden. Esto significa que
+
+```         
+rnorm(n = 100, mean = 10, sd = 3)
+```
+
+hará exactamente lo mismo que
+
+```         
+rnorm(100, 10, 3)
+```
+
+A medida que te familiarices con las funciones, será más frecuente que decidas no escribir el nombre de los argumentos. Ten cuidado, en este caso, de introducir los argumentos en el orden necesario (puedes consultar la ayuda de la función para estar seguro. En este caso `help(rnorm)`)
+
+## Errores, warnings y mensajes
+
+Una cosa que intimida a los nuevos usuarios de R y RStudio es cómo informa de los *errores*, *warnings* y *mensajes*. R informa de los errores, las advertencias (warnings) y los mensajes con una fuente roja muy llamativa, lo que hace que parezca que te está regañando. Además, el mensaje de error no siempre es informativo, ya que se centra en decirle lo que ha ido mal, pero a menudo no por qué, ni dice cómo resolverlo. Podemos diferenciar tres mensajes diferentes que puedes obtener en la consola:
+
+-   **Errors**: Cuando el texto rojo sea un error legítimo, irá precedido de "Error in..." e intentará explicar qué ha ido mal. Cuando haya un error, el código no se ejecutará.
+
+-   **Warnings**: Cuando el texto rojo es una advertencia, será precedido por "Warning:" y R tratará de explicar por qué hay una advertencia. En general, tu código seguirá funcionando, pero con algunas limitaciones o aspectos a considerar
+
+-   **Messages**: cuando el texto rojo no comienza con "Error" o "Warning", es *sólo un mensaje amistoso*. Verás estos mensajes cuando cargues *paquetes R* o cuando leas datos guardados en archivos de hojas de cálculo. Estos son mensajes de diagnóstico útiles y no impiden que tu código funcione.
+
+> **Nota importante:** Recibirás **Toneladas de mensajes de error** de R, especialmente al principio. No te preocupes, esto es normal, y es parte del proceso de aprendizaje. Cada vez que recibas un mensaje de error, no te paralices por el pánico. Trata de entender lo que salió mal, y si no lo sabes, busca en Google el texto del mensaje. Es muy probable que se trate de un error común y que puedas encontrar fácilmente la solución por ti mismo. Si no es así, también puedes consultarlo con tus compañeros. Si no sois capaces de resolverlo por vosotros mismos, podemos ayudaros, pero aprender a recibir ayuda para resolver vuestros propios problemas es una parte capital del aprendizaje de R, así que os animamos a que lo intentéis antes de pedirnos ayuda.
+
+## Para saber más
+
+Para aprender más sobre algunos de los temas cubiertos en este laboratorio, recomiendo ver el vídeo "Writing code in RStudio", desarrollado por el equipo de RStudio. Contiene muchos de los conceptos que se tratan aquí, y también algunos consejos más para seguir: \[en inglés\] <https://resources.rstudio.com/wistia-rstudio-essentials-2/rstudioessentialsprogrammingpart1-2>

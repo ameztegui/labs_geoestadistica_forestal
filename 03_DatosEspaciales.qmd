@@ -1,0 +1,410 @@
+---
+title: "Trabajando con datos espaciales en R"
+subtitle: "Geoestadística i Tècniques d'Observació Global (24/25)" 
+author: "Aitor Ameztegui (UdL)"
+date: "last-modified"
+format: 
+    html:
+        theme: cerulean
+        toc: true
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE, eval = F}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+## Introducción
+
+El objetivo de este $lab$ es familiarizarse con el uso y representación de información espacial en $R$. Además de las funciones estadísticas que ya hemos visto, existen en $R$ miles de paquetes, cada uno con un propósito específico. Varios de ellos permiten interactuar con datos espaciales, tanto en formato vectorial como raster. Los principales paquetes "espaciales" son:
+
+-   rgdal
+-   sf
+-   terra
+-   stars
+-   tmap
+
+Estas librerías (paquetes) permiten leer y gestionar objetos espaciales, ya sea en formato vectorial o ficheros raster como ASCII o cualquier otro [formato soportado por GDAL](http://www.gdal.org/formats_list.html). Estos paquetes funcionan como un GIS, permitiéndonos realizar la mayoría de geoprocesos (intersecciones, uniones, etc.), así como procesos geoestadísticos avanzados y crear mapas.
+
+Durante años, tres de los paquetes más populares para trabajar con datos espaciales en R han sido `rgdal`, `raster` y `sp`, que se convirtieron prácticamente en un estandard. Sin embargo, por diversos problemas, en 2022 se decidió deprecarlos, es decir, dejar de darles soporte, y se recomendó sustituirlos por sus "equivalentes": `terra`y `sf`. Desde octubre de 2023, aún pueden usarse las funciones de `sp` y `raster`, pero `rgdal` ha sido retirado, por lo que nos centraremos en conocer las funcionalidades de `terra`y `sf`.
+
+Obviamente, no podremos profundizar en toda la potencialidad de estos dos paquetes, que cada vez más logran sustituir perfectamente a un GIS de escritorio, pero sí veremos algunas de sus opciones más básicas.
+
+## Trabajando con vectores
+
+### Cargar información vectorial
+
+Sabemos que los archivos *shapefile* de ESRI, que son casi un estándar en el mundo del SIG, son en realidad un conjunto de varios ficheros. Pero para cargarlos en $R$, al igual que hacemos en ArcMap, basta con cargar el que tiene extensión `.shp`, ya que el resto van asociados a él. Sin embargo, si queremos copiar o cortar nuestros "*shapes*" en otra carpeta debemos tener cuidado de copiar todos los ficheros.
+
+Veamos un ejemplo, importando las capas `estaciones_meteo.shp` y `provincias.shp`, que se encuentran en la carpeta `datos/shapes`, dentro de la sección "Recursos" del campus virtual de la asignatura. Estas capas contiene la información espacial de parte de las estaciones meteorológicas de las que extrajimos la información para ajustar la regresión lineal, así como los límites de todas las provincias de España.
+
+Para leerlos en R podemos usar la función `st_read()` del paquete `sf`, por lo que antes que nada, instalamos y cargamos el paquete `sf`:
+
+```{r, message=FALSE, warning=FALSE}
+# install.packages('sf')
+library(sf)
+
+```
+
+Y posteriormente cargamos los ficheros, especificando la ruta al archivo `.shp` y asignándoles un nombre:
+
+```{r, warning = FALSE}
+estaciones <- st_read('data/meteo/meteo_espacial/estaciones_meteo.shp') 
+```
+
+Vemos que, al leer los ficheros, la consola nos informa sobre el nuevo objeto que estamos creando. Identifica que el fichero de origen es un shapefile de ESRI, y nos informa de que se convertirá en un objeto "simple feature" con 90 observaciones de tipo "punto" y 13 campos. También nos informa sobre el bounding box del objeto espacial (el rectángulo que lo contiene) y su sistema de referencia de coordenadas o CRS.
+
+Un objeto `simple feature` es el método que ha elegido `sf` para lidiar con información espacial. Los objetos espaciales almacenan tanto información relativa a las características espaciales (sistema de referencia, extensión, coordenadas de los objetos...) como a los atributos de cada uno de los objetos (en este caso, la información meteorológica). La ventaja de `sf` es que lo hace de manera muy lógica y sencilla. Vemos en el panel de *Environment* que `estaciones` aparece como un data frame normal. Y es que de hecho *es* un data frame normal, pero ahora es a la vez más cosas:
+
+```{r}
+class(estaciones)
+```
+
+La diferencia es que contiene, además de los atributos que veríamos en ArcMap, una columna llamada `geometry` con las coordenadas de cada una de las observaciones. La ventaja de esto es que el objeto espacial es un data frame, y por lo tanto podemos procesarlo con normalidad, filtrando, creando nuevas variables o modificando valores, igual que hacemos con los data frames. Al cargar `estaciones` nos informaba de que se traba de un objeto espacial de puntos. Por tanto cada punto contendrá las coordenadas x e y de ese punto según el CRS del objeto espacial:
+
+```{r}
+estaciones
+```
+
+Vamos a cargar ahora la capa `provincias`:
+
+```{r}
+provincias <- st_read('data/meteo/meteo_espacial/provincias_spain.shp') 
+```
+
+El proceso es idéntico, pero ahora nos dice que el objeto creado contiene una geometría tipo `multipolygon`, es decir, que es un fichero vectorial de polígonos. Ahora, por lo tanto, el campo `geometry` contendrá, para cada observación, el conjunto de coordenadas que define los vértices del polígono:
+
+```{r}
+provincias
+provincias$geometry[1]
+```
+
+### Representando gráficamente información vectorial
+
+Evidentemente, cuando trabajamos con datos espaciales una de las acciones más interesantes es representarlos gráficamente. Para ello basta con usar la función `plot()` y el nombre del objeto espacial
+
+```{r}
+plot(estaciones)
+```
+
+Por defecto nos ploteará todos los campos. Si queremos visualizar específicamente alguno de ellos debemos indicarlo expresamente, poniendo el nombre del campo entre corchetes `[]`:
+
+```{r}
+plot(estaciones["Tmed_MES"])
+```
+
+$R$ mapea los puntos según su ubicación, y les asigna un color en función de los valores de la variable elegida, pero podemos editar la visualización igual que hacemos con los $scatterplot$ o los $plots$ normales.
+
+Por ejemplo, podemos cambiar el tipo de símbolo con `pch`, el color con `col` o el tamaño con `cex`.
+
+```{r}
+plot(estaciones["Tmed_MES"], pch = 19)
+
+plot(estaciones["Tmed_MES"], pch = 21, col='black', bg= 'red')
+```
+
+En caso de que sólo queremos plotear la geometría del objeto (sin incluir ningún atributo) debemos indicarlo con la función `st_geometry()`
+
+```{r}
+plot(st_geometry(provincias))
+```
+
+```{r}
+plot(st_geometry(provincias), col = "dark red")
+```
+
+Podemos también combinar dos capas diferentes mediante el comando `add = TRUE`:
+
+```{r}
+plot(st_geometry(provincias) )
+plot(estaciones["Tmed_MES"], pch = 19, col = "red", cex = 0.5, add = TRUE) 
+```
+
+#### Visualizando capas vectoriales con `tmap`
+
+Un paquete interesante para la visualización de información espacial es `tmap`. Este paquete funciona de manera diferente, ya que le debemos indicar las diferentes capas a visualizar uniendo las órdenes con el símbolo `+`. Lo primero es indicar la capa que queremos visualizar mediante el comando `tm_shape()` y luego especificamos si queremos ver puntos (`tm_dots()`), los bordes de los polígonos (`tm_borders()`), o los polígonos con relleno (`tm_polygons()`, entre otras muchas opciones). De cada uno de los comandos `tm_*` puede personalizarse el color, forma, tamaño, etc. con valores fijos o en función de alguna columna.
+
+Probemos a visualizar las estaciones:
+
+```{r}
+library(tmap)
+
+tm_shape(estaciones) +
+    tm_dots()
+```
+
+Lógicamente, podemos cambiar el tamaño de los puntos, su forma, o los colores, haciéndolos depender de la variable `Tmed_MES` e incluso definir la paleta:
+
+```{r}
+tm_shape(estaciones) +
+    tm_dots(size = 1, shape = 20, col = "Tmed_MES", palette = "viridis")
+```
+
+Con `tmaps` podemos visualizar tantas capas como queramos, sólo necesitamos volver a utilizar la función `tm_shape()` con el nombre de la nueva capa. Eso sí, la extensión del mapa vendrá dada por la primera capa que llamemos. Probemos a visualizar las estaciones sobre las provincias del nordeste:
+
+```{r}
+tm_shape(provincias) +
+    tm_polygons(col = "lightgrey") +
+    tm_text("NAMEUNIT") +
+tm_shape(estaciones) +
+    tm_dots(col = "Tmed_MES", palette = "viridis", size = 0.75)
+```
+
+La extensión espacial del mapa vendrá determinada por la primera capa o *shape* que carguemos. Si cargamos primero las estaciones:
+
+```{r}
+
+tm_shape(estaciones) +
+    tm_dots(col = "Tmed_MES", palette = "viridis", size = 0.75) +
+tm_shape(provincias) +
+    tm_borders() +
+    tm_text("NAMEUNIT") 
+```
+
+Las opciones generales del mapa se pueden personalizar mediante `tm_layout()`:
+
+```{r}
+
+tm_shape(estaciones) +
+    tm_dots(col = "Tmed_MES", palette = "viridis", size = 0.75,title = "T media") +
+tm_shape(provincias) +
+    tm_borders() +
+    tm_text("NAMEUNIT") +
+    tm_layout(legend.outside = F, bg.color = "steelblue",title = "Estaciones meteorológicas del Nordeste", title.size = 4)
+```
+
+Incluso podemos definir un fondo basado en un proveedor como Google Maps o OpenStreetMap, con la función `tm_basemap()` y hacer que el mapa sea interactivo definiendo antes `tmap_mode("view")`: (una lista de las opciones se puede encontrar [aquí](https://leaflet-extras.github.io/leaflet-providers/preview/))
+
+```{r}
+
+tmap_mode("view")
+
+tm_shape(estaciones) +
+    tm_dots(col = "Tmed_MES", palette = "viridis") +
+tm_shape(provincias) +
+    tm_borders() +
+    tm_text("NAMEUNIT") +
+    tm_basemap("OpenStreetMap.Mapnik")
+```
+
+Por último, una vez tengamos un mapa que nos guste, podemos exportarlo al formato de nuestra elección:
+
+```{r}
+
+mapa <- tm_shape(estaciones) +
+    tm_dots(col = "Tmed_MES", palette = "viridis") +
+    tm_shape(provincias) +
+    tm_borders() +
+    tm_text("NAMEUNIT") +
+    tm_basemap("OpenStreetMap.Mapnik")
+
+## Guardar como imagen (modo "plot")
+tmap_save(mapa, filename = "mapa_estaciones.png")
+
+## Guardar como HTML file (modo "view")
+tmap_save(mapa, filename = "mapa_estaciones.html")
+```
+
+##### Para saber más
+
+Existen numerosos tutoriales online con las principales funcionalidades del paquete `tmap`. Algunas de las recomendadas son [tmap: get started!](https://cran.r-project.org/web/packages/tmap/vignettes/tmap-getstarted.html), el libro [tmap book](https://r-tmap.github.io/tmap-book/) o el capítulo dedicado a tmap del libro [Making maps with R](https://bookdown.org/nicohahn/making_maps_with_r5/docs/tmap.html)
+
+### Seleccionando campos, filtros y observaciones
+
+Pero ¿qué pasa si no queremos trabajar con todos los puntos, o si solo queremos representar una parte de los mismos? Como comentábamos antes, un objeto `sf` no es más que un `data.frame` con geometría espacial, por lo que podemos hacer con el todas las operaciones que hacemos con un data frame. Por ejemplo, podemos escoger submuestras basadas en valores determinados mediante la función `subset()`:
+
+```{r}
+bajas <- subset(estaciones, ALTITUD <= 500)
+
+tm_shape(estaciones) +
+    tm_dots(col = "darkgrey") +
+tm_shape(bajas) +
+    tm_dots(col= "Tmed_MES")
+
+
+```
+
+Este comando lo podemos usar también con caracteres de texto:
+
+```{r}
+catalunya <- subset(provincias, NAMEUNIT %in% c("Lleida", "Tarragona"))
+
+tm_shape(catalunya) +
+    tm_borders(col = "orange") +
+tm_shape(estaciones) +
+    tm_dots(col= "Tmed_MES")
+
+```
+
+Sin embargo, hay que tener en cuenta que si lo que hacemos es seleccionar una columna extraeremos los valores de la variable como un vector, pero perderemos la información espacial:
+
+```{r}
+estaciones$Tmed_MES
+```
+
+### Operaciones espaciales con `sf`
+
+`sf` también permite realizar todas las operaciones espaciales típicas de un GIS como intersectar capas, unirlas, crear buffers, etc. No vamos a ver todo esto con mucho detalle porque se escapa del objetivo de la asignatura, pero podéis encontrar un tutorial muy extenso [aquí](https://geocompr.robinlovelace.net/spatial-operations.html).
+
+De momento solo veremos un ejemplo de intersección entre dos capas:
+
+```{r}
+estaciones_cat <- st_intersection(catalunya, estaciones)
+
+
+tm_shape(catalunya) +
+    tm_borders(col = "orange") +
+tm_shape(estaciones_cat) +
+    tm_dots(col= "Tmed_MES")
+
+```
+
+## Trabajando con rasters
+
+La información en formato raster es básicamente una matriz de dos dimensiones, en la que cada una de las celdas o píxeles tiene un valor numérico que representa una variable, numérica o categórica. Este tipo de estructura es muy adecuada para representar información sobre fenómenos continuos, como la temperatura, elevación, distancias...
+
+### Cargando rasters
+
+Igual que hicimos con las capas vectoriales, lo primero de todo es cargar la capa en un objeto de R. En este caso usaremos la funcion `rast()`, del paquete `terra`. Vamos a cargar un modelo digital de elevaciones de la zona de estudio de las estaciones meteorológicas que se encuentra en la carpeta "Recursos/data/rasters_meteo" del campus virtual
+
+```{r}
+# install.packages('terra', dep = TRUE)
+
+library(terra)
+dem <- rast("data/meteo/meteo_espacial/rasters_meteo/elevation.txt")
+dem
+
+```
+
+Y podemos visualizarlo de forma sencilla mediante `plot()`:
+
+```{r}
+plot(dem)
+```
+
+### Cargar varias capas raster
+
+Puede que os hayáis dado cuenta de que la carpeta `rasters_meteo` contiene más ficheros además del de elevaciones. Gracias a las utilidades del paquete `terra` podremos cargar varias capas raster a la vez, que quearán almacenadas en lo que se llama `stack` que no es otra cosa que un objeto que contiene numerosas capas raster que comparten extensión, resolución, sistema de coordenadas... Un ejemplo típico serían las distintas bandas de una imagen de satélite.
+
+Sólo necesitamos una lista que contenga los nombres de los objetos a cargar (rasters). Podemos usar para ello la función `list.files()`:
+
+```{r}
+lista <- list.files('data/meteo/meteo_espacial/rasters_meteo/',full.names = TRUE)
+lista
+```
+
+`list.files` devuelve un `vector` con los nombres de todos los ficheros dentro de una determinda carpeta. Esta función tiene algunos argumentos interesantes:
+
+-   `full.names`: `TRUE` o `FALSE` determina si queremos que devuelva sólo el nombre del archivo o mejor la ruta completa a cada uno de ellos.
+-   `pattern`: parámetro que permite filtrar los objetos por nombre. Por ejemplo, si queremos sólo los ficheros en formato *txt*:
+
+```{r}
+lista <- list.files('data/meteo/meteo_espacial/rasters_meteo/',full.names = TRUE, pattern = 'txt')
+lista
+```
+
+Una vez que tenemos una lista de los rasters a cambiar, podemos cargar la lista con la función `rast()`:
+
+```{r}
+rasters <- rast(lista)
+
+```
+
+Y si ploteammos veremos que hay varios raster (capas) cargadas:
+
+```{r}
+plot(rasters)
+```
+
+Podemos acceder a cada una de las "bandas" del stack con el comando `$`:
+
+```{r}
+plot(rasters$elevation)
+```
+
+## Proyección y sistema de referencia
+
+El sistema de referencia (CRS) es un elemento clave de la información espacial. Hasta ahora hemos trabajado la información espacial sin prestar atención a este parámetro. Sin embargo, tarde o temprano tendremos que ocuparnos de él. No tenerlo en cuenta nos dará problemas. Por ejemplo, no podremos superponer o combinar capas por la ausencia o diferencia de sistemas de referencia, por lo que tenemos que saber cómo ensamblar o reproyectar una capa a un sistema de referencia diferente.
+
+### Asignar un sistema de referencia de coordenadas (CRS)
+
+Un CRS sólo deber asignarse a una capa cuando esta carezca de esta información de manera explícita. Lo primero es comprobar por tanto qué CRS tienen las capas con las que estamos trabajando:
+
+```{r}
+crs(rasters)
+crs(estaciones)
+```
+
+En este caso, los rasters que hemos cargado no tienen asignado ningún CRS, así que debemos asignarle uno. Para ello podemos comprobar la lista de los diferentes CRS - y manera de codificarlo - en esta web. EN este caso sabemos que el CRS correcto es EPSG: 23030 - UTM ED50 30N, que en el codificado "proj4" es:
+
+`+proj=utm +zone=30 +ellps=intl +units=m +no_defs`
+
+Y lo asignamos como:
+
+```{r}
+crs(rasters)<- "+proj=utm +zone=30 +ellps=intl +units=m +no_defs"
+```
+
+Ahora podemos comprobar CRS otra vez:
+
+```{r}
+crs(rasters)
+    
+```
+
+### Proyectar a otro CRS
+
+Es común que, cuando descargamos cartografía de diversas fuentes, cada una tenga su propio CRS. Esto nos trae problemas en cuanto a la visualización, pero también si queremos hacer operaciones espaciales (intersects, buffers...). Para solventarlo, debemos proyectar alguna de las capas, de manera que estén todas en la misma CRS.
+
+NOTA: es importante tener en cuenta que proyectar una capa a un nuevo CRS no es lo mismo que asignar un CRS. En el primer caso, la capa ya tiene CRS asignado, y lo que hacemos es transformar espacialmente las coordenadas. En el segundo (asignar) las coordenadas están, pero no está definido que CRS usar para representar.
+
+```{r}
+
+nuevo_provincias <- st_transform(provincias, "+proj=utm +zone=31 +ellps=intl +units=m +no_defs")
+
+plot(st_geometry(nuevo_provincias))
+plot(estaciones["Tmed_MES"], pch = 19, col = "red", cex = 0.5, add = TRUE) 
+```
+
+Sin embargo, el mismo mapa con `tmaps` sí que funcionará:
+
+```{r}
+tmap_mode("plot")
+
+tm_shape(nuevo_provincias)+
+    tm_borders()+
+    tm_shape(estaciones)+
+    tm_dots()
+
+```
+
+Esto es porque `tmaps` implementa, igual que `ArcMap` la llamada proyección *on-the-fly*, es decir que transforma automáticamente los CRS de las capas al CRS definido al principio (fijaos que las provincias salen ahora giradas respecto a la visualización original).
+
+## Visualización de mapas combinados de rasters y shapefiles
+
+Al tener asignado correctamente el CRS; ahora podemos plotear las diferentes capas a la vez usando las funciones de `tmap`:
+
+```{r, eval = FALSE}
+# tmap_mode("plot")
+
+tm_shape(rasters$elevation) +
+    tm_raster() +
+tm_shape(provincias) +
+    tm_borders() +
+tm_shape(estaciones) + 
+    tm_dots( col="Tmed_MES", size = 0.5, palette= "viridis") +
+    tm_layout(legend.outside = T)
+
+```
+
+## Para saber más
+
+Desde luego, esto sólo es una introducción al uso de $R$ como entorno de procesado y visualización SIG. Hay mucho más, y para profundizar os recomiendo consultar los siguientes recursos:
+
+-   Visualización con tmap:
+    -   [Elegant and informative maps with tmap](https://r-tmap.github.io/tmap-book/index.html)
+    -   [tmap: get started!](https://cran.r-project.org/web/packages/tmap/vignettes/tmap-getstarted.html)
+
+web de R Spatial (<https://rspatial.org/#google_vignette>) o la web [Introduction to GIS with R](https://www.jessesadler.com/post/gis-with-r-intro/)

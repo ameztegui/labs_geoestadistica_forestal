@@ -1,0 +1,419 @@
+---
+title: "Autocorrelación espacial en ArcGIS y R"
+subtitle: "Geoestadística i Tècniques d'Observació Global (24/25)" 
+author: "Aitor Ameztegui (UdL)"
+date: "last-modified"
+format: 
+    html:
+        theme: cerulean
+        toc: true
+editor_options: 
+  chunk_output_type: console
+---
+
+## Introducción
+
+En este tutorial vamos a ver cómo llevar a cabo un análisis de autocorrelación espacial usando tanto R como ArcGIS Pro y QGis.
+
+Esto nos permitirá comparar las diferentes herramientas, analizar en qué difieren y en qué se parecen, y tendremos por tanto un mayor abanico de opciones para realizar este tipo de análisis.
+
+En teoría hemos visto que la autocorrelación espacial no es más que el grado de correlación de una variable consigo misma a través del espacio. Para poder calcularla necesitamos por tanto: 1) observaciones de una variable, y 2) la ubicación espacial de dichas observaciones. Todo ello nos lo proporciona cualquier fichero de información espacial (shapefiles de ESRI, geopackages, u objetos de R de clase `sf`, como vimos en el tutorial "Accediendo a datos espaciales en R").
+
+Por ello, lo primero que vamos a hacer es cargar el fichero de datos espaciales que vamos a analizar, que no es otro que el shapefile con los valores de estaciones meteorológicas que usamos en la unidad sobre regresión lineal. También necesitamos cargar el paquete `sfdep`, que contienen funciones específicas para análisis espaciales en R. Por último, cargaremos el shapefile de provincias para mejorar nuestra visualización:
+
+```{r message=FALSE, warning=FALSE}
+
+# Cargamos las librerías que necesitamos
+library(sf)
+# library(spdep)
+library(sfdep) 
+
+# Cargamos el fichero de datos (en este caso, un shapefile)
+
+estaciones <- st_read('data/meteo/meteo_espacial/estaciones_meteo.shp')
+provincias <- st_read('data/meteo/meteo_espacial/provincias_spain.shp')
+
+
+```
+
+## Definiendo vecinos
+
+Hemos visto en la parte de teoría que uno de los pasos críticos en un análisis de autocorrelación es decidir qué observaciones consideramos como *vecinas* de un determinado punto. Hay varias manera de definirlo, pero las más importantes son definir los vecinos con criterios de contigüidad (en el caso de polígonos o raster), seleccionar los $k$ puntos más cercanos, o definir el vecindario en función de la distancia entre los elementos. Métodos más complejos permiten también asignar pesos a los vecinos en función de diversos criterios, entre los que destaca asignarlos de manera inversa a la distancia entre puntos.
+
+### Vecinos contiguos
+
+Si tenemos un fichero de polígonos, podemos definir la vecindad como aquellos polígonos contiguos a cada uno, mediante la función `st:contiguity()` del paquete `sfdep`. La opción `queen = TRUE` determina cómo vecinos de un polígono todos aquellos que coincidan en un sólo punto de sus límites. Si `queen = FALSE` sólo son vecinos aquellos que compartan al menos dos puntos (vecindad de Rook)
+
+```{r}
+veins_cont <- st_contiguity(provincias, queen = FALSE)
+veins_cont
+```
+
+Ahora podemos plotear este objeto para ver las conexiones entre polígonos:
+
+```{r}
+plot(st_geometry(provincias))
+plot(veins_cont, coords = st_coordinates(st_centroid(provincias)), add = TRUE, col = "red")
+```
+
+> **NOTA:** este método sólo funciona para archivos espaciales de polígonos. Si tratáramos de aplicarlos con puntos obtendríamos un error, ya que los puntos no pueden tener puntos de contacto entre ellos.
+
+> **NOTA (2):** aunque la opción "queen" permite definir el criterio de selección de vecinos, en el caso de polígonos complejos como el del fichero `provincias` lo más normal es que no haya diferencias entre `queen = TRUE` o `queen = FALSE`
+
+### $k$ vecinos más próximos
+
+Un método alternativo consiste en elegir como vecinos los $k$ puntos más cercanos, lo que se adapta a toda la zona de estudio, teniendo en cuenta las diferencias en las densidades de las entidades de área. En este caso tan sólo debemos definir el valor de $k$, y la función buscará automáticamente los k puntos más próximos de cada punto. Usaremos para ello la función `st_knn()`:
+
+```{r}
+veins_k <- st_knn(estaciones, k = 8)
+veins_k
+```
+
+Ahora podemos plotearlo como antes:
+
+```{r}
+plot(veins_k, coords = st_coordinates(estaciones), col = "red")
+```
+
+> En el caso de esta metodología, puede utilizarse también con polígonos. Sin embargo requiere que trabajemos con los centroides de cada polígono, que serán los que nos permitan determinar la distancia entre polígonos:
+
+```{r}
+veins_prov_k <- st_knn(st_centroid(provincias), k = 4)
+plot(st_geometry(provincias))
+plot(veins_prov_k, coords = st_coordinates(st_centroid(provincias)),
+     col = "red", add = TRUE)
+```
+
+### Vecinos basados en intervalos de distancia
+
+Para definir los vecinos en base a una distancia podemos usar la función `st_dist_band()` en la que debemos definir la distancia mínima (`lower`) y máxima (`upper`) para seleccionar un vecino. La función determinará que todos los puntos que estén entre estas dos distancias serán vecinos:
+
+```{r}
+veins_dist <- st_dist_band(estaciones, lower = 0, upper = 30000)
+plot(veins_dist, coords = st_coordinates(estaciones), col = "red")
+
+```
+
+> Igual que antes, si queremos usar este método con polígonos, debemos hacerlo con los centroides de los polígonos.
+
+## Asignando pesos a los vecinos
+
+Otra opción muy interesante, y que suele aplicarse en muchos casos, es no sólo definir cuáles consideraremos como vecinos de cada observación, sino darles un peso determinado según la distancia a la que estén del punto analizado. Este método se conoce como weighting.
+
+Aunque existen varias opciones para dar pesos, veremos las dos más comunes: asignar el mismo peso a todos los vecinos de un punto (función `st_weights()`) o asignar mayor peso a los vecinos que estén más cerca, lo que se conoce como *inverse distance weighting (idw)* (función `st_inverse_distance()`).
+
+> Para evitar que la función calcule las distancias entre todos los puntos dos a dos - lo que podría colapsar la memoria del ordenador - las dos funciones se aplican sobre un objeto de vecinos ya creado, en el que le digamos cuáles son los vecinos de cada punto. En este caso, usaremos el que acabamos de crear (`veins_dist`):
+
+```{r}
+veins_w_dist <- st_weights(veins_dist)
+veins_w_dist
+
+veins_idw <- st_inverse_distance(veins_dist, estaciones)
+veins_idw
+
+```
+
+Al imprimir el resultado vemos que, mientras en `veins_dist_w()` todos los vecinos de una observación tienen el mismo peso, en `veins_idw` los pesos varían entre los vecinos.
+
+## Autocorrelació Global: I de Moran
+
+La I global de Moran determina el grado de autocorrelación de una muestra en su conjunto. Valores positivos indican autocorrelación positiva (los valores más próximos entre sí muestran valores más similares), valores negativos muestran lo contrario, y valores cercanos a 0, ausencia de autocorrelación espacial.
+
+### I global de Moran con R
+
+En R podemos determinar la I de Moran con la función `global_moran_test()` que necesita como argumentos: (1) la variable que queremos analizar (en este caso será la temperatura media del mes, `Tmed_MES`); (2) un objeto `neighbor` que identifique los vecinos de cada observación; y (3) un objeto de pesos. Por lo tanto los pasos a seguir son:
+
+1.  Identificar los vecinos de cada observación
+2.  Asignar los pesos mediante la opción `st_weights()` o `st_inverse_distance()`
+3.  Calcular la I de Moran
+
+Aunque ya tenemos los objetos resultantes de los pasos 1 y 2, vamos a repasar todo el proceso para tener todos los pasos juntos:
+
+#### I global de Moran en base a los k vecinos más próximos
+
+Como hemos visto antes, en el caso de usar los k vecinos más próximos, usaremos las funciones `st_knn()` y `st_weights()`:
+
+```{r}
+
+# 1. Identificar los vecinos de cada observación en un objeto neighbour (nb)
+veins_k <- st_knn(estaciones, k = 8)
+
+# 2. Asignar los pesos de cada observación (en este caso, pesos iguales)
+veins_w_k <- st_weights(veins_k)
+
+# 3. Calcular la I de Moran para la variable Tmed_MES
+globalMoran_k <- global_moran_test(x = estaciones$Tmed_MES, nb = veins_k, wt = veins_w_k)
+globalMoran_k
+
+```
+
+Vemos que el valor de la I de Moran es 0.6077, lo que indica autocorrelación espacial positiva. El valor esperado si los datos se distribuyeran aleatoriamente sería de -0.011. Por último, también sabemos que la probabilidad de que los valores de temperatura observados estén distribuidos al azar es de 2.2e-16, con lo que claramente rechazaremos la hipótesis nula (es decir, rechazamos que no haya autocorrelación). En definitiva, que sí que hay autocorrelación espacial.
+
+#### I global de Moran en base a la distancia entre vecinos
+
+En este caso reconoceremos como vecinos aquellos dentro de un intervalo de distancias, y asignaremos el mismo peso a todos:
+
+```{r}
+
+# 1. Identificar los vecinos de cada observación en un objeto neighbour (nb)
+veins_dist <- st_dist_band(estaciones, lower = 0, upper = 30000)
+
+# 2. Asignar los pesos de cada observación (en este caso, pesos iguales)
+veins_w_dist <- st_weights(veins_dist)
+
+# 3. Calcular la I de Moran
+globalMoran_dist <- global_moran_test(x = estaciones$Tmed_MES, nb = veins_dist, wt = veins_w_dist)
+globalMoran_dist
+```
+
+Vemos que el valor cambia respecto al calculado antes (0.664),ya que la definición de cuáles son los vecinos ha cambiado mucho. Sin embargo, la conclusión sigue siendo la misma (hay bastante autocorrelación)
+
+#### I Global de Moran en base a IDW
+
+Ahora identificaremos los vecinos en base a la franja de distancias, pero les asignaremos un peso inversamente proporcional a la distancia con el punto analizado:
+
+```{r}
+# 1. Identificar los vecinos de cada observación en un objeto neighbour (nb)
+veins_dist <- st_dist_band(estaciones, lower = 0, upper = 30000)
+
+# 2. Asignar los pesos de cada observación (en este caso, pesos iguales)
+veins_idw <- st_inverse_distance(veins_dist, estaciones)
+
+# 3. Calcular la I de Moran
+globalMoran_idw <- global_moran_test(x = estaciones$Tmed_MES, nb = veins_dist, wt = veins_idw)
+globalMoran_idw
+```
+
+Aunque el resultado es parecido al de `globalMoran_dist`, hay pequeñas diferencias debidas a los pesos asignados. En función del dataset concreto las diferencias pueden ser más o menos grandes.
+
+### I Global de Mo#ran con ArcGis Pro
+
+Determinar la I global de Moran con ArcGIS es también muy sencillo. En primer lugar, debemos cargar la capa `estaciones_meteo.shp`, y tenemos que buscar la función **Spatial Autocorrelation (Global Moran's I)**, que podemos encontrar dentro de las herramientas de **Geoprocessing**
+
+![](images/MoranIToolbox1_ArcGISPro.png)
+
+Una vez seleccionada la función, tenemos que indicar la capa que queremos analizar, la variable de interés, y cómo determinaremos el peso de los vecinos.
+
+![](images/MoranIToolbox2_ArcGISPro.png)
+
+Los resultados se muestran en la pestaña *Results* de ArcGIS, que si no tenemos visible, podemos activar yendo a *Geoprocessing/Results*. Si además hemos seleccionado que queremos que genere un informe, este estará disponible como html, produciendo una salida visualmente muy informativa.
+
+![](images/MoranIToolbox3_ArcGISPro.png) \> \*\* Ejercicio\*\* Prueba a modificar la manera de definir los pesos de cada observación, verás que los resultados de ArcGIS son los mismos que obtenemos en R.
+
+### I Global de Moran con QGis y Geoda
+
+#### Presentando GeoDa
+
+Por supuesto, QGis tiene funcionalidades parecidas a las de ArcGis, mediante un plugin llamado *Spatial Analysis Toolbox*. Sin embargo, a día de hoy (julio de 2024), este plugin no funciona, así que veremos una alternativa muy interesante, el software [*GeoDa*](https://geodacenter.github.io/).
+
+*GeoDa* es un software de escritorio gratuito y de código abierto, desarrollado por el equipo del Dr. Luc Anselin, profesor de la Universidad de Chicago y uno de los grandes pioneros en el análisis espacial y la econometría. Podemos descargar gratuitamente GeoDa [aquí](https://geodacenter.github.io/download_windows.html).
+
+Una vez descargado, si lo abrimos nos pedirá que carguemos los datos: podemos cargar capas y objetos espaciales en multitud de formatos. En este caso, vamos a cargar el fichero `estaciones_meteo.shp`.
+
+![](images/geoda_intro.jpg)
+
+Una vez cargados los datos, el aspecto es el de un SIG convencional, con la tabla de contenidos a la izquierda, la visualización a la derecha, y arriba veremos el menú con diversas opciones.
+
+![](images/geoda_aspecto.jpg)
+
+#### Calculando vecinos y pesos en GeoDa
+
+Para poder calcular la I de Moran, GeoDa nos exige que calculemos los pesos. Para ello debemos acceder al menú `Weights Manager` caracterizado por una gran `W` morada. El menú del *Weights manager* nos resultará familiar, ya que nos da la opción de definir los vecinos por contiguidad (según el criterio de Rooke o de Queen) o por distancia (y en este caso podremos elegir por banda de distancia, k vecinos más próximos o mediante un kernel, que no lo hemos visto). En caso de elegir los vecinos por distancia, nos preguntará si queremos usar el inverso de la distancia como peso (es decir, un idw):
+
+![](images/geoda_weights.jpg) Una vez decidido el criterio que queramos, guardamos el fichero de pesos en disco, con el nombre que queramos y la extensión `.gwd`. Una de las funcionalidades más interesantes de GeoDa es que nos permite visualizar, una vez seleccionado el fichero de pesos que queramos, los vecinos de un punto sobre el que pongamos el cursos, además de permitirnos ver gráficos de vecindad interactivos:
+
+![](images/geoda_weights_interactivo.png)
+
+Podemos probar a crear un fichero con knn (8 vecinos), otro con los vecinos entre 0 y 30.000 metros, y otro con los mismos vecinos pero pesos inversos a la distancia, como hicimos en R.
+
+#### Calculando la I de Moran con GeoDa
+
+Una vez definidos los vecinos, podemos calcular fácilmente la I global de Moran, seleccionando el comando `Univariate Moran's I` del menú `Space`. Para ello sólo debemos indicar la variable de interés (Tmed_MES) y el fichero de vecinos deseado:
+
+![](images/geoda_MoranI.png)
+
+## Autocorrelación Local (I de Anselin)
+
+Para poder calcular la I local de Moran (también llamada I de Anselin), necesitaremos, igual que antes, conocer la variable a utilizar, la identificación de los vecinos, y los pesos. Vamos a trabajar, por simplicidad, con uno de los casos (idw), pero funcionaría igual con el resto:
+
+```{r}
+localMoran <- local_moran(x = estaciones$Tmed_MES, nb = veins_dist, wt = veins_idw)
+```
+
+Vemos que en este caso el objeto generado contiene el valor calculado de *I* (`ii`), el valor esperado (`eii`), la varianza (`var_ii`), el z-score (`z_ii`) y el p-valor (`p_ii`) de *cada observación de la muestra*, entre otros campos
+
+```{r}
+head(localMoran)
+```
+
+### LISA (Local indicators of spatial association) - Agrupaciones espaciales
+
+Un análisis muy interesante cuando trabajamos con autocorrelación espacial local es el de identificar aquellas observaciones en las que se cumplen una serie de condiciones. Este análisis fue desarrollado en 1995 por Luc Anselin, y recibe el nombre de LISA (local indicators of spatial association). Se compone de varios elementos:
+
+#### Scatterplot de Anselin
+
+Si queremos producir un scatterplot con los valores positivamente y negativamente autocorrelacionados, podemos usar la función `moran.plot()`, del paquete `spdep`. Por desgracia, aún no existe una versión de esta función para `sfdep`, por lo que nos vemos obligados a definir los pesos de los vecinos usando la función `nb2listw()` (en caso de querer aplicar pesos iguales), o la función `nb2listwdist()` si queremos aplicar un idw.
+
+```{r}
+library(spdep)
+moran.plot(x = estaciones$Tmed_MES, nb2listw(veins_dist))
+moran.plot(x = estaciones$Tmed_MES, nb2listwdist(veins_dist, estaciones))
+
+```
+
+Vemos que los valores de las esquinas inferior izquierda y superior derecha son los que tienen autocorrelación positiva, y los de las esquinas contrarias, autocorrelación negativa.
+
+#### Mapa de valores de I
+
+También podemos usar la función `tm_shape()` y `tm_dots()` del paquete `tmap` para visualizar espacialmente los valores locales de I de Moran. Primero debemos unir los cálculos de I local al objeto espacial que tenemos, usando `cbind()`.
+
+```{r}
+lisa <- cbind(estaciones, localMoran)
+```
+
+Después podemos crear la representación espacial de la siguiente manera:
+
+```{r}
+
+library(tmap)
+tm_shape(lisa) +
+    tm_dots(col = "ii", size = 0.75) +
+tm_shape(provincias) +
+    tm_borders()
+
+```
+
+#### Mapa de agrupaciones cluster
+
+Consiste en identificar las observaciones que cumplen estos criterios:
+
+-   Alto valor de la variable y vecinos con alto valor (High-high)
+
+-   Bajo valor de la variable y vecinos con bajo valor (Low-Low)
+
+-   Alto valor de la variable y vecinos con bajo valor (High-Low)
+
+-   Bajo valor de la variable y vecinos con alto valor (Low-High)
+
+Los dos primeros se suelen colorear de color rojo y azul intenso, respectivamente, y corresponden a las observaciones que contribuyen significativamente a la autocorrelación espacial global positiva. Los otros dos se suelen representar con colores pálidos, y son las observaciones que contribuyen a una autocorrelación negativa. Las observaciones con valores no significativos no suelen colorearse.
+
+La función localMoran ya nos ofrece una clasificación en estos cuatro grupos, a la que podemos acceder de la siguiente manera:
+
+```{r}
+
+localMoran$mean
+```
+
+Como antes hemos unido los resultados de `localMoran` a nuestra tabla `estaciones` también tendremos esta información en el objeto `moran.map`
+
+Si definimos un nivel de significación, podemos clasificar las observaciones según el grupo al que pertenezcan y su significación. Indiquemos que los valores no significativos tengan un valor de "NS"
+
+```{r}
+# llindar de significacion
+signif <- 0.1 
+
+lisa$mean <- ifelse(lisa$p_ii > signif,  "NS", as.character(lisa$mean))
+lisa
+
+```
+
+Por último, ploteamos la figura con `tmap`, `tm_shape()` y `tm_dots()`:
+
+```{r}
+# plot dels resultats
+
+tm_shape(lisa) +
+    tm_dots(col = "mean",
+          style = "cat",
+          palette= c("NS"="grey",
+                     "Low-Low" = "blue",        # Low-Low
+                     "Low-High" = "lightblue",  # Low-High 
+                     "High-Low"= "sienna1",     # High-low
+                     "High-High"="red"),        # High -High
+              size = 0.5) +
+tm_shape(provincias)+
+    tm_borders()
+
+
+```
+
+#### Mapa de significación
+
+Otro elemento interesante es producir un mapa de significación. Para ello establecemos las categorías de significación que queramos, y ploteamos su distribución espacial. Por ejemplo, vamos a crear 4 categorías:
+
+-   No significativo (P \> 0.05)
+
+-   0.01 \< P \< 0.05
+
+-   0.001 \< P \< 0.01
+
+-   P \< 0.001
+
+```{r}
+
+lisa$sign <- ifelse(lisa$p_ii < 0.001, "p<0.001",
+                         ifelse(lisa$p_ii < 0.01, "p<0.01",
+                                ifelse(lisa$p_ii < 0.05, "p<0.05",
+                                "NS")))
+
+```
+
+Y creamos el mapa de manera muy similar:
+
+```{r}
+tm_shape(lisa) +
+    tm_dots(col = "sign",
+          style = "cat",
+          palette= c("NS"="grey",
+                     "p<0.001"= "darkgreen",
+                     "p<0.01" = "green",
+                     "p<0.05" =  "lightgreen"), 
+          title = "Nivel de significación",
+          size = 0.5) +
+    tm_shape(provincias) +
+    tm_borders()
+
+```
+
+Y como curiosidad, hasta podríamos crear un visor con esta información
+
+```{r}
+
+tmap_mode("view")
+tm_shape(lisa) +
+    tm_dots(col = "mean",
+          style = "cat",
+          palette= c("NS"="grey",
+                     "Low-Low" = "blue",        # Low-Low
+                     "Low-High" = "lightblue",  # Low-High 
+                     "High-Low"= "sienna1",     # High-low
+                     "High-High"="red"),        # High -High
+          title = "LISA con p > 0.1") +
+    tm_shape(provincias) +
+    tm_borders(col="white") +
+    tm_basemap(leaflet::providers$Esri.WorldImagery)
+
+
+```
+
+### I local de Anselin con ArcGis Pro
+
+ArcMap permite realizar el equivalente a un análisis cluster LISA de Anselin con suma facilidad. Para ello debemos seleccionar la herramienta *Cluster and Outlier Analysis (Anselin Local Moran's I)* que se encuentra en el menú *Spatial Statistics Tools/Mapping Clusters*.
+
+![](images/Anselin_01_ArcGIS.png)
+
+El proceso que sigue ArcMap es similar: calcula la I local, los z-scores, el p-valor, y finalmente realiza una agrupación en clusters como hemos visto antes:
+
+![](images/Anselin_02_ArcGIS.png)
+
+Sin embargo, hay que poner atención en un aspecto: ArcMap identifica los puntos con un sistema de colores inverso al que hemos visto anteriormente. Para ArcMap, los valores *High-Low* y *Low-High* son outliers, y por lo tanto los identifica con colores más vivos, mientras que los *High-High* y *Low-Low*, que son los que se destacan normalmente en un análisis LISA, aquí se representan con tonos más pálidos.
+
+![](images/Anselin_03_ArcGis.png)
+
+### I local de Anselin con GeoDa
+
+Igual que hicimos antes, vamos a ver como realizar un análisis LISA con GeoDa, en lugar de hacerlo con QGis. Como no podía ser de otra manera este es uno de los puntos fuertes de este software, creado por el propio Luc Anselin. Para ello debemos buscar el comando `Univariate Local Moran's I`, en el menú `Space`. Seleccionando la variable de interés y el fichero de vecinos, podemos generar todos los elementos del LISA. Uno de los atractivos de GeoDa es que estos gráficos son interactivos y están conectados, de manera que seleccionar unos puntos en uno de ellos resalzará los mismos puntos en el resto de gráficos:
+
+{{< video images/geoda_localI.mp4 >}}
+
+Por supuesto, estas no son las únicas funcionalidades de GeoDa, como veremos más adelante durante el curso.

@@ -1,0 +1,73 @@
+# Presentación {.unnumbered}
+
+Bienvenidos a la asignatura de "Geoestadística y Técnicas de Observación Global". Esta asignatura se incluye en la doble titulación del Grado en Ingeniería Forestal y Grado en Conservación de la Naturaleza. Se trata de una asignatura en la que se enseñan técnicas y métodos para el análisis estadístico, modelización y predicción de procesos espaciales.
+
+## ¿Qué es la geoestadística?
+
+La geoestadística es un tipo de estadística utilizada para analizar y predecir los valores asociados a fenómenos espaciales o espacio-temporales. Incorpora las coordenadas espaciales (y en algunos casos temporales) de los datos en los análisis. Las primeras herramientas geoestadísticas se desarrollaron para describir patrones espaciales y interpolar valores en lugares donde no se tomaron muestras. El análisis geoestadístico moderno permite también construir modelos de interpolación e incertidumbre más precisos, incorporando análisis mulivariados.
+
+La geoestadística se utiliza ampliamente en muchos ámbitos de la ciencia y la ingeniería, por ejemplo para estimar niveles de contaminantes y determinar si constituyen una amenaza para la salud, para espacializar los datos procedentes de muestreos no continuos, como el Inventario Forestal Nacional , o para cartografiar características del suelo como los nutrientes, salinidad, etc. Y relacionarlos con el rendimiento de cultivos agrícolas o sistemas forestales, entre otros muchos:
+
+En todos estos ejemplos el contexto general es que existe algún fenómeno de interés que se produce en el paisaje I que se caracteriza a partir de muestreos puntuales. La geoestadística se utiliza a continuación para elaborar predicciones en las ubicaciones no muestreadas. En esta asignatura se introducen los principios de la modelización estadística y de la información espacial, para a continuación presentar las herramientas disponibles para un análisis geoestadístico de los procesos de interés.
+
+## ¿De qué va este curso?
+
+## ¿Qué hay de especial en lo espacial?
+
+## ¿Cuándo un análisis es espacial?
+
+## Tipos de preguntas que requieren análisis espacial
+
+## Funcionamiento de la asignatura
+
+### Tipos de sesiones
+
+### Nuestras herramientas
+
+### Evaluación
+
+#### **Evaluación continua**
+
+| Bloque          | Número de pruebas | Peso |
+|:----------------|-------------------|------|
+| Primer parcial  | 1                 | 25%  |
+| Segundo parcial | 1                 | 25%  |
+| Prácticas       | 6                 | 50%  |
+
+La asignatura se evaluará según la siguiente ponderación: 
+
+-   Parte teórica: 50% de la nota final  (25% cada bloque)
+
+-   Parte práctica: 50% de la nota final
+
+Cálculo de la nota global: Ex. Parcial 1 x 0.25 + Ex. Parcial 2 x 0.25 + Prácticas x 0.5
+
+Para aprobar la asignatura se debe obtener una nota igual o superior a 5.0, y cumplir las siguientes condiciones:
+
+-   BLOQUE TEÓRICO: para aprobar este bloque se debe obtener una nota ≥ 4,0 en cada uno de los parciales, independientemente de la nota de prácticas. Es decir, no se hará media con las prácticas a no ser que se cumpla el requisito mínimo anterior. 
+
+-   BLOQUE PRÁCTICO: La nota mínima para superar la parte práctica es 5,0. La parte práctica consiste en la entrega de 6 informes de prácticas. Para aprobar el bloque se debe obtenir una nota ≥ 5,0 en al menos 4 de las prácticas. 
+
+**NOTA**: Cada pràctica tendrá una **fecha de entrega específica**. El retraso en la entrega de los informes se penalizará des de un **-30%** hasta un **-100%** de la nota de la práctica entregada fuera de plazo.
+
+#### **Recuperación**
+
+En caso de que no se supere la nota mínima en alguno de los bloques (teoría 1, teoría 2, prácticas), se podrán recuperar dentro del período marcado por el centro (ETSEAFIV). En el caso de recuperación, la nota máxima del bloque de prácticas no podrá ser superior a 5.
+
+#### **Plagio o copia**
+
+La Ley 2/2022 de convivencia universitaria regula lo que se considera fraude académico: cualquier comportamiento premeditado tendente a falsear los resultados de un examen, propio o ajeno, realizado como requisito para superar una asignatura o acreditar el rendimiento académico. Las faltas pueden ser graves o muy graves. Puede consultar en la web de la UdL [la Normativa de convivencia universitaria.](https://www.udl.cat/export/sites/universitat-lleida/ca/udl/norma/.galleries/docs/Organitzacio_interna/Acord-19-2023-CG-28.2.2023-Normativa-de-Convivencia-Universitaria-UdL.pdf)
+
+Si se copia o plagia con medios fraudulentos se retirará la actividad de evaluación (por tanto quedará suspendida) y se hará llegar un informe y las evidencias a la coordinación del máster ya los jefes de estudio para iniciar un expediente disciplinario. Las sanciones aplicables incluyen, entre otros y dependiendo de la gravedad de la falta, la pérdida del derecho a ser evaluado de la asignatura, la pérdida de la matrícula de un semestre o curso o la expulsión hasta tres años.
+
+## Bibliografía
+
+-   Baddeley, Turner (2015) Spatial Point Patterns: Methodology and Applications with R. Routledge.
+
+-   Cayuela, De la Cruz (2022) [Análisis de datos ecológicos en R](https://www.mundiprensa.com/catalogo/9788484768333/analisis-de-datos-ecologicos-en-r?utm_source=pocket_mylist). Mundiprensa
+
+-   Maestre, Escudeo, Bonet (2008)[Introducción al análisis espacial de datos en ecología y ciencias ambientales](https://dialnet.unirioja.es/servlet/libro?codigo=347765). U. Rey Juan Carlos.
+
+-   Pebesma, EJ; Bivand R, Gómez-Rubio V. 2008 Applied Spatial Data Analysis with R. 
+
+-   Spatial Data Science with R. 2020 Available at[ https://rspatial.org](https://rspatial.org)
