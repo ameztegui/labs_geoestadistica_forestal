@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Aitor Ameztegui">
+
+<title>Apuntes y ejercicios de geoestadística para forestales</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./00_Familiar_RStudio.html" rel="next">
+<link href="./images/udl.png" rel="icon" type="image/png">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Presentación</a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Apuntes y ejercicios de geoestadística para forestales</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/ameztegui/labs_geoestadistica_forestal" rel="" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Presentación</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">UNIDAD 0: INTRODUCCION</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./00_Familiar_RStudio.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Familiarizándose con R y RStudio</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./00_Intro_R.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introducción a R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./00_RMarkdown_Quarto.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Introducción a Quarto y RMarkdown</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">UNIDAD 1: ANÁLISIS DE REGRESIÓN</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01_RegresionLineal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Regresión lineal en R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_GLM.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Regresión lineal generalizada (GLM) en R</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">UNIDAD 2: GEOESTADÍSTICA Y ANÁLISIS ESPACIAL</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03_DatosEspaciales.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Trabajando con datos espaciales en R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04_AutocorrelacionEspacial.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Autocorrelación espacial en ArcGIS y R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05_PatronPuntos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Análisis de patrón de puntos en R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06_InterpolacionEspacial.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Interpolación espacial en R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07_RegresionEspacial.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Regresión espacial en R</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#presentación" id="toc-presentación" class="nav-link active" data-scroll-target="#presentación">Presentación</a>
+  <ul class="collapse">
+  <li><a href="#qué-es-la-geoestadística" id="toc-qué-es-la-geoestadística" class="nav-link" data-scroll-target="#qué-es-la-geoestadística">¿Qué es la geoestadística?</a></li>
+  <li><a href="#de-qué-va-este-curso" id="toc-de-qué-va-este-curso" class="nav-link" data-scroll-target="#de-qué-va-este-curso">¿De qué va este curso?</a></li>
+  <li><a href="#qué-hay-de-especial-en-lo-espacial" id="toc-qué-hay-de-especial-en-lo-espacial" class="nav-link" data-scroll-target="#qué-hay-de-especial-en-lo-espacial">¿Qué hay de especial en lo espacial?</a></li>
+  <li><a href="#cuándo-un-análisis-es-espacial" id="toc-cuándo-un-análisis-es-espacial" class="nav-link" data-scroll-target="#cuándo-un-análisis-es-espacial">¿Cuándo un análisis es espacial?</a></li>
+  <li><a href="#tipos-de-preguntas-que-requieren-análisis-espacial" id="toc-tipos-de-preguntas-que-requieren-análisis-espacial" class="nav-link" data-scroll-target="#tipos-de-preguntas-que-requieren-análisis-espacial">Tipos de preguntas que requieren análisis espacial</a></li>
+  <li><a href="#funcionamiento-de-la-asignatura" id="toc-funcionamiento-de-la-asignatura" class="nav-link" data-scroll-target="#funcionamiento-de-la-asignatura">Funcionamiento de la asignatura</a>
+  <ul class="collapse">
+  <li><a href="#tipos-de-sesiones" id="toc-tipos-de-sesiones" class="nav-link" data-scroll-target="#tipos-de-sesiones">Tipos de sesiones</a></li>
+  <li><a href="#nuestras-herramientas" id="toc-nuestras-herramientas" class="nav-link" data-scroll-target="#nuestras-herramientas">Nuestras herramientas</a></li>
+  <li><a href="#evaluación" id="toc-evaluación" class="nav-link" data-scroll-target="#evaluación">Evaluación</a></li>
+  </ul></li>
+  <li><a href="#bibliografía" id="toc-bibliografía" class="nav-link" data-scroll-target="#bibliografía">Bibliografía</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/ameztegui/labs_geoestadistica_forestal/edit/main/index.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/ameztegui/labs_geoestadistica_forestal/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Apuntes y ejercicios de geoestadística para forestales</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Aitor Ameztegui </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">Invalid Date</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+
+<section id="presentación" class="level1 unnumbered">
+<h1 class="unnumbered">Presentación</h1><p><img src="images/cover.png" title="Apuntes y ejercicios de geoestadística para forestales" class="quarto-cover-image img-fluid"></p>
+<p>Bienvenidos a la asignatura de “Geoestadística y Técnicas de Observación Global”. Esta asignatura se incluye en la doble titulación del Grado en Ingeniería Forestal y Grado en Conservación de la Naturaleza. Se trata de una asignatura en la que se enseñan técnicas y métodos para el análisis estadístico, modelización y predicción de procesos espaciales.</p>
+<section id="qué-es-la-geoestadística" class="level2">
+<h2 class="anchored" data-anchor-id="qué-es-la-geoestadística">¿Qué es la geoestadística?</h2>
+<p>La geoestadística es un tipo de estadística utilizada para analizar y predecir los valores asociados a fenómenos espaciales o espacio-temporales. Incorpora las coordenadas espaciales (y en algunos casos temporales) de los datos en los análisis. Las primeras herramientas geoestadísticas se desarrollaron para describir patrones espaciales y interpolar valores en lugares donde no se tomaron muestras. El análisis geoestadístico moderno permite también construir modelos de interpolación e incertidumbre más precisos, incorporando análisis mulivariados.</p>
+<p>La geoestadística se utiliza ampliamente en muchos ámbitos de la ciencia y la ingeniería, por ejemplo para estimar niveles de contaminantes y determinar si constituyen una amenaza para la salud, para espacializar los datos procedentes de muestreos no continuos, como el Inventario Forestal Nacional , o para cartografiar características del suelo como los nutrientes, salinidad, etc. Y relacionarlos con el rendimiento de cultivos agrícolas o sistemas forestales, entre otros muchos:</p>
+<p>En todos estos ejemplos el contexto general es que existe algún fenómeno de interés que se produce en el paisaje I que se caracteriza a partir de muestreos puntuales. La geoestadística se utiliza a continuación para elaborar predicciones en las ubicaciones no muestreadas. En esta asignatura se introducen los principios de la modelización estadística y de la información espacial, para a continuación presentar las herramientas disponibles para un análisis geoestadístico de los procesos de interés.</p>
+</section>
+<section id="de-qué-va-este-curso" class="level2">
+<h2 class="anchored" data-anchor-id="de-qué-va-este-curso">¿De qué va este curso?</h2>
+</section>
+<section id="qué-hay-de-especial-en-lo-espacial" class="level2">
+<h2 class="anchored" data-anchor-id="qué-hay-de-especial-en-lo-espacial">¿Qué hay de especial en lo espacial?</h2>
+</section>
+<section id="cuándo-un-análisis-es-espacial" class="level2">
+<h2 class="anchored" data-anchor-id="cuándo-un-análisis-es-espacial">¿Cuándo un análisis es espacial?</h2>
+</section>
+<section id="tipos-de-preguntas-que-requieren-análisis-espacial" class="level2">
+<h2 class="anchored" data-anchor-id="tipos-de-preguntas-que-requieren-análisis-espacial">Tipos de preguntas que requieren análisis espacial</h2>
+</section>
+<section id="funcionamiento-de-la-asignatura" class="level2">
+<h2 class="anchored" data-anchor-id="funcionamiento-de-la-asignatura">Funcionamiento de la asignatura</h2>
+<section id="tipos-de-sesiones" class="level3">
+<h3 class="anchored" data-anchor-id="tipos-de-sesiones">Tipos de sesiones</h3>
+</section>
+<section id="nuestras-herramientas" class="level3">
+<h3 class="anchored" data-anchor-id="nuestras-herramientas">Nuestras herramientas</h3>
+</section>
+<section id="evaluación" class="level3">
+<h3 class="anchored" data-anchor-id="evaluación">Evaluación</h3>
+<section id="evaluación-continua" class="level4">
+<h4 class="anchored" data-anchor-id="evaluación-continua"><strong>Evaluación continua</strong></h4>
+<table class="table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Bloque</th>
+<th>Número de pruebas</th>
+<th>Peso</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Primer parcial</td>
+<td>1</td>
+<td>25%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Segundo parcial</td>
+<td>1</td>
+<td>25%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Prácticas</td>
+<td>6</td>
+<td>50%</td>
+</tr>
+</tbody>
+</table>
+<p>La asignatura se evaluará según la siguiente ponderación:&nbsp;</p>
+<ul>
+<li><p>Parte teórica: 50% de la nota final&nbsp; (25% cada bloque)</p></li>
+<li><p>Parte práctica: 50% de la nota final</p></li>
+</ul>
+<p>Cálculo de la nota global: Ex. Parcial 1 x 0.25 + Ex. Parcial 2 x 0.25 + Prácticas x 0.5</p>
+<p>Para aprobar la asignatura se debe obtener una nota igual o superior a 5.0, y cumplir las siguientes condiciones:</p>
+<ul>
+<li><p>BLOQUE TEÓRICO: para aprobar este bloque se debe obtener una nota ≥ 4,0 en cada uno de los parciales, independientemente de la nota de prácticas. Es decir, no se hará media con las prácticas a no ser que se cumpla el requisito mínimo anterior.&nbsp;</p></li>
+<li><p>BLOQUE PRÁCTICO: La nota mínima para superar la parte práctica es 5,0. La parte práctica consiste en la entrega de 6 informes de prácticas. Para aprobar el bloque se debe obtenir una nota ≥ 5,0 en al menos 4 de las prácticas.&nbsp;</p></li>
+</ul>
+<p><strong>NOTA</strong>: Cada&nbsp;pràctica&nbsp;tendrá una <strong>fecha de entrega específica</strong>. El retraso en la entrega de los informes se penalizará des de un <strong>-30%</strong> hasta un <strong>-100%</strong> de la nota de la práctica entregada fuera de plazo.</p>
+</section>
+<section id="recuperación" class="level4">
+<h4 class="anchored" data-anchor-id="recuperación"><strong>Recuperación</strong></h4>
+<p>En caso de que no se supere la nota mínima en alguno de los bloques (teoría 1, teoría 2, prácticas), se podrán recuperar dentro del período marcado por el centro (ETSEAFIV). En el caso de recuperación, la nota máxima del bloque de prácticas no podrá ser superior a 5.</p>
+</section>
+<section id="plagio-o-copia" class="level4">
+<h4 class="anchored" data-anchor-id="plagio-o-copia"><strong>Plagio o copia</strong></h4>
+<p>La Ley 2/2022 de convivencia universitaria regula lo que se considera fraude académico: cualquier comportamiento premeditado tendente a falsear los resultados de un examen, propio o ajeno, realizado como requisito para superar una asignatura o acreditar el rendimiento académico. Las faltas pueden ser graves o muy graves. Puede consultar en la web de la UdL <a href="https://www.udl.cat/export/sites/universitat-lleida/ca/udl/norma/.galleries/docs/Organitzacio_interna/Acord-19-2023-CG-28.2.2023-Normativa-de-Convivencia-Universitaria-UdL.pdf">la Normativa de convivencia universitaria.</a></p>
+<p>Si se copia o plagia con medios fraudulentos se retirará la actividad de evaluación (por tanto quedará suspendida) y se hará llegar un informe y las evidencias a la coordinación del máster ya los jefes de estudio para iniciar un expediente disciplinario. Las sanciones aplicables incluyen, entre otros y dependiendo de la gravedad de la falta, la pérdida del derecho a ser evaluado de la asignatura, la pérdida de la matrícula de un semestre o curso o la expulsión hasta tres años.</p>
+</section>
+</section>
+</section>
+<section id="bibliografía" class="level2">
+<h2 class="anchored" data-anchor-id="bibliografía">Bibliografía</h2>
+<ul>
+<li><p>Baddeley, Turner (2015) Spatial Point Patterns: Methodology and Applications with R. Routledge.</p></li>
+<li><p>Cayuela, De la Cruz (2022) <a href="https://www.mundiprensa.com/catalogo/9788484768333/analisis-de-datos-ecologicos-en-r?utm_source=pocket_mylist">Análisis de datos ecológicos en R</a>. Mundiprensa</p></li>
+<li><p>Maestre, Escudeo, Bonet (2008)<a href="https://dialnet.unirioja.es/servlet/libro?codigo=347765">Introducción al análisis espacial de datos en ecología y ciencias ambientales</a>. U. Rey Juan Carlos.</p></li>
+<li><p>Pebesma, EJ; Bivand R, Gómez-Rubio V. 2008 Applied Spatial Data Analysis with R.&nbsp;</p></li>
+<li><p>Spatial Data Science with R. 2020 Available at<a href="https://rspatial.org">&nbsp;https://rspatial.org</a></p></li>
+</ul>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./00_Familiar_RStudio.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Familiarizándose con R y RStudio</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">Apuntes y ejercicios de geoestadística forestal. Aitor Ameztegui, Universitat de Lleida.</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">Este libro se ha elaborado con <a href="https://quarto.org/">Quarto</a>.</div>
+  </div>
+</footer>
+
+
+
+</body></html>

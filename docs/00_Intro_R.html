@@ -1,0 +1,2117 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Aitor Ameztegui (UdL)">
+<meta name="dcterms.date" content="2024-08-22">
+
+<title>Apuntes y ejercicios de geoestadística para forestales - 2&nbsp; Introducción a R</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./00_RMarkdown_Quarto.html" rel="next">
+<link href="./00_Familiar_RStudio.html" rel="prev">
+<link href="./images/udl.png" rel="icon" type="image/png">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./00_Familiar_RStudio.html">UNIDAD 0: INTRODUCCION</a></li><li class="breadcrumb-item"><a href="./00_Intro_R.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introducción a R</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Apuntes y ejercicios de geoestadística para forestales</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/ameztegui/labs_geoestadistica_forestal" rel="" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Presentación</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">UNIDAD 0: INTRODUCCION</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./00_Familiar_RStudio.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Familiarizándose con R y RStudio</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./00_Intro_R.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introducción a R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./00_RMarkdown_Quarto.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Introducción a Quarto y RMarkdown</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">UNIDAD 1: ANÁLISIS DE REGRESIÓN</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01_RegresionLineal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Regresión lineal en R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_GLM.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Regresión lineal generalizada (GLM) en R</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">UNIDAD 2: GEOESTADÍSTICA Y ANÁLISIS ESPACIAL</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03_DatosEspaciales.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Trabajando con datos espaciales en R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04_AutocorrelacionEspacial.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Autocorrelación espacial en ArcGIS y R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05_PatronPuntos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Análisis de patrón de puntos en R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06_InterpolacionEspacial.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Interpolación espacial en R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07_RegresionEspacial.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Regresión espacial en R</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introducción.-objetivo." id="toc-introducción.-objetivo." class="nav-link active" data-scroll-target="#introducción.-objetivo."><span class="header-section-number">2.1</span> Introducción. Objetivo.</a></li>
+  <li><a href="#usando-r-como-una-calculadora" id="toc-usando-r-como-una-calculadora" class="nav-link" data-scroll-target="#usando-r-como-una-calculadora"><span class="header-section-number">2.2</span> Usando R como una calculadora</a>
+  <ul class="collapse">
+  <li><a href="#funciones-matemáticas" id="toc-funciones-matemáticas" class="nav-link" data-scroll-target="#funciones-matemáticas"><span class="header-section-number">2.2.1</span> Funciones matemáticas</a></li>
+  <li><a href="#comparando-objetos" id="toc-comparando-objetos" class="nav-link" data-scroll-target="#comparando-objetos"><span class="header-section-number">2.2.2</span> Comparando objetos</a></li>
+  </ul></li>
+  <li><a href="#objetos-en-r" id="toc-objetos-en-r" class="nav-link" data-scroll-target="#objetos-en-r"><span class="header-section-number">2.3</span> Objetos en R</a>
+  <ul class="collapse">
+  <li><a href="#trabajando-con-variables" id="toc-trabajando-con-variables" class="nav-link" data-scroll-target="#trabajando-con-variables"><span class="header-section-number">2.3.1</span> Trabajando con variables</a></li>
+  </ul></li>
+  <li><a href="#tipos-de-datos" id="toc-tipos-de-datos" class="nav-link" data-scroll-target="#tipos-de-datos"><span class="header-section-number">2.4</span> Tipos de datos</a>
+  <ul class="collapse">
+  <li><a href="#vectores" id="toc-vectores" class="nav-link" data-scroll-target="#vectores"><span class="header-section-number">2.4.1</span> Vectores</a></li>
+  <li><a href="#factores" id="toc-factores" class="nav-link" data-scroll-target="#factores"><span class="header-section-number">2.4.2</span> Factores</a></li>
+  <li><a href="#data-frames" id="toc-data-frames" class="nav-link" data-scroll-target="#data-frames"><span class="header-section-number">2.4.3</span> Data frames</a></li>
+  <li><a href="#listas" id="toc-listas" class="nav-link" data-scroll-target="#listas"><span class="header-section-number">2.4.4</span> Listas</a></li>
+  </ul></li>
+  <li><a href="#gestión-de-objetos" id="toc-gestión-de-objetos" class="nav-link" data-scroll-target="#gestión-de-objetos"><span class="header-section-number">2.5</span> Gestión de objetos</a>
+  <ul class="collapse">
+  <li><a href="#creando-objetos" id="toc-creando-objetos" class="nav-link" data-scroll-target="#creando-objetos"><span class="header-section-number">2.5.1</span> Creando objetos</a></li>
+  </ul></li>
+  <li><a href="#funciones-y-argumentos" id="toc-funciones-y-argumentos" class="nav-link" data-scroll-target="#funciones-y-argumentos"><span class="header-section-number">2.6</span> Funciones y argumentos</a></li>
+  <li><a href="#errores-warnings-y-mensajes" id="toc-errores-warnings-y-mensajes" class="nav-link" data-scroll-target="#errores-warnings-y-mensajes"><span class="header-section-number">2.7</span> Errores, warnings y mensajes</a></li>
+  <li><a href="#para-saber-más" id="toc-para-saber-más" class="nav-link" data-scroll-target="#para-saber-más"><span class="header-section-number">2.8</span> Para saber más</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/ameztegui/labs_geoestadistica_forestal/edit/main/00_Intro_R.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/ameztegui/labs_geoestadistica_forestal/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introducción a R</span></h1>
+<p class="subtitle lead">Geoestadística i Tècniques d’Observació Global (24/25)</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Aitor Ameztegui (UdL) </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">August 22, 2024</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="introducción.-objetivo." class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="introducción.-objetivo."><span class="header-section-number">2.1</span> Introducción. Objetivo.</h2>
+<p>En el tutorial anterior vimos cómo instalar R y RStudio, así como alguna de sus principales características. Una vez familiarizados con el entorno en el que trabajaremos, es el momento de empezar a trabajar <em>realmente</em> con R. Como ya dijimos en la presentación de la asignatura, R es una herramienta muy versátil, ya que podemos usarlo de maneras muy distintas: puede ser desde una herramienta estadística hasta un lenguaje de programación compleja. Vamos a ver a continuación algunos de sus usos más básicos, y en el proceso iremos comentando algunas de las particularidades de cómo funciona R. Como ya dijimos en el tutorial anterior, si ya tienes experiencia usando R, puedes saltarte las partes que ya domines.</p>
+</section>
+<section id="usando-r-como-una-calculadora" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="usando-r-como-una-calculadora"><span class="header-section-number">2.2</span> Usando R como una calculadora</h2>
+<p>Lo más sencillo que puedes hacer con R es utilizarlo como una calculadora, es decir, para hacer aritmética. Por ejemplo, si escribimos la siguiente expresión:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dv">156</span> <span class="sc">*</span> <span class="dv">35</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 5460</code></pre>
+</div>
+</div>
+<p>Vemos que R imprimirá la respuesta, con un [1] precedente. No te preocupes por esto por ahora, lo explicaremos más adelante. Por ahora piensa en esto como una indicación de salida de resultados.</p>
+<p>Si escribimos un comando incompleto, R esperará que lo completemos. Por ejemplo, intenta escribir en la consola</p>
+<p><code>1 +</code></p>
+<p>Cuando aprietes <kbd>Return</kbd> y la sesión de R muestre un <code>+</code> en vez de <code>&gt;</code>, quiere decir que está esperando a que completemos el comando. Si queremos cancelar una orden incompleta podemos clicar <kbd>Escape</kbd> y RStudio volverá a mostrar el icono <code>&gt;</code>. Esto también se puede usar para interrumpir un proceso que se quede colgado o lleve demasiado tiempo.</p>
+<p>Cuando se utiliza R como calculadora, el orden de las operaciones es el mismo que aprendimos en el colegio. De mayor a menor precedencia:</p>
+<ul>
+<li>Paréntesis: <code>(</code>, <code>)</code></li>
+<li>Exponentes: <code>^</code> or <code>**</code></li>
+<li>División: <code>/</code></li>
+<li>Multiplicación: <code>*</code></li>
+<li>Suma: <code>+</code></li>
+<li>Resta: <code>-</code></li>
+</ul>
+<p>Por ejemplo:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="dv">3</span> <span class="sc">+</span> <span class="dv">2</span> <span class="sc">*</span> <span class="dv">5</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 13</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>(<span class="dv">3</span> <span class="sc">+</span> <span class="dv">2</span>) <span class="sc">*</span> <span class="dv">5</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 25</code></pre>
+</div>
+</div>
+<p>Los paréntesis pueden utilizarse para aclarar el sentido del código. Sin embargo, puede resultar difícil de leer cuando hay muchos o cuando realmente no es necesario. Recuerda que otros (¡o incluso tú mismo!) pueden leer tu código más adelante, y es conveniente que sea lo más inteligible posible.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="dv">3</span> <span class="sc">+</span> <span class="dv">2</span> <span class="sc">*</span> <span class="dv">5</span> <span class="sc">^</span> <span class="dv">2</span>       <span class="co"># claro, si recuerdas las reglas</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 53</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="dv">3</span> <span class="sc">+</span> <span class="dv">2</span> <span class="sc">*</span> (<span class="dv">5</span> <span class="sc">^</span> <span class="dv">2</span>)     <span class="co"># probablemente más claro</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 53</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>(<span class="dv">3</span> <span class="sc">+</span> (<span class="dv">2</span> <span class="sc">*</span> (<span class="dv">5</span> <span class="sc">^</span> <span class="dv">2</span>))) <span class="co"># más difícil de leer</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 53</code></pre>
+</div>
+</div>
+<p>Puede que hayas notado que parte del texto anterior no ha sido procesado por R. En realidad, todo lo que sigue después del símbolo hash <code>#</code> es ignorado por R cuando ejecuta el código. El texto que sigue a <code>#</code> se llama “comentario”, y puede ser muy útil para recordar el propósito y los pasos de un determinado análisis.</p>
+<section id="funciones-matemáticas" class="level3" data-number="2.2.1">
+<h3 data-number="2.2.1" class="anchored" data-anchor-id="funciones-matemáticas"><span class="header-section-number">2.2.1</span> Funciones matemáticas</h3>
+<p>R tiene muchas funciones matemáticas incorporadas. Para llamar a una función, simplemente escribimos su nombre, seguido de los paréntesis de apertura y cierre. Recuerda que todo lo que escribimos dentro de los paréntesis se llama <em>argumentos</em> de la función (los inputs que requiere para funcionar).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Veamos algunas funciones trigonométricas</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sin</span>(<span class="dv">1</span>)  <span class="co"># seno de un número</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.841471</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">log</span>(<span class="dv">1</span>)  <span class="co"># logaritmo natural de un número</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">log10</span>(<span class="dv">10</span>) <span class="co"># logaritmo base 10</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">exp</span>(<span class="fl">0.5</span>) <span class="co"># e^(1/2)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1.648721</code></pre>
+</div>
+</div>
+<p>También podemos utilizar las funciones de R para calcular el máximo, mínimo o media de una serie de valores, para obtener los elementos distintos de una serie de elementos o para extraer elementos de una cadena de caracteres.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">max</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">5</span>,<span class="dv">6</span>,<span class="dv">7</span>,<span class="dv">9</span>,<span class="dv">12</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 12</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 5.5</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(<span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">6</span>,<span class="dv">6</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3 4 5 6</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">substr</span>(<span class="st">"abcdef"</span>, <span class="dv">2</span>,<span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "bcd"</code></pre>
+</div>
+</div>
+<blockquote class="blockquote">
+<p><strong>Series de valores (vectores):</strong> Has visto aquí arriba las dos formas principales de crear vectores numéricos en R: concatenando diferentes elementos dentro de la función <code>c()</code>, o definiendo un intervalo mediante <code>1:10</code>, que equivaldría a decir <code>de 1 a 10</code>. Los vectores pueden contener valores numéricos o caracteres, pero todos los elementos deben ser del mismo tipo. Veremos más sobre vectores más adelante.</p>
+</blockquote>
+<blockquote class="blockquote">
+<p><strong>Recordando los nombres de las funciones y los argumentos:</strong> <br><br> Como hemos dicho, R tiene multitud de funciones matemáticas, y muchas más están incluidas en los paquetes. Una buena función tendrá un nombre autoexplicativo que será fácil de recordar (por ejemplo, <code>mean()</code>, <code>max()</code>…). Sin embargo, no os preocupéis por intentar recordar todas las funciones de R. Podéis simplemente buscarlas en Google, o si recordáis el comienzo del nombre de la función, escribidlo y pulsad la tecla <kbd>Tab</kbd>. Esto mostrará una lista de funciones cuyo nombre coincide con lo que has escrito hasta ahora. Esto se conoce como <code>completar con tabulador</code>, y puede ahorrar mucho tiempo de escritura (y reducir el riesgo de errores de escritura). El completado de tabulador funciona tanto en R como en RStudio. En RStudio esta característica es aún más útil; un extracto del archivo de ayuda de la función se mostrará junto al nombre de la función. Prueba a escribir <code>me</code> y pulsa <kbd>tab</kbd>.<br> <br> Además, si pulsas <kbd>Tab</kbd> después de especificar el nombre de la función y el paréntesis de apertura, RStudio proporciona una lista de los argumentos que necesita esa función. Y si se pulsa <kbd>Tab</kbd> cuando el cursor está entre dos comillas, proporcionará una lista con las carpetas de tu directorio actual. Además, si escribes un <code>?</code> antes del nombre de una función, se abrirá la página de ayuda de esa función, que además de proporcionar una descripción detallada de la función y de su funcionamiento, suele mostrar una colección de ejemplos de código que ilustran el uso de la función. Al principio puede que no encuentres estas características tan útiles, pero a medida que escribas más código te encontrarás utilizándolas ampliamente.</p>
+</blockquote>
+</section>
+<section id="comparando-objetos" class="level3" data-number="2.2.2">
+<h3 data-number="2.2.2" class="anchored" data-anchor-id="comparando-objetos"><span class="header-section-number">2.2.2</span> Comparando objetos</h3>
+<p>También podemos hacer comparaciones en R, y nos dirá si la comparación que estamos probando es cierta (<code>TRUE</code>) o falsa (<code>FALSE</code>). Por ejemplo, prueba las siguientes comparaciones:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">==</span> <span class="dv">1</span>    <span class="co"># igualdad (se usan dos signos de igual, para diferenciarlo del `=` como asignación)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">!=</span> <span class="dv">2</span>    <span class="co"># desigualdad (se lee como "no es igual a")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span> <span class="sc">&lt;</span> <span class="dv">1</span>     <span class="co"># menor que</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] FALSE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">&gt;</span> <span class="dv">0</span>     <span class="co"># mayor que</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="dv">6</span> <span class="sc">&lt;=</span> <span class="dv">6</span>    <span class="co"># menor o igual que</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">&gt;=</span> <span class="sc">-</span><span class="dv">9</span>   <span class="co"># mayor o igual que</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="objetos-en-r" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="objetos-en-r"><span class="header-section-number">2.3</span> Objetos en R</h2>
+<p>Cada vez que almacenamos un determinado valor en la memoria de R, estamos creando un <em>objeto</em>. Esto es realmente importante, ya que si no guardamos las operaciones, o los valores, como objetos, estos no estarán disponibles más adelante. Es decir, R simplemente los imprimirá en la consola pero no los almacenará en memoria. Vamos a crear un objeto llamado <code>x</code>. Utilizamos <code>&lt;-</code> para asignar valores a un determinado objeto.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="dv">3</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>x</code> contiene ahora el valor <code>3</code>. Si buscamos la pestaña <em>Environment</em> en uno de los paneles de RStudio, veremos que han aparecido <code>x</code> y su valor. Sin embargo, R no imprime nada cuando hacemos esta asignación. En su lugar, lo almacena para más tarde en algo llamado <em>variable</em>, que es el tipo de objeto más simple en R. Las variables se muestran en la pestaña <code>Environment</code> de RStudio, y se almacenan en la memoria hasta que terminamos la sesión actual de R. Para ver el valor almacenado en un objeto, simplemente pedimos a R que evalúe <code>x</code> y nos muestra el valor almacenado:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3</code></pre>
+</div>
+</div>
+<p>Una forma más explícita de pedirle a R que nos muestre el valor almacenado en <code>x</code> es utilizando <code>print</code> de esta manera:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3</code></pre>
+</div>
+</div>
+<p>Los objetos más sencillos en R son las variables como <code>x</code>, pero en realidad, cualquier entidad que se cree y manipule en R puede ser almacenada como objeto, incluyendo datos, funciones, modelos, gráficos… Para crear un objeto sólo tenemos que asignarle un nombre. Ya hemos mencionado anteriormente que R es un lenguaje orientado a objetos. Esto significa básicamente que está diseñado para utilizar objetos como base de todas las tareas.</p>
+<blockquote class="blockquote">
+<p><strong>Consejo: asignación</strong> <br> También es posible utilizar el operador <code>=</code> para la asignación, como en: <code>x = 1/40</code>. Esto es mucho menos común entre los usuarios de R, y más adelante veremos por qué no es buena idea utilizarlo. Si lo usas, trata de cambiar tus hábitos lo antes posible.</p>
+</blockquote>
+<section id="trabajando-con-variables" class="level3" data-number="2.3.1">
+<h3 data-number="2.3.1" class="anchored" data-anchor-id="trabajando-con-variables"><span class="header-section-number">2.3.1</span> Trabajando con variables</h3>
+<p>Lo interesante es que nuestra variable <code>x</code> está ahora almacenada en memoria, por lo que puede utilizarse en lugar de un número en cualquier cálculo que espere un número. Por ejemplo, prueba esto:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>x <span class="sc">+</span> <span class="dv">3</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 6</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">log</span>(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1.098612</code></pre>
+</div>
+</div>
+<p>Las variables se pueden reasignar tantas veces como se desee, pero eso significa que su valor anterior se borrará de la memoria:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="dv">100</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>x</code> solía contener el valor <code>3</code> y ahora tiene el valor <code>100</code> (ver la pestaña <code>Environment</code> en RStudio).</p>
+<p>Las asignaciones pueden contener la variable a la que se asigna, y en este caso tomarán el valor almacenado actualmente, calcularán lo que contenga el código y sobrescribirán el valor anterior con el nuevo.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> x <span class="sc">*</span><span class="dv">2</span> <span class="co"># observa cómo RStudio actualiza su descripción de x en la pestaña Environment</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<blockquote class="blockquote">
+<p><strong>Atención:</strong> <br> Aunque la posibilidad de sobreescribir una variable como resultado de una operación es una de las características más útiles de R, tiene su peligro. Al realizar tareas complejas, es <strong>extremadamente fácil</strong> sobrescribir una variable sin querer, y todos nuestros cálculos a partir de ese momento corren el riesgo de ser erróneos. Por ejemplo, si ejecutas el código anterior dos veces en lugar de una, <code>x</code> obtendrá un valor de <code>400</code> en lugar de <code>200</code>. Si haces esto sin darte cuenta, <code>x</code> no tendrá el valor que esperas que tenga. Además, si te equivocas en el código anterior y R devuelve un mensaje de error, eso significa que no habrás sobrescrito el valor de <code>x</code>, que seguirá siendo <code>100</code>. <br> Por lo tanto, <strong>siempre</strong> comprueba el valor actual de una variable (en el panel “Environment”) antes de realizar operaciones con ella.</p>
+</blockquote>
+</section>
+</section>
+<section id="tipos-de-datos" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="tipos-de-datos"><span class="header-section-number">2.4</span> Tipos de datos</h2>
+<p>Las variables en R pueden ser de diferentes tipos. La función <code>class</code> nos ayuda a determinar qué tipo de objeto tenemos:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "numeric"</code></pre>
+</div>
+</div>
+<p>Para trabajar eficientemente en R, es importante aprender los diferentes tipos de variables y lo que podemos hacer con ellas. Estas son:</p>
+<ul>
+<li><p><strong>Numeric:</strong> un número entero o decimal dependiendo de si especificamos cifras decimales.</p></li>
+<li><p><strong>Character:</strong> una variable categórica o un texto.</p></li>
+<li><p><strong>Vector:</strong> una lista de valores del mismo tipo.</p></li>
+<li><p><strong>Factor:</strong> los factores son variables en R que toman un número limitado de valores diferentes; tales variables se denominan a menudo <em>variables categóricas</em>.</p></li>
+<li><p><strong>Data frame:</strong> tabla compuesta por vectores como columnas. Todas las columnas deben tener la misma longitud (número de elementos)</p></li>
+<li><p><strong>List:</strong> vector con valores de diferentes tipos.</p></li>
+<li><p><strong>Matrix:</strong> objeto bidimensional (como los data frame) donde los elementos se organizan en filas y columnas, y todos son del mismo tipo.</p></li>
+</ul>
+<p>Hay muchos otros tipos de objetos en R, pero estos son los principales. Por ejemplo, otro objeto con el que vamos a trabajar son los objetos <code>model</code>, que almacenan la salida de un determinado modelo estadístico, como un modelo de regresión lineal. Trabajaremos con ellos más adelante. Por ahora, veamos en detalle los principales tipos de datos:</p>
+<section id="vectores" class="level3" data-number="2.4.1">
+<h3 data-number="2.4.1" class="anchored" data-anchor-id="vectores"><span class="header-section-number">2.4.1</span> Vectores</h3>
+<p>Los <strong>vectores</strong> son uno de los tipos de objetos más comunes en R. Los vectores pueden almacenar varios valores, pero <strong>deben</strong> ser necesariamente de la <strong>misma clase</strong> (todos números, todos texto, etc.). Las <strong>listas</strong> son un tipo específico de vector que puede contener elementos de diferentes clases.</p>
+<p>Todo vector tiene dos propiedades:</p>
+<ol type="1">
+<li>Su tipo (character, integer, double…), que puede determinarse mediante la función <code>typeof()</code>.</li>
+<li>Su longitud, que podemos determinar con <code>length()</code>.</li>
+</ol>
+<p>Hay varias formas de crear vectores. La más común es utilizar la función <code>c()</code> que nos permite introducir valores manualmente separándolos con <code>,</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>v1 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>)</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>v1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1 2 3 4 5</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>v2 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'my'</span>,<span class="st">'name'</span>,<span class="st">'is'</span>, <span class="st">'Aitor'</span>)</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>v2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "my"    "name"  "is"    "Aitor"</code></pre>
+</div>
+</div>
+<p>Como ves, los vectores no se limitan a almacenar números. Sin embargo, volvamos a insistir en que todos los datos de un vector tienen que ser del mismo tipo: deben ser o bien caracteres, o bien números, o todos han de ser lógicos (TRUE/FALSE)). Esta es una propiedad importante de los vectores: el tipo de datos que contiene el vector es una propiedad del vector, no de cada elemento. Veamos qué ocurre si intentamos crear un vector de datos numéricos y de caracteres:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="st">"three"</span>, <span class="st">"four"</span>, <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "1"     "2"     "three" "four"  "5"    </code></pre>
+</div>
+</div>
+<p>Vemos que R ha coercionado los elementos que contienen números a caracteres de texto, de modo que todos los elementos tienen el mismo tipo (carácter).</p>
+<section id="principales-tipos-de-vectores" class="level4" data-number="2.4.1.1">
+<h4 data-number="2.4.1.1" class="anchored" data-anchor-id="principales-tipos-de-vectores"><span class="header-section-number">2.4.1.1</span> Principales tipos de vectores</h4>
+<p>Veamos con más detalle los principales tipos de vectores:</p>
+<section id="vectores-lógicos" class="level5" data-number="2.4.1.1.1">
+<h5 data-number="2.4.1.1.1" class="anchored" data-anchor-id="vectores-lógicos"><span class="header-section-number">2.4.1.1.1</span> Vectores lógicos</h5>
+<p>Los vectores lógicos sólo pueden tomar tres valores posibles: <code>FALSE</code>, <code>TRUE</code>, y <code>NA</code> (no disponible, lo veremos más adelante). Los vectores lógicos se construyen normalmente con operadores de comparación:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">8</span>,<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">3</span>,<span class="dv">7</span>,<span class="dv">8</span>,<span class="dv">9</span>) <span class="sc">&gt;=</span> <span class="dv">5</span>   <span class="co"># Qué elementos son mayores o iguales que 5</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] FALSE FALSE  TRUE FALSE  TRUE FALSE  TRUE  TRUE  TRUE</code></pre>
+</div>
+</div>
+<p>Los vectores lógicos tienen la particularidad de que <code>TRUE</code> tiene un valor de 1, y <code>FALSE</code> de 0, así que la suma del vector nos dará el número de <code>TRUE</code> y la media nos dará la proporción de <code>TRUE</code>.</p>
+</section>
+<section id="vectores-numéricos" class="level5" data-number="2.4.1.1.2">
+<h5 data-number="2.4.1.1.2" class="anchored" data-anchor-id="vectores-numéricos"><span class="header-section-number">2.4.1.1.2</span> Vectores numéricos</h5>
+<p>Los vectores<code>integer</code> y <code>doubles</code> se conocen colectivamente como <strong>vectores numéricos</strong>. En R, los números son <code>doubles</code> (con decimales) por defecto. De todos modos, la diferencia entre entero y decimal no suele ser importante, así que no entraremos en más detalles aquí. Para construir vectores numéricos podemos utilizar la función <code>c()</code> vista anteriormente, pero hay otras dos opciones. Podemos usar <code>:</code>, que produce una secuencia ordenada de números empezando por el primer valor y sumando de uno en uno hasta el último.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>v3 <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span></span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>v3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1]  1  2  3  4  5  6  7  8  9 10</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>v4 <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">5</span><span class="sc">:</span><span class="dv">3</span></span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>v4</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -5 -4 -3 -2 -1  0  1  2  3</code></pre>
+</div>
+</div>
+<p>También podemos usar <code>seq()</code>, que produce una secuencia de números:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1]  1  2  3  4  5  6  7  8  9 10</code></pre>
+</div>
+</div>
+<p>El primer argumento define el inicio, y el segundo define el final, que está incluido. El valor por defecto es subir en incrementos de 1, pero un tercer argumento nos permite decirle cuánto debe saltar:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1 3 5 7 9</code></pre>
+</div>
+</div>
+</section>
+<section id="vectores-de-carácter" class="level5" data-number="2.4.1.1.3">
+<h5 data-number="2.4.1.1.3" class="anchored" data-anchor-id="vectores-de-carácter"><span class="header-section-number">2.4.1.1.3</span> Vectores de carácter</h5>
+<p>Los vectores de caracteres son el tipo más complejo de vector atómico, porque cada elemento de un vector de caracteres es una cadena, y una cadena puede contener una cantidad arbitraria de datos.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>v5 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Lleida"</span>, <span class="st">"Lleida"</span>, <span class="st">"Barcelona"</span>, <span class="st">"Madrid"</span>, <span class="st">"Lleida"</span>, <span class="st">"Madrid"</span>)</span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a>v5</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Lleida"    "Lleida"    "Barcelona" "Madrid"    "Lleida"    "Madrid"   </code></pre>
+</div>
+</div>
+</section>
+<section id="valores-no-presentes-missing-values" class="level5" data-number="2.4.1.1.4">
+<h5 data-number="2.4.1.1.4" class="anchored" data-anchor-id="valores-no-presentes-missing-values"><span class="header-section-number">2.4.1.1.4</span> Valores no presentes (missing values)</h5>
+<p>Los vectores, como casi cualquier objeto de datos en R, pueden contener valores perdidos. Estos se indican como <code>NA</code> (no disponible). Sin embargo, ten en cuenta que <code>NA</code> hereda la clase del vector, por lo que un <code>NA</code> dentro de un vector numérico seguirá siendo numérico, mientras que un <code>NA</code> en un vector de caracteres será de tipo carácter.</p>
+</section>
+</section>
+<section id="trabajando-con-vectores" class="level4" data-number="2.4.1.2">
+<h4 data-number="2.4.1.2" class="anchored" data-anchor-id="trabajando-con-vectores"><span class="header-section-number">2.4.1.2</span> Trabajando con vectores</h4>
+<p>A continuación veremos algunas de las operaciones que podemos hacer con los vectores, y las herramientas que tenemos para trabajar con ellos</p>
+<section id="funciones-de-longitud-y-test" class="level5" data-number="2.4.1.2.1">
+<h5 data-number="2.4.1.2.1" class="anchored" data-anchor-id="funciones-de-longitud-y-test"><span class="header-section-number">2.4.1.2.1</span> Funciones de longitud y test</h5>
+<p>Como hemos dicho anteriormente, las dos características principales de un vector son su tipo y su longitud. Podemos calcular cuántos elementos contiene un vector utilizando la función <code>length()</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(letters)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 26</code></pre>
+</div>
+</div>
+</section>
+<section id="coerción" class="level5" data-number="2.4.1.2.2">
+<h5 data-number="2.4.1.2.2" class="anchored" data-anchor-id="coerción"><span class="header-section-number">2.4.1.2.2</span> Coerción</h5>
+<p>Podemos querer forzar (coaccionar) un vector para que sea de un tipo determinado. Podemos hacerlo llamando a una función como <code>as.logical()</code>, <code>as.integer()</code>, <code>as.double()</code>, o <code>as.character()</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as.character</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "1" "2" "3" "4"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as.integer</span>(<span class="fu">c</span>(<span class="fl">3.5</span>, <span class="fl">4.3</span>, <span class="fl">6.4</span>, <span class="fl">5.0</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3 4 6 5</code></pre>
+</div>
+</div>
+</section>
+<section id="nombrando-vectores" class="level5" data-number="2.4.1.2.3">
+<h5 data-number="2.4.1.2.3" class="anchored" data-anchor-id="nombrando-vectores"><span class="header-section-number">2.4.1.2.3</span> Nombrando vectores</h5>
+<p>Por supuesto, también podemos asignar un vector a un objeto, de manera que lo guardemos en memoria. Como se ha visto anteriormente, basta con darle un nombre:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="dv">5</span><span class="sc">:</span><span class="dv">10</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>R viene con algunos vectores incorporados, que contienen valores comunes útiles. Prueba estos:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a>LETTERS</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K" "L" "M" "N" "O" "P" "Q" "R" "S"
+[20] "T" "U" "V" "W" "X" "Y" "Z"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a>letters</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s"
+[20] "t" "u" "v" "w" "x" "y" "z"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a>month.abb</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "Jan" "Feb" "Mar" "Apr" "May" "Jun" "Jul" "Aug" "Sep" "Oct" "Nov" "Dec"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a>month.name</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "January"   "February"  "March"     "April"     "May"       "June"     
+ [7] "July"      "August"    "September" "October"   "November"  "December" </code></pre>
+</div>
+</div>
+<p>Lógicamente, el tipo de datos que se almacena en una variable afecta a lo que podemos hacer con ella:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a>LETTERS <span class="sc">+</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in LETTERS + 1: argumento no-numérico para operador binario</code></pre>
+</div>
+</div>
+</section>
+<section id="submuestreando-vectores" class="level5" data-number="2.4.1.2.4">
+<h5 data-number="2.4.1.2.4" class="anchored" data-anchor-id="submuestreando-vectores"><span class="header-section-number">2.4.1.2.4</span> Submuestreando vectores</h5>
+<p>Una vez definido un vector, a menudo es útil extraer partes de un vector. Lo hacemos con el operador <code>[]</code>. Por ejemplo, podemos extraer el segundo elemento del vector <code>month.name</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a>month.name[<span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "February"</code></pre>
+</div>
+</div>
+<p>o podemos extraer los meses del 2º al 4º:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb93"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a>month.name[<span class="dv">2</span><span class="sc">:</span><span class="dv">4</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "February" "March"    "April"   </code></pre>
+</div>
+</div>
+<p>Desenmascaremos el segundo ejemplo; <code>2:4</code> genera la secuencia <code>2,3,4</code>. Esta secuencia se pasa al operador de extracción <code>[]</code>, por lo que extraerá el segundo, tercer y cuarto elemento. También podemos generar esta secuencia utilizando la función <code>c()</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb95"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a>month.name[<span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">6</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "February" "March"    "June"    </code></pre>
+</div>
+</div>
+<p>Los valores se devuelven en el orden en que especificamos los índices.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb97"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true" tabindex="-1"></a>month.name[<span class="dv">4</span><span class="sc">:</span><span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "April"    "March"    "February"</code></pre>
+</div>
+</div>
+<p>También podemos extraer el mismo elemento más de una vez:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb99"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1" aria-hidden="true" tabindex="-1"></a>month.name[<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">4</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "January"  "January"  "February" "February" "February" "April"   </code></pre>
+</div>
+</div>
+<p>También es posible modificar la información de una posición concreta utilizando la combinación <code>nombre[posición]</code> y el operador de asignación <code>&lt;-</code>. Por ejemplo:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb101"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1" aria-hidden="true" tabindex="-1"></a>month.name[<span class="dv">12</span>] <span class="ot">&lt;-</span> <span class="st">"Navidades!"</span></span>
+<span id="cb101-2"><a href="#cb101-2" aria-hidden="true" tabindex="-1"></a>month.name</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "January"    "February"   "March"      "April"      "May"       
+ [6] "June"       "July"       "August"     "September"  "October"   
+[11] "November"   "Navidades!"</code></pre>
+</div>
+</div>
+<p>Si utilizamos un número negativo como índice de un vector, R devolverá todos los elementos excepto el especificado:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb103"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a>month.name[<span class="sc">-</span><span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "January"    "March"      "April"      "May"        "June"      
+ [6] "July"       "August"     "September"  "October"    "November"  
+[11] "Navidades!"</code></pre>
+</div>
+</div>
+<p>También podemos omitir varios elementos:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb105"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1" aria-hidden="true" tabindex="-1"></a>month.name[<span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="sc">-</span><span class="dv">5</span>)]  <span class="co"># o </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "February"   "March"      "April"      "June"       "July"      
+ [6] "August"     "September"  "October"    "November"   "Navidades!"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb107"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1" aria-hidden="true" tabindex="-1"></a>month.name[<span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">5</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "February"   "March"      "April"      "June"       "July"      
+ [6] "August"     "September"  "October"    "November"   "Navidades!"</code></pre>
+</div>
+</div>
+<p>Además de proporcionar una lista de índices que queremos conservar (o eliminar, si les ponemos el prefijo <code>-</code>), podemos pasar un vector lógico a R indicando los índices que queremos seleccionar:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb109"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb109-1"><a href="#cb109-1" aria-hidden="true" tabindex="-1"></a>month.name[<span class="fu">c</span>(<span class="cn">TRUE</span>, <span class="cn">FALSE</span>, <span class="cn">TRUE</span>, <span class="cn">TRUE</span>, <span class="cn">FALSE</span>, <span class="cn">FALSE</span>,</span>
+<span id="cb109-2"><a href="#cb109-2" aria-hidden="true" tabindex="-1"></a>             <span class="cn">FALSE</span>, <span class="cn">TRUE</span>, <span class="cn">TRUE</span>, <span class="cn">FALSE</span>, <span class="cn">FALSE</span>, <span class="cn">TRUE</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "January"    "March"      "April"      "August"     "September" 
+[6] "Navidades!"</code></pre>
+</div>
+</div>
+<p>La idea de seleccionar elementos de un vector utilizando un vector lógico de subconjuntos puede parecer un poco esotérica, y mucho más teclear que simplemente seleccionar los elementos que queremos por índice, pero se vuelve realmente útil cuando escribimos código para generar el vector lógico:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb111"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb111-1"><a href="#cb111-1" aria-hidden="true" tabindex="-1"></a>my_vector <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">3</span>, <span class="dv">6</span>, <span class="dv">7</span>, <span class="dv">9</span>)</span>
+<span id="cb111-2"><a href="#cb111-2" aria-hidden="true" tabindex="-1"></a>my_vector <span class="sc">&gt;</span> <span class="dv">6</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  TRUE FALSE FALSE  TRUE  TRUE</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb113"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb113-1"><a href="#cb113-1" aria-hidden="true" tabindex="-1"></a>my_vector[my_vector <span class="sc">&gt;</span> <span class="dv">6</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 10  7  9</code></pre>
+</div>
+</div>
+<blockquote class="blockquote">
+<p><strong>Consejo: Combinando condiciones lógicas</strong> <br> Hay muchas situaciones en las que podemos querer combinar varios criterios lógicos. Por ejemplo, podríamos querer encontrar todos los elementos que están entre dos valores. En R existen varias operaciones para combinar vectores lógicos:</p>
+</blockquote>
+<p>-<code>&amp;</code>, el operador lógico “Y”: devuelve <code>TRUE</code> si tanto la izquierda como la derecha son <code>TRUE</code>.</p>
+<p>-<code>|</code>, el operador lógico “O”: devuelve <code>TRUE</code>, si la izquierda o la derecha (o ambas) son <code>TRUE</code>.</p>
+<p>- <code>!</code> El operador lógico “NOT”: convierte “TRUE” en “FALSE” y “FALSE” en “TRUE”. Puede negar una sola condición lógica (por ejemplo, <code>!TRUE</code> se convierte en <code>FALSE</code>), o todo un vector de condiciones (por ejemplo, <code>!c(TRUE, FALSE)</code> se convierte en <code>c(FALSE, TRUE)</code>).</p>
+<p>Además, puede comparar los elementos de un mismo vector utilizando la función <code>all</code> (que devuelve <code>TRUE</code> si todos los elementos del vector son <code>TRUE</code>) y la función <code>any</code> (que devuelve <code>TRUE</code> si uno o más elementos del vector son <code>TRUE</code>).</p>
+</section>
+</section>
+</section>
+<section id="factores" class="level3" data-number="2.4.2">
+<h3 data-number="2.4.2" class="anchored" data-anchor-id="factores"><span class="header-section-number">2.4.2</span> Factores</h3>
+<p>Los factores son un tipo específico de vector de caracteres, en el que los elementos sólo pueden tomar un número predefinido y finito de valores, llamados niveles, <em>levels</em>. Por ejemplo: un campo de datos como el estado civil puede contener sólo valores de soltero, casado, separado, divorciado o viudo.</p>
+<p>Podemos crear un factor utilizando la función <code>factor()</code>. Podemos proporcionar los posibles niveles de un factor. Se inferirán de los datos si no se proporcionan.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb115"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb115-1"><a href="#cb115-1" aria-hidden="true" tabindex="-1"></a>estado <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">c</span>(<span class="st">"soltero"</span>, <span class="st">"casado"</span>, <span class="st">"casado"</span>, <span class="st">"divorciado"</span>, <span class="st">"viudo"</span>))</span>
+<span id="cb115-2"><a href="#cb115-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb115-3"><a href="#cb115-3" aria-hidden="true" tabindex="-1"></a><span class="fu">levels</span>(estado)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "casado"     "divorciado" "soltero"    "viudo"     </code></pre>
+</div>
+</div>
+</section>
+<section id="data-frames" class="level3" data-number="2.4.3">
+<h3 data-number="2.4.3" class="anchored" data-anchor-id="data-frames"><span class="header-section-number">2.4.3</span> Data frames</h3>
+<p>Los <code>data frame</code> son el objeto más común para almacenar datos en R. Un <code>data frame</code> es una tabla o una estructura bidimensional (tiene filas y columnas). Cada columna suele contener valores de una variable, por lo que podríamos considerar que un <code>data frame</code> es un conjunto de vectores de igual longitud. Cada fila contiene un valor de cada columna.</p>
+<p>Los <code>data frame</code> deben tener ciertas características:</p>
+<ul>
+<li>Los nombres de las columnas deben ser no vacíos.</li>
+</ul>
+<p>- Los nombres de las filas (si existen) deben ser únicos.</p>
+<p>- Cada columna debe contener el mismo número de elementos.</p>
+<p>Para crear un <code>data frame</code> podemos utilizar la función <code>data.frame</code> y proporcionar una lista de vectores con nombre:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb117"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1" aria-hidden="true" tabindex="-1"></a>grades <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Name =</span> <span class="fu">c</span>(<span class="st">"Mark"</span>, <span class="st">"Lewis"</span>, <span class="st">"Brian"</span>, <span class="st">"Matthew"</span>),</span>
+<span id="cb117-2"><a href="#cb117-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">Course =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">2</span>),</span>
+<span id="cb117-3"><a href="#cb117-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">Grade =</span> <span class="fu">c</span>(<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"A+"</span>, <span class="st">"C"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Sin embargo, raramente crearemos un <code>data frame</code> manualmente. Normalmente, llamaremos a una instrucción para leer archivos de texto que contengan datos o llamaremos a objetos de datos disponibles en algunos paquetes. Por ejemplo, consideremos el siguiente marco de datos, disponible en el paquete <code>tidyverse</code> (puede que necesites instalar y cargar el paquete):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb118"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb118-1"><a href="#cb118-1" aria-hidden="true" tabindex="-1"></a>starwars</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 87 × 14
+   name     height  mass hair_color skin_color eye_color birth_year sex   gender
+   &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; 
+ 1 Luke Sk…    172    77 blond      fair       blue            19   male  mascu…
+ 2 C-3PO       167    75 &lt;NA&gt;       gold       yellow         112   none  mascu…
+ 3 R2-D2        96    32 &lt;NA&gt;       white, bl… red             33   none  mascu…
+ 4 Darth V…    202   136 none       white      yellow          41.9 male  mascu…
+ 5 Leia Or…    150    49 brown      light      brown           19   fema… femin…
+ 6 Owen La…    178   120 brown, gr… light      blue            52   male  mascu…
+ 7 Beru Wh…    165    75 brown      light      blue            47   fema… femin…
+ 8 R5-D4        97    32 &lt;NA&gt;       white, red red             NA   none  mascu…
+ 9 Biggs D…    183    84 black      light      brown           24   male  mascu…
+10 Obi-Wan…    182    77 auburn, w… fair       blue-gray       57   male  mascu…
+# ℹ 77 more rows
+# ℹ 5 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;, films &lt;list&gt;,
+#   vehicles &lt;list&gt;, starships &lt;list&gt;</code></pre>
+</div>
+</div>
+<p>Este conjunto de datos contiene los nombres y características (nombre, altura, masa, vehículos… hasta 13 variables) de 87 personajes que participan en la saga de Star Wars. Hay columnas numéricas y de caracteres, pero todas las variables tienen 87 elementos.</p>
+<p>Para subconjuntar un marco de datos, podemos utilizar el operador <code>[</code>, pero ahora indicando dos dimensiones: qué fila(s) queremos subconjuntar, y qué columna(s):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb120"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb120-1"><a href="#cb120-1" aria-hidden="true" tabindex="-1"></a>starwars[<span class="dv">1</span>,<span class="dv">4</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 1
+  hair_color
+  &lt;chr&gt;     
+1 blond     </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb122"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb122-1"><a href="#cb122-1" aria-hidden="true" tabindex="-1"></a>starwars[<span class="dv">4</span>,<span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 1
+   mass
+  &lt;dbl&gt;
+1   136</code></pre>
+</div>
+</div>
+<p>Si nos dejamos una de las dimensiones, obtendremos un mensaje de error. Sin embargo, si dejamos un espacio vacío, R entenderá que queremos mantener todos los elementos de la fila o columna seleccionada:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb124"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb124-1"><a href="#cb124-1" aria-hidden="true" tabindex="-1"></a>starwars[, <span class="dv">3</span>]   <span class="co"># Seleccionará todos los valores de la columna 3</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 87 × 1
+    mass
+   &lt;dbl&gt;
+ 1    77
+ 2    75
+ 3    32
+ 4   136
+ 5    49
+ 6   120
+ 7    75
+ 8    32
+ 9    84
+10    77
+# ℹ 77 more rows</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb126"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb126-1"><a href="#cb126-1" aria-hidden="true" tabindex="-1"></a>starwars[<span class="dv">4</span>, ]   <span class="co"># Seleccionará todas las columnas para la fila 4</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 14
+  name      height  mass hair_color skin_color eye_color birth_year sex   gender
+  &lt;chr&gt;      &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; 
+1 Darth Va…    202   136 none       white      yellow          41.9 male  mascu…
+# ℹ 5 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;, films &lt;list&gt;,
+#   vehicles &lt;list&gt;, starships &lt;list&gt;</code></pre>
+</div>
+</div>
+<p>Como los <code>data frame</code> son una sucesión de vectores con nombre, podemos utilizar el nombre de la columna para extraer las columnas deseadas:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb128"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb128-1"><a href="#cb128-1" aria-hidden="true" tabindex="-1"></a>starwars[ , <span class="st">"gender"</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 87 × 1
+   gender   
+   &lt;chr&gt;    
+ 1 masculine
+ 2 masculine
+ 3 masculine
+ 4 masculine
+ 5 feminine 
+ 6 masculine
+ 7 feminine 
+ 8 masculine
+ 9 masculine
+10 masculine
+# ℹ 77 more rows</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb130"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb130-1"><a href="#cb130-1" aria-hidden="true" tabindex="-1"></a>starwars[ , <span class="fu">c</span>(<span class="st">"gender"</span>, <span class="st">"birth_year"</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 87 × 2
+   gender    birth_year
+   &lt;chr&gt;          &lt;dbl&gt;
+ 1 masculine       19  
+ 2 masculine      112  
+ 3 masculine       33  
+ 4 masculine       41.9
+ 5 feminine        19  
+ 6 masculine       52  
+ 7 feminine        47  
+ 8 masculine       NA  
+ 9 masculine       24  
+10 masculine       57  
+# ℹ 77 more rows</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb132"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb132-1"><a href="#cb132-1" aria-hidden="true" tabindex="-1"></a>starwars[<span class="dv">2</span>, <span class="st">"homeworld"</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 1
+  homeworld
+  &lt;chr&gt;    
+1 Tatooine </code></pre>
+</div>
+</div>
+<p>También podemos utilizar el operador <code>$</code> para extraer una columna completa:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb134"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb134-1"><a href="#cb134-1" aria-hidden="true" tabindex="-1"></a>starwars<span class="sc">$</span>gender</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "masculine" "masculine" "masculine" "masculine" "feminine"  "masculine"
+ [7] "feminine"  "masculine" "masculine" "masculine" "masculine" "masculine"
+[13] "masculine" "masculine" "masculine" "masculine" "masculine" NA         
+[19] "masculine" "masculine" "masculine" "masculine" "masculine" "masculine"
+[25] "masculine" "masculine" "feminine"  "masculine" "masculine" "masculine"
+[31] "masculine" "masculine" "masculine" "feminine"  "masculine" "masculine"
+[37] "masculine" "masculine" "masculine" "masculine" "masculine" "feminine" 
+[43] "masculine" "masculine" "feminine"  "masculine" "masculine" "masculine"
+[49] "masculine" "masculine" "masculine" "masculine" "masculine" "feminine" 
+[55] "masculine" "masculine" "masculine" "masculine" NA          NA         
+[61] "masculine" "masculine" "feminine"  "feminine"  "feminine"  "masculine"
+[67] "masculine" "masculine" "feminine"  "masculine" "masculine" "feminine" 
+[73] "feminine"  "feminine"  "masculine" "masculine" "feminine"  "masculine"
+[79] "masculine" "masculine" NA          "masculine" "masculine" "feminine" 
+[85] "masculine" "masculine" "feminine" </code></pre>
+</div>
+</div>
+<p>Algunas funciones útiles para utilizar con los marcos de datos son <code>str()</code> para obtener los nombres, tipos y primeros valores de las columnas; y <code>summary()</code> para obtener las estadísticas descriptivas de las variables numéricas.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb136"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb136-1"><a href="#cb136-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(starwars)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>tibble [87 × 14] (S3: tbl_df/tbl/data.frame)
+ $ name      : chr [1:87] "Luke Skywalker" "C-3PO" "R2-D2" "Darth Vader" ...
+ $ height    : int [1:87] 172 167 96 202 150 178 165 97 183 182 ...
+ $ mass      : num [1:87] 77 75 32 136 49 120 75 32 84 77 ...
+ $ hair_color: chr [1:87] "blond" NA NA "none" ...
+ $ skin_color: chr [1:87] "fair" "gold" "white, blue" "white" ...
+ $ eye_color : chr [1:87] "blue" "yellow" "red" "yellow" ...
+ $ birth_year: num [1:87] 19 112 33 41.9 19 52 47 NA 24 57 ...
+ $ sex       : chr [1:87] "male" "none" "none" "male" ...
+ $ gender    : chr [1:87] "masculine" "masculine" "masculine" "masculine" ...
+ $ homeworld : chr [1:87] "Tatooine" "Tatooine" "Naboo" "Tatooine" ...
+ $ species   : chr [1:87] "Human" "Droid" "Droid" "Human" ...
+ $ films     :List of 87
+  ..$ : chr [1:5] "A New Hope" "The Empire Strikes Back" "Return of the Jedi" "Revenge of the Sith" ...
+  ..$ : chr [1:6] "A New Hope" "The Empire Strikes Back" "Return of the Jedi" "The Phantom Menace" ...
+  ..$ : chr [1:7] "A New Hope" "The Empire Strikes Back" "Return of the Jedi" "The Phantom Menace" ...
+  ..$ : chr [1:4] "A New Hope" "The Empire Strikes Back" "Return of the Jedi" "Revenge of the Sith"
+  ..$ : chr [1:5] "A New Hope" "The Empire Strikes Back" "Return of the Jedi" "Revenge of the Sith" ...
+  ..$ : chr [1:3] "A New Hope" "Attack of the Clones" "Revenge of the Sith"
+  ..$ : chr [1:3] "A New Hope" "Attack of the Clones" "Revenge of the Sith"
+  ..$ : chr "A New Hope"
+  ..$ : chr "A New Hope"
+  ..$ : chr [1:6] "A New Hope" "The Empire Strikes Back" "Return of the Jedi" "The Phantom Menace" ...
+  ..$ : chr [1:3] "The Phantom Menace" "Attack of the Clones" "Revenge of the Sith"
+  ..$ : chr [1:2] "A New Hope" "Revenge of the Sith"
+  ..$ : chr [1:5] "A New Hope" "The Empire Strikes Back" "Return of the Jedi" "Revenge of the Sith" ...
+  ..$ : chr [1:4] "A New Hope" "The Empire Strikes Back" "Return of the Jedi" "The Force Awakens"
+  ..$ : chr "A New Hope"
+  ..$ : chr [1:3] "A New Hope" "Return of the Jedi" "The Phantom Menace"
+  ..$ : chr [1:3] "A New Hope" "The Empire Strikes Back" "Return of the Jedi"
+  ..$ : chr "A New Hope"
+  ..$ : chr [1:5] "The Empire Strikes Back" "Return of the Jedi" "The Phantom Menace" "Attack of the Clones" ...
+  ..$ : chr [1:5] "The Empire Strikes Back" "Return of the Jedi" "The Phantom Menace" "Attack of the Clones" ...
+  ..$ : chr [1:3] "The Empire Strikes Back" "Return of the Jedi" "Attack of the Clones"
+  ..$ : chr "The Empire Strikes Back"
+  ..$ : chr "The Empire Strikes Back"
+  ..$ : chr [1:2] "The Empire Strikes Back" "Return of the Jedi"
+  ..$ : chr "The Empire Strikes Back"
+  ..$ : chr [1:2] "Return of the Jedi" "The Force Awakens"
+  ..$ : chr "Return of the Jedi"
+  ..$ : chr "Return of the Jedi"
+  ..$ : chr "Return of the Jedi"
+  ..$ : chr "Return of the Jedi"
+  ..$ : chr "The Phantom Menace"
+  ..$ : chr [1:3] "The Phantom Menace" "Attack of the Clones" "Revenge of the Sith"
+  ..$ : chr "The Phantom Menace"
+  ..$ : chr [1:3] "The Phantom Menace" "Attack of the Clones" "Revenge of the Sith"
+  ..$ : chr [1:2] "The Phantom Menace" "Attack of the Clones"
+  ..$ : chr "The Phantom Menace"
+  ..$ : chr "The Phantom Menace"
+  ..$ : chr "The Phantom Menace"
+  ..$ : chr [1:2] "The Phantom Menace" "Attack of the Clones"
+  ..$ : chr "The Phantom Menace"
+  ..$ : chr "The Phantom Menace"
+  ..$ : chr [1:2] "The Phantom Menace" "Attack of the Clones"
+  ..$ : chr "The Phantom Menace"
+  ..$ : chr "Return of the Jedi"
+  ..$ : chr [1:3] "The Phantom Menace" "Attack of the Clones" "Revenge of the Sith"
+  ..$ : chr "The Phantom Menace"
+  ..$ : chr "The Phantom Menace"
+  ..$ : chr "The Phantom Menace"
+  ..$ : chr "The Phantom Menace"
+  ..$ : chr [1:3] "The Phantom Menace" "Attack of the Clones" "Revenge of the Sith"
+  ..$ : chr [1:3] "The Phantom Menace" "Attack of the Clones" "Revenge of the Sith"
+  ..$ : chr [1:3] "The Phantom Menace" "Attack of the Clones" "Revenge of the Sith"
+  ..$ : chr [1:2] "The Phantom Menace" "Revenge of the Sith"
+  ..$ : chr [1:2] "The Phantom Menace" "Revenge of the Sith"
+  ..$ : chr [1:2] "The Phantom Menace" "Revenge of the Sith"
+  ..$ : chr "The Phantom Menace"
+  ..$ : chr [1:3] "The Phantom Menace" "Attack of the Clones" "Revenge of the Sith"
+  ..$ : chr [1:2] "The Phantom Menace" "Attack of the Clones"
+  ..$ : chr "Attack of the Clones"
+  ..$ : chr "Attack of the Clones"
+  ..$ : chr "Attack of the Clones"
+  ..$ : chr [1:2] "Attack of the Clones" "Revenge of the Sith"
+  ..$ : chr [1:2] "Attack of the Clones" "Revenge of the Sith"
+  ..$ : chr "Attack of the Clones"
+  ..$ : chr "Attack of the Clones"
+  ..$ : chr [1:2] "Attack of the Clones" "Revenge of the Sith"
+  ..$ : chr [1:2] "Attack of the Clones" "Revenge of the Sith"
+  ..$ : chr "Attack of the Clones"
+  ..$ : chr "Attack of the Clones"
+  ..$ : chr "Attack of the Clones"
+  ..$ : chr "Attack of the Clones"
+  ..$ : chr "Attack of the Clones"
+  ..$ : chr "Attack of the Clones"
+  ..$ : chr [1:2] "Attack of the Clones" "Revenge of the Sith"
+  ..$ : chr "Attack of the Clones"
+  ..$ : chr "Attack of the Clones"
+  ..$ : chr [1:2] "Attack of the Clones" "Revenge of the Sith"
+  ..$ : chr "Revenge of the Sith"
+  ..$ : chr "Revenge of the Sith"
+  ..$ : chr [1:2] "A New Hope" "Revenge of the Sith"
+  ..$ : chr [1:2] "Attack of the Clones" "Revenge of the Sith"
+  ..$ : chr "Revenge of the Sith"
+  ..$ : chr "The Force Awakens"
+  ..$ : chr "The Force Awakens"
+  ..$ : chr "The Force Awakens"
+  ..$ : chr "The Force Awakens"
+  ..$ : chr "The Force Awakens"
+ $ vehicles  :List of 87
+  ..$ : chr [1:2] "Snowspeeder" "Imperial Speeder Bike"
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr "Imperial Speeder Bike"
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr "Tribubble bongo"
+  ..$ : chr [1:2] "Zephyr-G swoop bike" "XJ-6 airspeeder"
+  ..$ : chr(0) 
+  ..$ : chr "AT-ST"
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr "Snowspeeder"
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr "Tribubble bongo"
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr "Sith speeder"
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr "Flitknot speeder"
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr "Koro-2 Exodrive airspeeder"
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr "Tsmeu-6 personal wheel bike"
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+ $ starships :List of 87
+  ..$ : chr [1:2] "X-wing" "Imperial shuttle"
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr "TIE Advanced x1"
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr "X-wing"
+  ..$ : chr [1:5] "Jedi starfighter" "Trade Federation cruiser" "Naboo star skiff" "Jedi Interceptor" ...
+  ..$ : chr [1:3] "Naboo fighter" "Trade Federation cruiser" "Jedi Interceptor"
+  ..$ : chr(0) 
+  ..$ : chr [1:2] "Millennium Falcon" "Imperial shuttle"
+  ..$ : chr [1:2] "Millennium Falcon" "Imperial shuttle"
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr "X-wing"
+  ..$ : chr "X-wing"
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr "Slave 1"
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr "Millennium Falcon"
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr "A-wing"
+  ..$ : chr(0) 
+  ..$ : chr "Millennium Falcon"
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr [1:3] "Naboo fighter" "H-type Nubian yacht" "Naboo star skiff"
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr "Naboo Royal Starship"
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr "Scimitar"
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr "Jedi starfighter"
+  ..$ : chr(0) 
+  ..$ : chr "Naboo fighter"
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr "Belbullab-22 starfighter"
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr(0) 
+  ..$ : chr "X-wing"
+  ..$ : chr(0) 
+  ..$ : chr(0) </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb138"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb138-1"><a href="#cb138-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(starwars)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     name               height           mass          hair_color       
+ Length:87          Min.   : 66.0   Min.   :  15.00   Length:87         
+ Class :character   1st Qu.:167.0   1st Qu.:  55.60   Class :character  
+ Mode  :character   Median :180.0   Median :  79.00   Mode  :character  
+                    Mean   :174.6   Mean   :  97.31                     
+                    3rd Qu.:191.0   3rd Qu.:  84.50                     
+                    Max.   :264.0   Max.   :1358.00                     
+                    NA's   :6       NA's   :28                          
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+  skin_color         eye_color           birth_year         sex           
+ Length:87          Length:87          Min.   :  8.00   Length:87         
+ Class :character   Class :character   1st Qu.: 35.00   Class :character  
+ Mode  :character   Mode  :character   Median : 52.00   Mode  :character  
+                                       Mean   : 87.57                     
+                                       3rd Qu.: 72.00                     
+                                       Max.   :896.00                     
+                                       NA's   :44                         
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+                                                                          
+    gender           homeworld           species         
+ Length:87          Length:87          Length:87         
+ Class :character   Class :character   Class :character  
+ Mode  :character   Mode  :character   Mode  :character  
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+                                                         
+ films.Length  films.Class  films.Mode
+ 5          -none-     character      
+ 6          -none-     character      
+ 7          -none-     character      
+ 4          -none-     character      
+ 5          -none-     character      
+ 3          -none-     character      
+ 3          -none-     character      
+ 1          -none-     character      
+ 1          -none-     character      
+ 6          -none-     character      
+ 3          -none-     character      
+ 2          -none-     character      
+ 5          -none-     character      
+ 4          -none-     character      
+ 1          -none-     character      
+ 3          -none-     character      
+ 3          -none-     character      
+ 1          -none-     character      
+ 5          -none-     character      
+ 5          -none-     character      
+ 3          -none-     character      
+ 1          -none-     character      
+ 1          -none-     character      
+ 2          -none-     character      
+ 1          -none-     character      
+ 2          -none-     character      
+ 1          -none-     character      
+ 1          -none-     character      
+ 1          -none-     character      
+ 1          -none-     character      
+ 1          -none-     character      
+ 3          -none-     character      
+ 1          -none-     character      
+ 3          -none-     character      
+ 2          -none-     character      
+ 1          -none-     character      
+ 1          -none-     character      
+ 1          -none-     character      
+ 2          -none-     character      
+ 1          -none-     character      
+ 1          -none-     character      
+ 2          -none-     character      
+ 1          -none-     character      
+ 1          -none-     character      
+ 3          -none-     character      
+ 1          -none-     character      
+ 1          -none-     character      
+ 1          -none-     character      
+ 1          -none-     character      
+ 3          -none-     character      
+ 3          -none-     character      
+ 3          -none-     character      
+ 2          -none-     character      
+ 2          -none-     character      
+ 2          -none-     character      
+ 1          -none-     character      
+ 3          -none-     character      
+ 2          -none-     character      
+ 1          -none-     character      
+ 1          -none-     character      
+ 1          -none-     character      
+ 2          -none-     character      
+ 2          -none-     character      
+ 1          -none-     character      
+ 1          -none-     character      
+ 2          -none-     character      
+ 2          -none-     character      
+ 1          -none-     character      
+ 1          -none-     character      
+ 1          -none-     character      
+ 1          -none-     character      
+ 1          -none-     character      
+ 1          -none-     character      
+ 2          -none-     character      
+ 1          -none-     character      
+ 1          -none-     character      
+ 2          -none-     character      
+ 1          -none-     character      
+ 1          -none-     character      
+ 2          -none-     character      
+ 2          -none-     character      
+ 1          -none-     character      
+ 1          -none-     character      
+ 1          -none-     character      
+ 1          -none-     character      
+ 1          -none-     character      
+ 1          -none-     character      
+ vehicles.Length  vehicles.Class  vehicles.Mode
+ 2          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 1          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 1          -none-     character               
+ 2          -none-     character               
+ 0          -none-     character               
+ 1          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 1          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 1          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 1          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 1          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 1          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 1          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ 0          -none-     character               
+ starships.Length  starships.Class  starships.Mode
+ 2          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 1          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 1          -none-     character                  
+ 5          -none-     character                  
+ 3          -none-     character                  
+ 0          -none-     character                  
+ 2          -none-     character                  
+ 2          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 1          -none-     character                  
+ 1          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 1          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 1          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 1          -none-     character                  
+ 0          -none-     character                  
+ 1          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 3          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 1          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 1          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 1          -none-     character                  
+ 0          -none-     character                  
+ 1          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 1          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  
+ 1          -none-     character                  
+ 0          -none-     character                  
+ 0          -none-     character                  </code></pre>
+</div>
+</div>
+</section>
+<section id="listas" class="level3" data-number="2.4.4">
+<h3 data-number="2.4.4" class="anchored" data-anchor-id="listas"><span class="header-section-number">2.4.4</span> Listas</h3>
+<p>Las listas, a veces también llamadas vectores recursivos, son objetos similares a los vectores “normales”, con la diferencia de que las listas <strong>permiten almacenar valores de distinto tipo</strong>. Incluso pueden contener otras listas. Las listas se crean con la función <code>list(valor1, valor2, ...)</code>. Por ejemplo:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb140"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb140-1"><a href="#cb140-1" aria-hidden="true" tabindex="-1"></a>list1 <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="st">"Harry"</span>, <span class="st">"Potter"</span>, <span class="st">"Wizard"</span>, <span class="dv">24</span>,<span class="st">"Hogwarts"</span>)</span>
+<span id="cb140-2"><a href="#cb140-2" aria-hidden="true" tabindex="-1"></a>list1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+[1] "Harry"
+
+[[2]]
+[1] "Potter"
+
+[[3]]
+[1] "Wizard"
+
+[[4]]
+[1] 24
+
+[[5]]
+[1] "Hogwarts"</code></pre>
+</div>
+</div>
+<section id="submuestreando-listas" class="level4" data-number="2.4.4.1">
+<h4 data-number="2.4.4.1" class="anchored" data-anchor-id="submuestreando-listas"><span class="header-section-number">2.4.4.1</span> Submuestreando listas</h4>
+<p>Para acceder a los valores almacenados en las distintas posiciones se procede de la misma manera que con los vectores, es decir, <code>nombre[posición]</code>. Sin embargo, <code>[</code> extrae una sublista, por lo que el resultado será siempre una lista.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb142"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb142-1"><a href="#cb142-1" aria-hidden="true" tabindex="-1"></a>list1[<span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+[1] "Wizard"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb144"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb144-1"><a href="#cb144-1" aria-hidden="true" tabindex="-1"></a><span class="fu">typeof</span>(list1[<span class="dv">3</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "list"</code></pre>
+</div>
+</div>
+<p>A diferencia de <code>[</code>, <code>[[</code>extrae un solo componente de una lista. Elimina un nivel de jerarquía de la lista:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb146"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb146-1"><a href="#cb146-1" aria-hidden="true" tabindex="-1"></a>list1[[<span class="dv">3</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Wizard"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb148"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb148-1"><a href="#cb148-1" aria-hidden="true" tabindex="-1"></a><span class="fu">typeof</span>(list1[[<span class="dv">3</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "character"</code></pre>
+</div>
+</div>
+<p>También podemos nombrar los elementos de una lista</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb150"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb150-1"><a href="#cb150-1" aria-hidden="true" tabindex="-1"></a>list2 <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">Name =</span> <span class="st">"Harry"</span>, <span class="at">Surname =</span> <span class="st">"Potter"</span>, <span class="at">Profession =</span> <span class="st">"Wizard"</span>, <span class="at">Age =</span> <span class="dv">24</span>,</span>
+<span id="cb150-2"><a href="#cb150-2" aria-hidden="true" tabindex="-1"></a>              <span class="at">College =</span> <span class="st">"Hogwarts"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Las listas son un poco más difíciles de trabajar que los vectores y los data frames. Apenas las utilizaremos en este curso, aunque trabajar con listas puede ser realmente útil y eficiente.</p>
+</section>
+</section>
+</section>
+<section id="gestión-de-objetos" class="level2" data-number="2.5">
+<h2 data-number="2.5" class="anchored" data-anchor-id="gestión-de-objetos"><span class="header-section-number">2.5</span> Gestión de objetos</h2>
+<section id="creando-objetos" class="level3" data-number="2.5.1">
+<h3 data-number="2.5.1" class="anchored" data-anchor-id="creando-objetos"><span class="header-section-number">2.5.1</span> Creando objetos</h3>
+<p>También podemos almacenar en un objeto el resultado de cualquier operación, o hacer referencia a otro objeto</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb151"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb151-1"><a href="#cb151-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="dv">10</span><span class="sc">+</span><span class="dv">2</span></span>
+<span id="cb151-2"><a href="#cb151-2" aria-hidden="true" tabindex="-1"></a>q <span class="ot">&lt;-</span> <span class="fu">mean</span>(vector)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in mean.default(vector): argument is not numeric or logical: returning
+NA</code></pre>
+</div>
+</div>
+<p>Algunas consideraciones a tener en cuenta a la hora de crear objetos o trabajar con R en líneas generales:</p>
+<ul>
+<li>R distingue entre mayúsculas y minúsculas por lo que <code>radio</code> ≠ <code>Radio</code></li>
+<li>Si se asigna un nuevo valor a un objeto, éste se sobrescribe y borra el valor anterior.</li>
+<li>La información de texto (también conocida como cadena o carácter) se introduce entre comillas, ya sea simple (<code>"texto"</code>) o doble (<code>'texto'</code>).</li>
+<li>Si el valor obtenido de una instrucción no se asigna a un objeto, se mostrará en el terminal, pero <strong>NO SE ALMACENARÁ</strong>.</li>
+</ul>
+</section>
+</section>
+<section id="funciones-y-argumentos" class="level2" data-number="2.6">
+<h2 data-number="2.6" class="anchored" data-anchor-id="funciones-y-argumentos"><span class="header-section-number">2.6</span> Funciones y argumentos</h2>
+<p>Hasta aquí hemos visto y ejecutado algunas instrucciones en R, generalmente orientadas a la creación de objetos o realización de operaciones aritméticas sencillas.</p>
+<p>Sin embargo, también hemos ejecutado algunas instrucciones de tipo función, como <code>length()</code>. Una función puede definirse como un grupo de instrucciones que toma una entrada, utiliza esta entrada para calcular otros valores y devuelve un resultado o salida. No entraremos en detalles por ahora. Basta con saber que para ejecutar una función basta con invocar la instrucción que llama a la función deseada y especificar las entradas necesarias (<em>argumentos</em>). Los argumentos se incluyen siempre entre los paréntesis de la instrucción, como en <code>length(vector)</code>. Si se necesitan varios argumentos los separamos utilizando <code>,</code>.</p>
+<p>Los argumentos de una función tienen nombre, y podemos indicarlos explícitamente al ejecutar la función. Si no proporcionamos los nombres de los argumentos, R los asignará en orden. Esto significa que</p>
+<pre><code>rnorm(n = 100, mean = 10, sd = 3)</code></pre>
+<p>hará exactamente lo mismo que</p>
+<pre><code>rnorm(100, 10, 3)</code></pre>
+<p>A medida que te familiarices con las funciones, será más frecuente que decidas no escribir el nombre de los argumentos. Ten cuidado, en este caso, de introducir los argumentos en el orden necesario (puedes consultar la ayuda de la función para estar seguro. En este caso <code>help(rnorm)</code>)</p>
+</section>
+<section id="errores-warnings-y-mensajes" class="level2" data-number="2.7">
+<h2 data-number="2.7" class="anchored" data-anchor-id="errores-warnings-y-mensajes"><span class="header-section-number">2.7</span> Errores, warnings y mensajes</h2>
+<p>Una cosa que intimida a los nuevos usuarios de R y RStudio es cómo informa de los <em>errores</em>, <em>warnings</em> y <em>mensajes</em>. R informa de los errores, las advertencias (warnings) y los mensajes con una fuente roja muy llamativa, lo que hace que parezca que te está regañando. Además, el mensaje de error no siempre es informativo, ya que se centra en decirle lo que ha ido mal, pero a menudo no por qué, ni dice cómo resolverlo. Podemos diferenciar tres mensajes diferentes que puedes obtener en la consola:</p>
+<ul>
+<li><p><strong>Errors</strong>: Cuando el texto rojo sea un error legítimo, irá precedido de “Error in…” e intentará explicar qué ha ido mal. Cuando haya un error, el código no se ejecutará.</p></li>
+<li><p><strong>Warnings</strong>: Cuando el texto rojo es una advertencia, será precedido por “Warning:” y R tratará de explicar por qué hay una advertencia. En general, tu código seguirá funcionando, pero con algunas limitaciones o aspectos a considerar</p></li>
+<li><p><strong>Messages</strong>: cuando el texto rojo no comienza con “Error” o “Warning”, es <em>sólo un mensaje amistoso</em>. Verás estos mensajes cuando cargues <em>paquetes R</em> o cuando leas datos guardados en archivos de hojas de cálculo. Estos son mensajes de diagnóstico útiles y no impiden que tu código funcione.</p></li>
+</ul>
+<blockquote class="blockquote">
+<p><strong>Nota importante:</strong> Recibirás <strong>Toneladas de mensajes de error</strong> de R, especialmente al principio. No te preocupes, esto es normal, y es parte del proceso de aprendizaje. Cada vez que recibas un mensaje de error, no te paralices por el pánico. Trata de entender lo que salió mal, y si no lo sabes, busca en Google el texto del mensaje. Es muy probable que se trate de un error común y que puedas encontrar fácilmente la solución por ti mismo. Si no es así, también puedes consultarlo con tus compañeros. Si no sois capaces de resolverlo por vosotros mismos, podemos ayudaros, pero aprender a recibir ayuda para resolver vuestros propios problemas es una parte capital del aprendizaje de R, así que os animamos a que lo intentéis antes de pedirnos ayuda.</p>
+</blockquote>
+</section>
+<section id="para-saber-más" class="level2" data-number="2.8">
+<h2 data-number="2.8" class="anchored" data-anchor-id="para-saber-más"><span class="header-section-number">2.8</span> Para saber más</h2>
+<p>Para aprender más sobre algunos de los temas cubiertos en este laboratorio, recomiendo ver el vídeo “Writing code in RStudio”, desarrollado por el equipo de RStudio. Contiene muchos de los conceptos que se tratan aquí, y también algunos consejos más para seguir: [en inglés] <a href="https://resources.rstudio.com/wistia-rstudio-essentials-2/rstudioessentialsprogrammingpart1-2" class="uri">https://resources.rstudio.com/wistia-rstudio-essentials-2/rstudioessentialsprogrammingpart1-2</a></p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./00_Familiar_RStudio.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Familiarizándose con R y RStudio</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./00_RMarkdown_Quarto.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Introducción a Quarto y RMarkdown</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">Apuntes y ejercicios de geoestadística forestal. Aitor Ameztegui, Universitat de Lleida.</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">Este libro se ha elaborado con <a href="https://quarto.org/">Quarto</a>.</div>
+  </div>
+</footer>
+
+
+
+</body></html>

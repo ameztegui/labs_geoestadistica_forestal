@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Aitor Ameztegui (UdL)">
+<meta name="dcterms.date" content="2024-08-22">
+
+<title>Apuntes y ejercicios de geoestadística para forestales - 1&nbsp; Familiarizándose con R y RStudio</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./00_Intro_R.html" rel="next">
+<link href="./index.html" rel="prev">
+<link href="./images/udl.png" rel="icon" type="image/png">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./00_Familiar_RStudio.html">UNIDAD 0: INTRODUCCION</a></li><li class="breadcrumb-item"><a href="./00_Familiar_RStudio.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Familiarizándose con R y RStudio</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Apuntes y ejercicios de geoestadística para forestales</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/ameztegui/labs_geoestadistica_forestal" rel="" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Presentación</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">UNIDAD 0: INTRODUCCION</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./00_Familiar_RStudio.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Familiarizándose con R y RStudio</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./00_Intro_R.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introducción a R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./00_RMarkdown_Quarto.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Introducción a Quarto y RMarkdown</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">UNIDAD 1: ANÁLISIS DE REGRESIÓN</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01_RegresionLineal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Regresión lineal en R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02_GLM.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Regresión lineal generalizada (GLM) en R</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">UNIDAD 2: GEOESTADÍSTICA Y ANÁLISIS ESPACIAL</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03_DatosEspaciales.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Trabajando con datos espaciales en R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04_AutocorrelacionEspacial.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Autocorrelación espacial en ArcGIS y R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05_PatronPuntos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Análisis de patrón de puntos en R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06_InterpolacionEspacial.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Interpolación espacial en R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07_RegresionEspacial.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Regresión espacial en R</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introducción.-objetivo." id="toc-introducción.-objetivo." class="nav-link active" data-scroll-target="#introducción.-objetivo."><span class="header-section-number">1.1</span> Introducción. Objetivo.</a></li>
+  <li><a href="#qué-son-r-y-rstudio" id="toc-qué-son-r-y-rstudio" class="nav-link" data-scroll-target="#qué-son-r-y-rstudio"><span class="header-section-number">1.2</span> ¿Qué son R y RStudio?</a></li>
+  <li><a href="#la-interfaz-de-rstudio" id="toc-la-interfaz-de-rstudio" class="nav-link" data-scroll-target="#la-interfaz-de-rstudio"><span class="header-section-number">1.3</span> La interfaz de RStudio</a>
+  <ul class="collapse">
+  <li><a href="#apariencia-básica" id="toc-apariencia-básica" class="nav-link" data-scroll-target="#apariencia-básica"><span class="header-section-number">1.3.1</span> Apariencia básica</a></li>
+  </ul></li>
+  <li><a href="#conceptos-básicos-y-terminología" id="toc-conceptos-básicos-y-terminología" class="nav-link" data-scroll-target="#conceptos-básicos-y-terminología"><span class="header-section-number">1.4</span> Conceptos básicos y terminología</a>
+  <ul class="collapse">
+  <li><a href="#qué-son-los-paquetes-de-r" id="toc-qué-son-los-paquetes-de-r" class="nav-link" data-scroll-target="#qué-son-los-paquetes-de-r"><span class="header-section-number">1.4.1</span> ¿Qué son los paquetes de R?</a></li>
+  <li><a href="#salvando-nuestro-código-scripts-en-r" id="toc-salvando-nuestro-código-scripts-en-r" class="nav-link" data-scroll-target="#salvando-nuestro-código-scripts-en-r"><span class="header-section-number">1.4.2</span> Salvando nuestro código: scripts en R</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/ameztegui/labs_geoestadistica_forestal/edit/main/00_Familiar_RStudio.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/ameztegui/labs_geoestadistica_forestal/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Familiarizándose con R y RStudio</span></h1>
+<p class="subtitle lead">Geoestadística i Tècniques d’Observació Global (24/25)</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Aitor Ameztegui (UdL) </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">August 22, 2024</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="introducción.-objetivo." class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="introducción.-objetivo."><span class="header-section-number">1.1</span> Introducción. Objetivo.</h2>
+<p>El objetivo principal de este <em>lab</em> es presentarte <code>R</code> y <code>RStudio</code>, el software que utilizaremos a lo largo del curso para recopilar datos, trabajarlos, visualizarlos y producir análisis estadísticos que nos permitan llegar a conclusiones fundamentadas sobre los problemas planteados.</p>
+<p>Asumiremos que no tienes ninguna experiencia previa con R o RStudio, así que en este <em>lab</em> cubriremos lo más básico, empezando por la instalación del software y los primeros pasos. Si ya sabes <em>algo</em> de R, puede que encuentres algunos de los temas bastante básicos, y eres libre de saltar a donde quieras dentro del documento. Ten en cuenta, sin embargo, que a veces daré algunos consejos y sugerencias que pueden ser interesantes incluso si tienes experiencia con R.</p>
+</section>
+<section id="qué-son-r-y-rstudio" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="qué-son-r-y-rstudio"><span class="header-section-number">1.2</span> ¿Qué son R y RStudio?</h2>
+<p>En este lab, y durante todo el curso, vamos a utilizar R a través de RStudio. Esto no es obligatorio, por supuesto, pero es muy recomendable. Es común al principio confundir los dos. <code>R</code> es un lenguaje de programación, mientras que <code>RStudio</code> es un entorno de desarrollo integrado (IDE), es decir, una interfaz que añade muchas herramientas y características convenientes y hace mucho más fácil la experiencia de usar <code>R</code>. Tomaré aquí la analogía de <a href="https://moderndive.com/index.html">ModernDive</a> y la simplificaré diciendo que, si <code>R</code> es el motor de un coche, <code>RStudio</code> sería el panel de mandos. Y como ocurre con el coche, claro que podemos ejecutar R sin RStudio, pero es mucho más fácil aprovechar sus múltiples e interesantes características. Además, RStudio (y el propio R) es gratuito, de código abierto y multiplataforma.</p>
+<p><img src="images/01-intro-r/r_vs_rstudio_1.png" class="img-fluid"></p>
+<blockquote class="blockquote">
+<p><strong>Instalación de R y RStudio</strong> <br> <br> Recuerda que R es el nombre del propio lenguaje de programación y RStudio es un IDE (es decir, una interfaz), por lo que no podrás utilizar RStudio sin instalar previamente R. <br><br> <a href="https://www.r-project.org/">Descarga e instala la última versión de R aquí</a><br> <a href="https://posit.co/download/rstudio-desktop/#download">Descarga e instala RStudio aquí</a><br> <br> Ten en cuenta que si utilizas los ordenadores de la Universidad, estos ya tienen instaladas las versiones adecuadas de R y RStudio.<br><br></p>
+</blockquote>
+</section>
+<section id="la-interfaz-de-rstudio" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="la-interfaz-de-rstudio"><span class="header-section-number">1.3</span> La interfaz de RStudio</h2>
+<p>La mala noticia es que R es un lenguaje de programación, y esto significa que tienes que escribir comandos en <em>código</em> R, y ejecutarlos para obtener el resultado. No te preocupes, la buena noticia es que no necesitas ser un programador experto para poder utilizar R y sacar mucho partido a sus capacidades.</p>
+<section id="apariencia-básica" class="level3" data-number="1.3.1">
+<h3 data-number="1.3.1" class="anchored" data-anchor-id="apariencia-básica"><span class="header-section-number">1.3.1</span> Apariencia básica</h3>
+<p>Cuando abras por primera vez RStudio serás recibido por tres paneles:</p>
+<ul>
+<li>La <em>consola</em> interactiva de R (toda la izquierda)</li>
+<li>Entorno/Historia (pestaña en la parte superior derecha) (si está en inglés, verás “Environment/History”</li>
+<li>Archivos/Plots/Paquetes/Ayuda/Visor (pestaña en la parte inferior derecha) (“Files/Plots/Packages/Help/Viewer”)</li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/01-intro-r/01_rstudio.png" class="img-fluid figure-img" width="1279"></p>
+<figcaption class="figure-caption">Apariencia básica de RStudio al abrirlo</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<section id="consola" class="level4" data-number="1.3.1.1">
+<h4 data-number="1.3.1.1" class="anchored" data-anchor-id="consola"><span class="header-section-number">1.3.1.1</span> Consola</h4>
+<p>La consola es el corazón de R, es donde R realmente evalúa y ejecuta el código. Esta consola en RStudio es lo único que obtendrías si decidieras usar R sin RStudio. Lo primero que verás en la sesión interactiva de R es un montón de información, seguida de un <code>&gt;</code> y un cursor parpadeante. Esto es un <em>prompt</em> que indica que R está listo para recibir nuevo código.</p>
+<p>La consola opera con la idea de un bucle “Leer, evaluar, imprimir”: escribes comandos, R intenta ejecutarlos y luego devuelve un resultado. Puedes escribir el código directamente en la consola después del <em>prompt</em> y obtener una respuesta inmediata, o copiarlo desde otro lugar (un editor de texto, por ejemplo) y pegarlo en la consola. Por ejemplo, si escribes <code>1 + 1</code> en la consola y pulsas enter (¡házlo ahora!), verás que R da inmediatamente una salida de <code>2</code>. ¡Eh, ya <em>estás</em> usando R!</p>
+</section>
+<section id="environmenthistory" class="level4" data-number="1.3.1.2">
+<h4 data-number="1.3.1.2" class="anchored" data-anchor-id="environmenthistory"><span class="header-section-number">1.3.1.2</span> Env~ironment/History</h4>
+<p>La pestaña <strong>Entorno</strong> (Environment/History) muestra los nombres de todos los objetos que has creado o cargado en tu sesión actual de R (no te preocupes, lo veremos más adelante). También puedes ver información como el número de observaciones y filas en los objetos. La pestaña también tiene algunas acciones en las que se puede hacer clic como <code>Import Dataset</code> que abrirá una interfaz gráfica de usuario (GUI) para importar datos en R.</p>
+<p>La pestaña <strong>Historial</strong> de este panel muestra un historial de todo el código que has evaluado previamente en la Consola. Tal vez no se utiliza tanto como la pestaña <strong>Entorno</strong>, pero puede ser muy útil en momentos puntuales.</p>
+<p>A medida que te sientas más cómodo con R, puede que encuentres el panel <em>Entorno / Historial</em> más y más útil. Pero al principio probablemente lo ignorarás, así que puedes incluso minimizar la ventana haciendo clic en el botón <em>minimizar</em> en la parte superior derecha del panel.</p>
+</section>
+<section id="files-plots-packages-help" class="level4" data-number="1.3.1.3">
+<h4 data-number="1.3.1.3" class="anchored" data-anchor-id="files-plots-packages-help"><span class="header-section-number">1.3.1.3</span> Files / Plots / Packages / Help</h4>
+<p>El panel <strong>Files / Plots / Packages / Help</strong> muestra mucha información útil. Vamos a ver cada pestaña en detalle:</p>
+<ul>
+<li><p><strong>Archivos:</strong> te da acceso al directorio de archivos de tu disco duro, por lo que es muy útil para encontrar y cargar scripts de código. Una buena característica del panel “Archivos” es que puedes usarlo para establecer tu directorio de trabajo: si tienes todos tus archivos en una carpeta (lo cual deberías), puedes apuntar a ella haciendo clic en “Más” y luego en “Establecer como directorio de trabajo.” Esto facilitará el proceso de leer y guardar archivos, porque RStudio apuntará a ese directorio por defecto. De esta manera no necesitarás indicar la ruta completa cuando quieras cargar un archivo a R.</p></li>
+<li><p><strong>Plots:</strong> este panel muestra todos los plots (figuras) que se generan durante una sesión de R. Hay botones para abrir el gráfico en una ventana separada y para exportar el gráfico como <code>.pdf</code> o <code>.jpeg</code>. Para ver cómo se muestran los gráficos en el panel <code>Plots</code>, simplemente copia el código siguiente en la <code>consola</code> para mostrar un histograma de la longitud de los pétalos de tres especies de plantas de Iris, que están incluidas en la base de datos <code>iris</code> (cargada con la instalación básica de R). Cuando lo hagas, deberías ver un histograma con la distribución del ancho de los pétalos para tres especies de Iris.</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(iris<span class="sc">$</span>Petal.Width, <span class="at">col =</span> <span class="st">"orange"</span>, <span class="at">main =</span> <span class="st">"Histogram of petal widths"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="00_Familiar_RStudio_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<ul>
+<li><p><strong>Paquetes:</strong> muestra una lista de todos los paquetes de R instalados en su disco duro e indica si están cargados o no. Los paquetes que están cargados en la sesión actual están marcados, mientras que los que están instalados pero no cargados todavía están desmarcados. Hablaremos de los paquetes más adelante.</p></li>
+<li><p><strong>Ayuda:</strong> menú de ayuda para las funciones de R. Podemos escribir el nombre de una función en la ventana de búsqueda, o utilizar el código para buscar una función con el nombre. También veremos qué son las funciones en un minuto.</p></li>
+</ul>
+<p>Por supuesto, el diseño en RStudio puede ser modificado, y el usuario puede configurar qué paneles ver, el color del código, y muchas otras cuestiones. Puedes aprender más sobre la personalización de RStudio <a href="https://support.posit.co/hc/en-us/articles/200549016-Customizing-the-RStudio-IDE">aquí</a>. De todos modos, no te preocupes por los diferentes paneles y sus funcionalidades por ahora. Aprenderás más sobre ellos a medida que los usemos durante el curso, y espero que pronto te familiarices con ellos.</p>
+</section>
+</section>
+</section>
+<section id="conceptos-básicos-y-terminología" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="conceptos-básicos-y-terminología"><span class="header-section-number">1.4</span> Conceptos básicos y terminología</h2>
+<p>Antes de empezar a usar R, necesitamos definir algunos conceptos de programación que saldrán a menudo. No es necesario que memorices ninguno de estos conceptos, ya que te familiarizarás con ellos, pero si en algún momento tienes dudas sobre lo que estamos hablando, puedes consultar esta sección (o preguntarme a mí, por supuesto).</p>
+<ul>
+<li><p><strong>Código</strong>: un trozo de texto que R entiende y es capaz de ejecutar</p></li>
+<li><p><strong>Ejecutar código</strong>: el acto de decirle a R que lea el código y realice las acciones que contenga. Para ejecutar un determinado trozo de código, lo escribimos en la consola y pulsamos Enter.</p></li>
+<li><p><strong>Objetos</strong>: siempre que guardamos algo en R, creamos un objeto. Una vez guardado, podemos realizar operaciones con los objetos, mostrar su contenido o reasignar su valor (ya veremos cómo). Los objetos pueden ser de muchos tipos, como veremos más adelante.</p></li>
+<li><p><strong>Funciones</strong> (a veces también llamadas comandos): un tipo específico de objeto, las funciones realizan tareas en R. Toman algunas entradas (llamadas <em>argumentos</em>), y devuelven algunas salidas. Como ejemplo, la función <code>mean()</code> toma como argumento una cadena de valores numéricos - que deben introducirse entre paréntesis - y devuelve… bueno, su media. Trabajaremos mucho con funciones a lo largo de este curso, y tendrás mucha práctica con ellas. Para ayudarte a entender cuándo estamos hablando de una función, también incluiré el <code>()</code> después de ellas, como hicimos con <code>mean()</code> más arriba.</p></li>
+<li><p><strong>Paquetes</strong>: algunas funciones están incluidas en la instalación estándar de R. Sin embargo, la comunidad de R es rica y muy activa, y cada día se crean cientos de paquetes. Un paquete no es más que una colección de funciones que ha sido creada y liberada para la comunidad (recuerda que R es un software de código abierto). Entre los paquetes que usaremos durante el curso están varios de los principales para tratar con datos espaciales: <code>tmaps</code>, <code>sf</code>, <code>terra</code>…)</p></li>
+<li><p><strong>Scripts</strong>: podemos escribir instrucciones (es decir, código) directamente en la consola, pero esta no es la forma más eficiente de trabajar. El 99% de las veces deberías escribir tus comandos en un script. Un script no es más que un archivo de texto que contiene un conjunto ordenado de instrucciones. Esto significa que podemos escribir un archivo con las instrucciones que queremos ejecutar y luego ejecutarlas todas a la vez, o decidir qué parte ejecutar. Lo mejor de los scripts es que nos permite guardar el código para poder ejecutarlo más tarde, o seguir trabajando en él.</p></li>
+</ul>
+<section id="qué-son-los-paquetes-de-r" class="level3" data-number="1.4.1">
+<h3 data-number="1.4.1" class="anchored" data-anchor-id="qué-son-los-paquetes-de-r"><span class="header-section-number">1.4.1</span> ¿Qué son los paquetes de R?</h3>
+<p>Como hemos visto, los paquetes de R amplían la funcionalidad de R proporcionando funciones adicionales, y a menudo también incluyen datos y documentación. Están escritos por una comunidad mundial de usuarios de R y pueden descargarse gratuitamente de Internet. Existe un repositorio “oficial” de paquetes R llamado <a href="https://cran.r-project.org/web/packages/index.html">CRAN</a> (Comprehensive R Archive Network), pero los usuarios también pueden alojar sus paquetes en cualquier repositorio de software (por ejemplo, este es un enlace a mi paquete <a href="https://github.com/ameztegui/neighborhood">neighborhood</a>, alojado en mi sitio <a href="https://github.com/ameztegui">GitHub</a>).</p>
+<p>Deberías pensar en los paquetes de R como en las aplicaciones que descargas en tu teléfono móvil. Un teléfono nuevo tiene ciertamente algunas características agradables cuando lo enciendes por primera vez, pero una de las primeras cosas que hacemos es instalar nuestras aplicaciones favoritas. Así que vamos a ver lo que tenemos que hacer para instalar un paquete de R.</p>
+<section id="instalación-de-paquetes" class="level4" data-number="1.4.1.1">
+<h4 data-number="1.4.1.1" class="anchored" data-anchor-id="instalación-de-paquetes"><span class="header-section-number">1.4.1.1</span> Instalación de paquetes</h4>
+<p>Cada vez que se instala una nueva versión de R (R está en continuo desarrollo, y las principales actualizaciones se producen cada 1-2 años) hay que instalar de nuevo los paquetes deseados. Esto es lo mismo que instalar WhatsApp desde Google Play o la App Store. En R hay dos formas de instalar paquetes.</p>
+<p>La forma más fácil es utilizar la pestaña “Paquetes” en RStudio. Allí, puedes hacer clic en “Instalar”, escribir el nombre del paquete que quieres, y hacer clic en “Instalar”. Y ¡voilà! El paquete está instalado.</p>
+<p><img src="images/01-intro-r/package_install.PNG" class="img-fluid"></p>
+<p>Una segunda forma de instalar un paquete es simplemente escribir <code>install.packages("el_nombre_del_paquete")</code> en la Consola y ejecutar este código (pulsando enter). Ten en cuenta que debe incluir las comillas alrededor del nombre del paquete. Por ejemplo, ejecutar el siguiente código instala el paquete <code>ggplot2</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"ggplot2"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="cargando-paquetes" class="level4" data-number="1.4.1.2">
+<h4 data-number="1.4.1.2" class="anchored" data-anchor-id="cargando-paquetes"><span class="header-section-number">1.4.1.2</span> Cargando paquetes</h4>
+<p>Una vez que instales un paquete, no necesitarás instalarlo de nuevo, a menos que actualices tu versión de R (siguiendo con la metáfora, esto sería como comprar un nuevo móvil), o quieras actualizar el propio paquete a una nueva versión. Sin embargo, al igual que hay que abrir la aplicación de Instagram o WhatsApp antes de usarla, hay que cargar el paquete antes de usar cualquiera de sus funciones. Esto se hace escribiendo <code>library()</code>. Por ejemplo, prueba a escribir y ejecutar <code>library(ggplot2)</code>.</p>
+<p>Si después de ejecutar el código anterior, aparece un cursor parpadeante junto al signo <code>&gt;</code> “prompt”, significa que ha tenido éxito y que el paquete <code>ggplot2</code> está cargado y listo para ser utilizado. Si, por el contrario, obtiene un “mensaje de error” en rojo que dice <code>...</code></p>
+<pre><code>Error in library(ggplot2) : there is no package called ‘ggplot2’</code></pre>
+<p>… significa que no lo instalaste correctamente.</p>
+</section>
+<section id="uso-de-paquetes" class="level4" data-number="1.4.1.3">
+<h4 data-number="1.4.1.3" class="anchored" data-anchor-id="uso-de-paquetes"><span class="header-section-number">1.4.1.3</span> Uso de paquetes</h4>
+<p>Un error muy común que cometen los nuevos usuarios de R cuando quieren usar paquetes es que se olvidan de “cargarlos” primero usando el comando <code>library()</code> que acabamos de ver. Recuerda: <em>tienes que cargar cada paquete que quieras usar cada vez que inicies RStudio.</em> Si no “cargas” primero un paquete, pero intentas usar una de sus características, verás un mensaje de error similar a: Error: could not find function</p>
+<p>R te está diciendo que está tratando de usar una función en un paquete que aún no ha sido “cargado”. R no sabe dónde encontrar la función que está utilizando. Casi todos los nuevos usuarios se olvidan de hacer esto cuando empiezan, y es un poco molesto acostumbrarse a hacerlo. Sin embargo, lo recordarás con la práctica y después de algún tiempo se convertirá en algo natural para ti.</p>
+</section>
+</section>
+<section id="salvando-nuestro-código-scripts-en-r" class="level3" data-number="1.4.2">
+<h3 data-number="1.4.2" class="anchored" data-anchor-id="salvando-nuestro-código-scripts-en-r"><span class="header-section-number">1.4.2</span> Salvando nuestro código: scripts en R</h3>
+<p>Hemos visto que un script es un archivo que contiene código. El código en el script no se ejecutará hasta que le digas explícitamente que se ejecute. Esto significa que podemos escribir un archivo con las instrucciones que queremos ejecutar y luego ejecutarlas a la vez, o decidir qué parte ejecutar.La ventaja de esto es sencilla: si escribes código en la consola, se ejecutará automáticamente, pero no se guardará. Así, por ejemplo, si te equivocas al escribir el código en la consola, tendrías que volver a escribirlo todo de nuevo. En cambio, si escribes todo tu código en un script y luego lo guardas, estará disponible en cualquier momento que lo necesites, y si necesitas volver a ejecutar algunos análisis sólo tienes que abrir los scripts necesarios y ejecutar todo el código que contienen. Trabajar en scripts bien organizados y documentados que puedan ser reejecutados múltiples veces por cualquier usuario es la base de la ciencia reproducible.</p>
+<p>Podemos crear un nuevo script eligiendo la opción de menú <code>Archivo / Nuevo archivo / R script</code>, o con el atajo de teclado <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>Mayúsculas</kbd> + <kbd>N</kbd>. Una vez hecho esto, notaremos que aparece un cuarto panel en RStudio. Podemos abrir varios scripts al mismo tiempo, y se organizarán en pestañas. El nuevo script se llamará <em>Sin título 1</em>, y estará listo para que escribamos el código. Por supuesto, podemos guardarlo donde queramos y con el nombre que deseemos. Los archivos de script son archivos de texto, que pueden ser abiertos por cualquier editor de texto, y compartidos con los colaboradores. Por convención, los scripts de R tienen la extensión <code>.R</code>.</p>
+<blockquote class="blockquote">
+<p><strong>Consejo:</strong> <br> Debes acostumbrarte lo más rápido posible a escribir la mayor parte de tu código en un script. Escribe directamente en la consola sólo para hacer análisis rápidos.</p>
+</blockquote>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/01-intro-r/scripts.PNG" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Una vista de la interfaz de RStudio inmediatamente después de crear un script. Fíjate como el panel “consola” está ahora en la parte de abajo, mientras que los scripts están en la parte superior.</figcaption>
+</figure>
+</div>
+<p>Los comandos dentro de un script no se ejecutarán inmediatamente, sólo cuando lo ordenes expresamente. Para ejecutar el comando en el que se encuentra el cursor en ese momento es necesario pulsar <code>Ctrl</code>+<code>Enter</code> o hacer clic en el comando <code>Run</code> en la parte superior de las ventanas de script. Ten en cuenta que el cursor no tiene que estar al principio del comando, y que el comando puede extenderse por más de una línea, se ejecutará completamente.</p>
+<p>Sin embargo, si una sola línea constituye un comando completo, R sólo ejecutará un comando. Después de ejecutar un comando, el cursor saltará automáticamente al siguiente comando, lo que hace que sea muy eficiente ejecutar grandes trozos de código con sólo pulsar <code>Ctrl</code>+<code>Enter</code> o hacer clic en <code>Run</code> varias veces.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/01-intro-r/new_script.gif" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">El proceso completo de crear un nuevo script, esribir código, y ejecutarlo. it.</figcaption>
+</figure>
+</div>
+<p>Para controlar mejor el trozo de código que quieres ejecutar, puedes seleccionarlo y pulsar <code>Ctrl</code>+<code>Enter</code>, y R ejecutará la selección.</p>
+<p>Para ejecutar todo el código del script, pulse <code>Ctrl+Mayús+Enter</code> o haga clic en <code>Fuente</code> en la barra que hay encima del script.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./index.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Presentación</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./00_Intro_R.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introducción a R</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">Apuntes y ejercicios de geoestadística forestal. Aitor Ameztegui, Universitat de Lleida.</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">Este libro se ha elaborado con <a href="https://quarto.org/">Quarto</a>.</div>
+  </div>
+</footer>
+
+
+
+</body></html>
