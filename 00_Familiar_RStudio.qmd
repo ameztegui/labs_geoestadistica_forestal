@@ -1,6 +1,6 @@
 ---
 title: "Familiarizándose con R y RStudio"
-subtitle: "Geoestadística i Tècniques d'Observació Global (24/25)" 
+subtitle: "Geoestadística i Tècniques d'Observació Global" 
 author: "Aitor Ameztegui (UdL)"
 date: "last-modified"
 

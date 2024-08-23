@@ -1,6 +1,6 @@
 ---
 title: "Análisis de patrón de puntos en R"
-subtitle: "Geoestadística i Tècniques d'Observació Global (24/25)" 
+subtitle: "Geoestadística i Tècniques d'Observació Global" 
 author: "Aitor Ameztegui (UdL)"
 date: "last-modified"
 format: 
