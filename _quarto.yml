@@ -19,6 +19,7 @@ book:
   repo-url: https://github.com/ameztegui/labs_geoestadistica_forestal
   repo-actions: [edit, issue]
   
+  
   chapters:
     - index.qmd
 
