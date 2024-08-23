@@ -1,13 +1,13 @@
 project:
   type: book
-  output-dir: _docs
+  output-dir: docs
 
 book:
   title: "Apuntes y ejercicios de geoestadística para forestales"
 
   page-footer:
     left: |
-      Apuntes y ejercicios de geoestadística para forestales. Aitor Ameztegui, Universitat de Lleida.
+      Apuntes y ejercicios de geoestadística forestal. Aitor Ameztegui, Universitat de Lleida.
     right: |
       Este libro se ha elaborado con <a href="https://quarto.org/">Quarto</a>.
   author: "Aitor Ameztegui"
@@ -15,9 +15,8 @@ book:
   
   cover-image: images/cover.png
   favicon: images/udl.png
-  site-url: https://r4ds.hadley.nz/
-  repo-url: https://github.com/hadley/r4ds/
   repo-branch: main
+  repo-url: https://github.com/ameztegui/labs_geoestadistica_forestal
   repo-actions: [edit, issue]
   
   chapters:
@@ -42,8 +41,6 @@ book:
         - 06_InterpolacionEspacial.qmd
         - 07_RegresionEspacial.qmd
         
-bibliography: references.bib
-
 format:
   html:
     theme: cosmo
