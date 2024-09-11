@@ -1,8 +1,4 @@
 ---
-title: "Introducción a Quarto y RMarkdown"
-subtitle: "Geoestadística i Tècniques d'Observació Global" 
-author: "Aitor Ameztegui (UdL)"
-date: "last-modified"
 format: 
     html:
         theme: cerulean
@@ -10,6 +6,9 @@ format:
 editor_options: 
   chunk_output_type: console
 ---
+
+# Introducción a Quarto y RMarkdown {#sec-Quarto} 
+
 
 ## Introducción. Objetivo.
 

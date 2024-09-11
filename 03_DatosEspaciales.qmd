@@ -1,8 +1,4 @@
 ---
-title: "Trabajando con datos espaciales en R"
-subtitle: "Geoestadística i Tècniques d'Observació Global" 
-author: "Aitor Ameztegui (UdL)"
-date: "last-modified"
 format: 
     html:
         theme: cerulean
@@ -11,10 +7,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-```{r setup, include=FALSE, eval = F}
-knitr::opts_chunk$set(echo = TRUE)
-
-```
+# Trabajando con datos espaciales en R {#sec-SpatialData} 
 
 ## Introducción
 

@@ -1,14 +1,13 @@
 ---
-title: "Introducción a R"
-subtitle: "Geoestadística i Tècniques d'Observació Global" 
-author: "Aitor Ameztegui (UdL)"
-date: "last-modified"
-
 format: 
     html:
         theme: cerulean
         toc: true
 ---
+
+# Introducción a R {#sec-introR} 
+
+
 
 ```{r include=FALSE}
 library(tidyverse)

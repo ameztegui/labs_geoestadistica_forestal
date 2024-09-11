@@ -1,8 +1,4 @@
 ---
-title: "Regresión espacial en R"
-subtitle: "Geoestadística i Tècniques d'Observació Global" 
-author: "Aitor Ameztegui (UdL)"
-date: "last-modified"
 format: 
     html:
         theme: cerulean
@@ -10,6 +6,8 @@ format:
 editor_options: 
   chunk_output_type: console
 ---
+
+# Regresión espacial {#sec-SpatReg} 
 
 ## Introducción. Regresión lineal y estructura espacial
 

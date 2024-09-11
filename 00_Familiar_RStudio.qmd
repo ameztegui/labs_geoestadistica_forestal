@@ -1,14 +1,11 @@
 ---
-title: "Familiarizándose con R y RStudio"
-subtitle: "Geoestadística i Tècniques d'Observació Global" 
-author: "Aitor Ameztegui (UdL)"
-date: "last-modified"
-
 format: 
     html:
         theme: cerulean
         toc: true
 ---
+
+# Familiarizándose con R y RStudio {#sec-RStudio} 
 
 ## Introducción. Objetivo.
 

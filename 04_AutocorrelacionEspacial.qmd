@@ -1,8 +1,4 @@
 ---
-title: "Autocorrelación espacial en ArcGIS y R"
-subtitle: "Geoestadística i Tècniques d'Observació Global" 
-author: "Aitor Ameztegui (UdL)"
-date: "last-modified"
 format: 
     html:
         theme: cerulean
@@ -10,6 +6,9 @@ format:
 editor_options: 
   chunk_output_type: console
 ---
+
+# Autocorrelación espacial {#sec-Autocorrelacion} 
+
 
 ## Introducción
 

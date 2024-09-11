@@ -179,7 +179,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./04_AutocorrelacionEspacial.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Autocorrelación espacial en ArcGIS y R</span></span></a>
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Autocorrelación espacial</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -191,13 +191,13 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./06_InterpolacionEspacial.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Interpolación espacial en R</span></span></a>
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Interpolación espacial</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./07_RegresionEspacial.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Regresión espacial en R</span></span></a>
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Regresión espacial</span></span></a>
   </div>
 </li>
       </ul>
@@ -215,7 +215,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#presentación" id="toc-presentación" class="nav-link active" data-scroll-target="#presentación">Presentación</a>
   <ul class="collapse">
   <li><a href="#qué-es-la-geoestadística" id="toc-qué-es-la-geoestadística" class="nav-link" data-scroll-target="#qué-es-la-geoestadística">¿Qué es la geoestadística?</a></li>
-  <li><a href="#de-qué-va-este-curso" id="toc-de-qué-va-este-curso" class="nav-link" data-scroll-target="#de-qué-va-este-curso">¿De qué va este curso?</a></li>
+  <li><a href="#de-qué-va-esta-asignatura-de-qué-no-va" id="toc-de-qué-va-esta-asignatura-de-qué-no-va" class="nav-link" data-scroll-target="#de-qué-va-esta-asignatura-de-qué-no-va">¿De qué va esta asignatura? ¿De qué no va?</a></li>
   <li><a href="#qué-hay-de-especial-en-lo-espacial" id="toc-qué-hay-de-especial-en-lo-espacial" class="nav-link" data-scroll-target="#qué-hay-de-especial-en-lo-espacial">¿Qué hay de especial en lo espacial?</a></li>
   <li><a href="#cuándo-un-análisis-es-espacial" id="toc-cuándo-un-análisis-es-espacial" class="nav-link" data-scroll-target="#cuándo-un-análisis-es-espacial">¿Cuándo un análisis es espacial?</a></li>
   <li><a href="#tipos-de-preguntas-que-requieren-análisis-espacial" id="toc-tipos-de-preguntas-que-requieren-análisis-espacial" class="nav-link" data-scroll-target="#tipos-de-preguntas-que-requieren-análisis-espacial">Tipos de preguntas que requieren análisis espacial</a></li>
@@ -252,7 +252,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">Invalid Date</p>
+      <p class="date">Septiembre de 2024</p>
     </div>
   </div>
   
@@ -265,32 +265,100 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="presentación" class="level1 unnumbered">
 <h1 class="unnumbered">Presentación</h1><p><img src="images/cover.png" title="Apuntes y ejercicios de geoestadística para forestales" class="quarto-cover-image img-fluid"></p>
-<p>Bienvenidos a la asignatura de “Geoestadística y Técnicas de Observación Global”. Esta asignatura se incluye en la doble titulación del Grado en Ingeniería Forestal y Grado en Conservación de la Naturaleza. Se trata de una asignatura en la que se enseñan técnicas y métodos para el análisis estadístico, modelización y predicción de procesos espaciales.</p>
+<p>Bienvenidos a laos apuntes y tutoriales de la asignatura “Geoestadística y Técnicas de Observación Global”. Esta asignatura se incluye en la doble titulación del Grado en Ingeniería Forestal y Grado en Conservación de la Naturaleza. Se trata de una asignatura en la que se enseñan técnicas y métodos para el análisis estadístico, modelización y predicción de procesos espaciales.</p>
 <section id="qué-es-la-geoestadística" class="level2">
 <h2 class="anchored" data-anchor-id="qué-es-la-geoestadística">¿Qué es la geoestadística?</h2>
 <p>La geoestadística es un tipo de estadística utilizada para analizar y predecir los valores asociados a fenómenos espaciales o espacio-temporales. Incorpora las coordenadas espaciales (y en algunos casos temporales) de los datos en los análisis. Las primeras herramientas geoestadísticas se desarrollaron para describir patrones espaciales y interpolar valores en lugares donde no se tomaron muestras. El análisis geoestadístico moderno permite también construir modelos de interpolación e incertidumbre más precisos, incorporando análisis mulivariados.</p>
 <p>La geoestadística se utiliza ampliamente en muchos ámbitos de la ciencia y la ingeniería, por ejemplo para estimar niveles de contaminantes y determinar si constituyen una amenaza para la salud, para espacializar los datos procedentes de muestreos no continuos, como el Inventario Forestal Nacional , o para cartografiar características del suelo como los nutrientes, salinidad, etc. Y relacionarlos con el rendimiento de cultivos agrícolas o sistemas forestales, entre otros muchos:</p>
-<p>En todos estos ejemplos el contexto general es que existe algún fenómeno de interés que se produce en el paisaje I que se caracteriza a partir de muestreos puntuales. La geoestadística se utiliza a continuación para elaborar predicciones en las ubicaciones no muestreadas. En esta asignatura se introducen los principios de la modelización estadística y de la información espacial, para a continuación presentar las herramientas disponibles para un análisis geoestadístico de los procesos de interés.</p>
+<p>En todos estos ejemplos el contexto general es que existe algún fenómeno de interés que se produce en el paisaje y que se caracteriza a partir de muestreos puntuales. La geoestadística se utiliza a continuación para elaborar predicciones en las ubicaciones no muestreadas. En esta asignatura se introducen los principios de la modelización estadística y de la información espacial, para a continuación presentar las herramientas disponibles para un análisis geoestadístico de los procesos de interés.</p>
 </section>
-<section id="de-qué-va-este-curso" class="level2">
-<h2 class="anchored" data-anchor-id="de-qué-va-este-curso">¿De qué va este curso?</h2>
+<section id="de-qué-va-esta-asignatura-de-qué-no-va" class="level2">
+<h2 class="anchored" data-anchor-id="de-qué-va-esta-asignatura-de-qué-no-va">¿De qué va esta asignatura? ¿De qué no va?</h2>
+<p>Esta asignatura se centra en diferentes tipos de análisis espacial, y ofrece al alumno una primera aproximación a los diversos tipos de análisis espacial existentes, con una visión muy práctica. Sin embargo, no se espera que el alumno aprenda tan sólo a realizar análisis geoestadísticos, sino también a interpretar los resultados, y a identificar qué tipo de análisis resultará más adecuado para cada tipo de pregunta a resolver.</p>
+<p>Si bien es importante definir cuál es el objetivo del curso, resulta igualmente importante dejar claro cuáles no son los objetivos del mismo, al menos no objetivos directos de la asignatura:</p>
+<ul>
+<li><p><strong>Estadística</strong>: para realizar un análisis geoestadístico es evidente que se necesita dominar algunos conceptos estadísticos. Conceptos como muestra, población, test de hipótesis o significación aparecerán de manera recurrente durante el curso. Sin embargo, no daremos por hecho un conocimiento profundo de los mismos, por lo que los explicaremos según las necesidades del alumnado. En cualquier caso, cabe destacar que esto no es un curso de estadística, por lo que los alumnos que identifiquen problemas en ese sentido deben referirse a sus apuntes de estadística de segundo curso. La excepción en este sentido es la regresión lineal, para la que se realizará un repaso en profundidad (<a href="01_RegresionLineal.html"><span>Chapter&nbsp;4</span></a>).</p></li>
+<li><p><strong>Sistemas de información geográfica (GIS)</strong>: evidentemente, un análisis geoespacial implica una ubicación de los fenómenos que estudiaremos. Es decir, nuestros datos tendrán coordenadas. Aunque la ubicación de los objetos es una característica fundamental en la geoestadística, no debe confundirse esta asignatura con un curso de SIG. Conceptos como archivo vectorial, raster, sistema de referencia de coordenadas (CRS), intersección de capas etc. serán frecuentes a la hora de trabajar con los ficheros espaciales, pero se supone un conocimiento suficiente por parte del alumnado (un conocimiento básico de SIG es suficiente). Sin embargo, sí dedicaremos un tema al manejo y visualización de información espacial en R (<a href="03_DatosEspaciales.html"><span>Chapter&nbsp;6</span></a>)</p></li>
+<li><p><strong>Cartografía</strong>: La cartografía es la rama de la geografía encargada de la representación gráfica de un área geográfica, usualmente en términos bidimensionales y convencionales. Es decir que la cartografía es el arte y la ciencia de hacer, analizar, estudiar y comprender todo tipo de mapas. Cualquiera puede hacer un mapa, pero un mapa que comunique al público destinatario de manera adecuada debe respetar los principios del diseño cartográfico (por ejemplo, la legibilidad). Aunque en esta asignatura produciremos numerosos mapas, conocer los elementos cartográficos y las reglas de la elaboración cartográfica quedan fuera del alcance de la misma, si bien se repasaran algunas nociones (escala, leyenda, flecha de norte…)</p></li>
+<li><p><strong>R y RStudio</strong>: R como hemos comentado, esta es una asignatura eminentemente práctica, y R es el software elegido como herramienta para realizar la mayoría de los análisis espaciales que cubriremos. Hemos elegido R por numerosos motivos, que van desde su versatilidad (funciona en cualquier sistema operativo), su carácter abierto y gratuito, su potencia y capacidad de análisis, o su creciente popularidad en el ámbito profesional y académico. Los alumnos se familiarizarán con el uso de R como herramienta de análisis, utilizándolo además para presentar los informes de prácticas. Sin embargo, aunque esta asignatura no es un curso de R, incluye una Unidad 0 que pretende ofrecer a los estudiantes una introducción tanto al lenguaje de programación R (<a href="00_Intro_R.html"><span>Chapter&nbsp;2</span></a>) como a las herramientas RStudio (<a href="00_Familiar_RStudio.html"><span>Chapter&nbsp;1</span></a>) y Quarto <a href="00_RMarkdown_Quarto.html"><span>Chapter&nbsp;3</span></a>), que se utilizarán durante el curso. Esta Unidad 0 queda a disposición de los y las estudiantes para refrescar conceptos relativos a R y como fuente de consulta de dudas durante todo el curso. Además, pueden plantearse al profesorado cualquier duda relativa a las herramientas que usaremos.</p></li>
+</ul>
 </section>
 <section id="qué-hay-de-especial-en-lo-espacial" class="level2">
 <h2 class="anchored" data-anchor-id="qué-hay-de-especial-en-lo-espacial">¿Qué hay de especial en lo espacial?</h2>
+<p>Los sistemas espaciales son <em>especiales</em> debido a las relaciones espaciales inherentes y a las características temporales de las entidades geográficas. Por lo tanto, es necesario tener en cuenta el contexto y las relaciones espaciotemporales a la hora de modelizar y simular procesos espaciales.</p>
+<p>En otras palabras, el análisis espacial tiene en cuenta de manera explícita las relaciones espaciotemporales que existen entre los objetos de estudio, y pretende extraer conclusiones derivadas no sólo de sus valores, sino también de su ubicación espaciotemporal. Un caso que se suele citar habitualmente como primer análisis espacial es el mapa del cólera de John Snow (ver recuadro).</p>
+<blockquote class="blockquote">
+<p><strong>El mapa del cólera de John Snow</strong><br> <br> A mediados del siglo XIX, la creencia general presuponía que el cólera se propagaba a través del aire. La teoría de los microbios y su relación con las enfermedades aún no estaba establecida (Pasteur tardaría aún 10 años en realizar los experimentos que le darían validez) y los brotes de cólera que asolaban Londres hacia 1850 eran, para todos, un misterio. Snow fue un médico inglés nacido en 1813, considerado el padre de la epidemiología. Al contrario que otros compañeros, el pensaba que el cólera no se propagaba por el aire, y sospechaba que lo hacía por el agua contaminada. Para demostrarlo, en 1854 empezó a registrar los casos de cólera del barrio del Soho, sobre un mapa que contenía la ubicación de las fuentes. Representaba cada muerte como un punto rojo ubicado sobre el lugar de residencia. En total, registró 578 muertes, y el resultado no dejaba lugar a pocas dudas: casi todos los casos se concentraban alrededor de la fuente de Broad Street. Sin embargo, también había casos aislados, fuera del área de influencia de la fuente, excepciones que Snow documentó de manera exhaustiva hasta descubrir el origen del caso. Además de sus análisis geográficos, Snow tomó muestras de las distintas fuentes y las analizó bajo el microscopio, confirmando la presencia de un organismo desconocido en la fuente de Broad Street. Aunque aún no se conocía el papel de los microbios en la transmisión de enfermedades, las autoridades decidieron cerrar la fuente por precaución, y el brote de cólera remitió inmediatamente. Finalmente, se descubrió que la fuente había sido contaminada por un pañal arrojado a un pozo negro cercano.</p>
+<img src="images/john_snow.png" class="img-fluid" data-fig-align="center" alt="El famoso mapa del cólera de John Snow">
+</blockquote>
+<p>Pero además, trabajar con datos espaciales requiere conocimientos especializados y habilidades en áreas que son específicas de la disciplina. Algunos ejemplos son:</p>
+<ul>
+<li><p>Geodatos: los datos geoespaciales están georreferenciados a una ubicación sobre, debajo o encima de la superficie terrestre. Las mediciones de coordenadas pueden ser ambiguas y difíciles de manejar, ya que existen multitud de sistemas de coordenadas y datums geodésicos.</p></li>
+<li><p>Análisis espacial: El componente de localización de los geodatos permite nuevos tipos de análisis basados en la distribución espacial de una o varias capas de datos. Facilita el descubrimiento de tendencias, patrones y relaciones espaciales y resuelve problemas mediante el modelado espacial.</p></li>
+<li><p>Estadística espacial: existe una potente colección de herramientas utilizadas para optimizar el muestreo de datos espaciales; para interpolar datos puntuales (por ejemplo, Kriging), medir distribuciones (por ejemplo, análisis de puntos calientes o <em>hotspots</em>), analizar patrones (por ejemplo, agrupación) y modelizar relaciones espaciales (por ejemplo, regresión ponderada geográficamente).</p></li>
+</ul>
 </section>
 <section id="cuándo-un-análisis-es-espacial" class="level2">
 <h2 class="anchored" data-anchor-id="cuándo-un-análisis-es-espacial">¿Cuándo un análisis es espacial?</h2>
+<p>Hasta ahora hemos hablado de que la geoestadística es la disciplina que trabaja con los datos espaciales, y hemos definido las particularidades de trabajar con datos espaciales. Pero ¿qué hace que un dato sea espacial, o geodato? La particularidad de los datos geoespaciales, espaciales o geodatos (podemos considerar los tres términos sinónimos) es que poseen dos tipos de información:</p>
+<ul>
+<li>El valor de la variable de interés, que llamaremos atributo</li>
+<li>La localización de la observación</li>
+</ul>
+<p>A diferencia de los geodatos, en los datos no espaciales, la localización no importa. Un ejemplo claro de datos espaciales o geodatos sería una serie de valores de temperatura de un conjunto de estaciones meteorológicas: tendremos el dato de la temperatura media del día, o la precipitación, pero también las coordenadas de la ubicación de la estación. Para predecir la temperatura que hará en un punto concreto del territorio en el que no existe estación, necesitaremos tener en cuenta ambos tipos de información: la temperatura de las estaciones más cercanas, y su distancia al punto de interés. Este procedimiento, que se llama interpolación espacial, es el que emplean herramientas como los Atlas climáticos o las Apps meteorológicas como Meteoblue o Accuweather.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/cover.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">La predicción de datos meteorológicos mediante interpolación es un claro ejemplo de análisis espacial</figcaption>
+</figure>
+</div>
+<p>Lógicamente, también podríamos realizar algún tipo de análisis que no utilice la información espacial. Por ejemplo, si calculamos simplemente la media y la desviación típica de la temperatura máxima de todas las estaciones de una provincia, no estaremos usando la ubicación de las estaciones. En este caso, a pesar de la naturaleza espacial de los datos, nuestro análisis no sería un análisis geoestadístico.</p>
 </section>
 <section id="tipos-de-preguntas-que-requieren-análisis-espacial" class="level2">
 <h2 class="anchored" data-anchor-id="tipos-de-preguntas-que-requieren-análisis-espacial">Tipos de preguntas que requieren análisis espacial</h2>
+<p>Como hemos comentado, las características propias de los datos espaciales permite abordar preguntas diferentes - o complementarias - a las que podríamos hacernos si no tenemos en cuenta la ubicación de los datos. Estas preguntas pueden ser de muy diverso tipo, y en algunos casos han dado lugar a subdisciplinas enteras dentro del análisis espacial.</p>
+<p>Un primer tipo de preguntas busca conocer dónde se producen los eventos. En este caso, el valor de la variable (atributo) no es tan importante como su ubicación. Ejemplos de este tipo de preguntas serían: ¿la regeneración del pino albar se produce de manera dispersa o agrupada? ¿Existen zonas con mayor densidad de igniciones que otras? ¿Se localizan los robos de manera aleatoria o existen patrones de agrupación? También podemos analizar si las observaciones de un tipo (por ejemplo, de una especie) afectan a la probabilidad de observar otro tipo (otra especie), lo que nos da idea de posibles interacciones, tanto positivas como negativas, entre ellas. Este tipo de cuestiones son propias del análisis de patrones de puntos, o análisis de agregación, que trataremos en el tema <a href="05_PatronPuntos.html"><span>Chapter&nbsp;8</span></a>.</p>
+<p>Otro tipo de preguntas pretende predecir el valor de una variable en un punto del espacio en el que no la hemos medido. Por ejemplo, teniendo valores de temperatura de varias estaciones meteorológicas cercanas, ¿cuál es el valor de temperatura en nuestro rodal? Otro ejemplo sería determinar la altura media del arbolado que podemos esperar en un rodal en el que hemos medido tan sólo 5 parcelas. Este tipo de preguntas pueden resolverse mediante interpolación espacial, que pretende predecir el valor a partir de los valores más cercanos al punto de interés (<a href="06_InterpolacionEspacial.html"><span>Chapter&nbsp;9</span></a>) o a partir de la regresión espacial, que utiliza una segunda variable auxiliar - y su ubicación - para realizar predicciones (<a href="07_RegresionEspacial.html"><span>Chapter&nbsp;10</span></a>).</p>
+<p>Un último tipo de cuestiones que citaremos es el que pretende identificar si las observaciones geográficamente cercanas son más similares entre sí que las distantes. Esto, por ejemplo, nos permitiría detectar si existen “hotspots” o zonas con mayor acumulación de biomasa que otras, o si existen zonas en el monte donde se acumulen los rodales con mayor incidencia de plagas. Este tipo de cuestiones responden a análisis de autocorrelación espacial, y se tratarán en el tema <a href="04_AutocorrelacionEspacial.html"><span>Chapter&nbsp;7</span></a>.</p>
 </section>
 <section id="funcionamiento-de-la-asignatura" class="level2">
 <h2 class="anchored" data-anchor-id="funcionamiento-de-la-asignatura">Funcionamiento de la asignatura</h2>
 <section id="tipos-de-sesiones" class="level3">
 <h3 class="anchored" data-anchor-id="tipos-de-sesiones">Tipos de sesiones</h3>
+<p>Teoría: introduciremos los principales conceptos teóricos necesarios para entender los temas</p>
+<p>Labs: sesiones guiadas de carácter práctico en el que aplicaremos los conceptos a datos reales, produciendo un análisis de datos que interpretaremos</p>
+<p>Prácticas: resolución de casos de estudio práctico en el que se aplicará lo visto en las dos sesiones anteriores. Se debe entregar un informe individual de cada práctica, que será evaluado.</p>
+<p>Exámenes: dos parciales. Se evaluará el conocimiento adquirido durante las sesiones teóricas y los labs.</p>
 </section>
 <section id="nuestras-herramientas" class="level3">
 <h3 class="anchored" data-anchor-id="nuestras-herramientas">Nuestras herramientas</h3>
+<section id="r" class="level4">
+<h4 class="anchored" data-anchor-id="r">R</h4>
+<p>Se está convirtiendo en lingua franca en ciencia de datos</p>
+<p>Versátil, multiplataforma</p>
+<p>100% gratis y libre</p>
+<p>Los análisis en R son transparentes, compartibles, y reproducibles</p>
+<p>Tiene funcionalidades espaciales avanzadas…</p>
+<p>…pero NO es un GIS</p>
+</section>
+<section id="rstudio" class="level4">
+<h4 class="anchored" data-anchor-id="rstudio">RStudio</h4>
+<p>Es un entorno de desarrollo integrado (IDE)</p>
+<p>Interfaz mucho más amigable, y tiene otras herramientas útiles:</p>
+<ul>
+<li>Autocompletado</li>
+<li>gestión y visualización de objetos</li>
+<li>Exportado de figuras, tablas, etc.</li>
+<li>Gestión de scripts (proyectos de RStudio).</li>
+</ul>
+<p>RStudio tiene numerosos tutoriales, ayudas, videos… hace mucho más fácil usar R.</p>
+</section>
+<section id="qgis" class="level4">
+<h4 class="anchored" data-anchor-id="qgis">QGis</h4>
+</section>
+<section id="arcgis-pro" class="level4">
+<h4 class="anchored" data-anchor-id="arcgis-pro">ArcGis Pro</h4>
+</section>
 </section>
 <section id="evaluación" class="level3">
 <h3 class="anchored" data-anchor-id="evaluación">Evaluación</h3>
