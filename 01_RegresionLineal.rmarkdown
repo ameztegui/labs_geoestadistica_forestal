@@ -1,0 +1,560 @@
+---
+format: 
+    html:
+        theme: cerulean
+        toc: true
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+# Regresión lineal en R {#sec-RegLin} 
+
+## Antes de ajustar la regresión...
+
+Como hemos visto en teoría, la regresión lineal es el proceso de obtención de una ecuación o fórmula matemática que capture la relación entre una variable respuesta o dependiente y una o varias variables explicativas o independientes. En realidad, esta definición encaja en cualquier tipo de regresión, no sólo la lineal, y la particularidad de la regresión lineal es que asumimos que la relación entre la variable dependiente (que llamaremos `y`) y la variable explicativa (`x`) es lineal, es decir, que la ecuación es una recta.
+
+## Nuestros datos
+
+Para esta actividad vamos a trabajar con la tabla (o `data frame`) llamado `meteo`, que podemos encontrar en el campus virtual, dentro de la carpeta "Recursos/Datos/meteo", en un fichero llamado "meteo.txt". Dicha tabla contiene las siguientes variables climáticas del mes de junio, extraídas de una serie de estaciones meteorológicas en el valle del Ebro:
+
+-   **TavgMAX**: temperatura media de las máximas de junio, en ºC
+
+-   **Tavg**: temperatura media diaria de junio, en ºC
+
+-   **d_atl**: distancia al océano Atlántico (en m)
+
+-   **d_medit**: distancia al mar Mediterráneo en m
+
+-   **elevation**: altitud sobre el nivel del mar (m)
+
+-   **long**: longitud en UTM, sistema de referencia EPSG:23030
+
+-   **lat**: latitud en UTM, sistema de referencia EPSG:23030
+
+Para cargar la tabla a nuestra sesión de R debemos guardarla en el ordenador, y después podemos usar el menú "Import Dataset" o copiar y ejecutar el siguiente código:
+
+
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+meteo <- read_delim("./data/meteo/meteo.txt",  # cambia la ruta según el caso!!!!
+                     "\t", locale = locale(date_names = "es", 
+                                           decimal_mark = ",", 
+                                           grouping_mark = "."))
+```
+
+
+
+Una vez el data frame está cargado, podemos echar un vistazo a las variables (y su tipo) tecleando `head()` o `summary()`:
+
+
+
+```{r}
+head(meteo)
+
+```
+
+```{r}
+summary(meteo)
+```
+
+
+
+El primer paso antes de realizar un análisis de regresión - o de ajustar cualquier modelo - entre dos o más variables es realizar un análisis exploratorio de los datos: podemos, por ejemplo, representar un histograma o boxplot de las variables, para comprobar que no hay valores aberrantes, y es muy recomendable también realizar un gráfico de dispersión (o scatterplot, en inglés) para ver *la pinta* que tiene la relación entre ellas.
+
+En este caso, nos interesa saber la relación que hay entre la elevación (`elevation`) y la temperatura media del mes de junio (`Tavg`), veamos la distribución que siguen ambas variables:
+
+
+
+```{r}
+hist(meteo$Tavg)
+hist(meteo$elevation)
+```
+
+
+
+Aparentemente, no presentan problemas. Ambas siguen distribuciones bastante normales, sin presencia de valores anómalos, o distribuciones sesgadas. También podemos analizar su distribución mediante boxplots:
+
+
+
+```{r}
+boxplot(meteo$Tavg)
+boxplot(meteo$elevation)
+```
+
+
+
+Y finalmente, veamos la magnitud de la relación entre ambas a través de su coeficiente de correlación. Para calcularlo usaremos la función `cor()` de R:
+
+
+
+```{r}
+cor(meteo$elevation, meteo$Tavg)
+```
+
+
+
+También es siempre recomendable evaluar la forma de la relación entre ambas a través de un gráfico de dispersión o scatterplot, para detectar posibles tendencias no lineales:
+
+
+
+```{r}
+plot(x = meteo$elevation, y = meteo$Tavg)
+```
+
+
+
+Parece que sí puede haber una relación, y que efectivamente tiene aspecto de ser lineal. Vamos a ajustar la regresión para comprobarlo:
+
+## La regresión lineal en R
+
+R tiene incluidas una serie de funciones estadísticas, las principales, que se incluyen en el paquete `stats`, que viene por defecto instalado en R (no hace falta instalarlo). Para ajustar, o calibrar, regresiones lineales, utilizaremos la función `lm`. Podemos teclear `help("lm")` para ver cómo funciona y qué argumentos requiere esta función:
+
+
+
+```{r eval = F}
+help("lm")
+```
+
+```{r eval = F}
+lm(formula, data, subset, weights, na.action, method = "qr", model = TRUE, x = FALSE, 
+   y = FALSE, qr = TRUE, singular.ok = TRUE, contrasts = NULL, offset)
+```
+
+
+
+Vemos que hay numerosos argumentos, pero la mayoría no son necesarios a no ser que queramos una configuración particular. En realidad sólo necesitamos dos:
+
+-   `formula`: aquí especificamos qué variables, de las incluidas en nuestra tabla, usaremos para ajustar la regresión. Además, al contrario que en la correlación, debemos definir cuál es la variable dependiente, y cuál o cuales son las variables independientes. Una fórmula tiene este aspecto:
+
+    `var_dep ~ v_indep_1 + v_indep_2 + v_indep_3 +`
+
+Como vemos, la var. dependiente y la/s independiente/s se separan por el operador `~`
+
+-   `data`: especifica el objeto que contiene las variables. Todas las variables definidas en la fórmula deben estar incluidas en `data`
+
+## Regresión lineal simple
+
+Vamos a ajustar una regresión simple (llamada así porque sólo contiene una variable independiente), en la que evaluaremos el papel de la altitud (`elevation`) en la temperatura media (`Tavg`), usando el data frame `meteo` que hemos cargado antes. Para ello especificamos la fórmula:
+
+
+
+```{r}
+lm(Tavg ~ elevation, data = meteo)
+```
+
+
+
+> Es importante tener claro que en el caso de una regresión lineal, tendremos una variable que queremos predecir (variable dependiente, `Tavg`) y otra a partir de la que obtendremos las predicciones (var. independiente, `elevation`). Es decir, queremos predecir la temperatura a partir de la elevación. Debemos tener eso en cuenta a la hora de definir la fórmula.
+
+Ejecutando el código de arriba obtenemos la lista de los coeficientes de regresión ($\beta_0$ y $\beta_1$), que son útiles para construir la ecuación de la recta de regresión. Un coeficiente positivo indica que la relación entre la variable dependiente y la variable independiente es positiva, y al contrario. En este caso, el resultado nos dice que, cada metro que subimos en altitud, la temperatura baja de media 0.0057 grados. O lo que es lo mismo, cada 100 m que subimos, baja 0.57 grados la temperatura Por otro lado, el coeficiente del `intercepto` puede interpretarse como $\beta_0$, el valor de temperatura cuando la altitud es igual a 0.
+
+Sin embargo, si ejecutamos `lm` (o cualquier otra función) sin guardar el resultado, se imprime en la consola pero no se guarda. Para guardarlo, le asignaremos un nombre, el que queramos:
+
+
+
+```{r}
+mod_lm <- lm(Tavg ~ elevation, data = meteo)
+```
+
+
+
+Ahora lo guarda, pero no imprime nada. Si tecleamos el nombre del objeto, lo imprime, y obtenemos lo mismo que antes:
+
+
+
+```{r}
+mod_lm
+```
+
+
+
+O aún mejor, podemos usar la función `summary()`, que proporciona mucha más información:
+
+
+
+```{r}
+summary(mod_lm)
+```
+
+
+
+Veamos que podemos obtener de `summary()`:
+
+-   El **grado de ajuste** (o bondad de ajuste) del modelo (`R-squared`), calculada a través del estadístico $F$, y su significación
+
+-   Los **cuartiles de los residuos**, que nos dan una idea de si los residuos se encuentran simétricamente distribuidos a ambos lados del 0 - lo que sería deseable - o no.
+
+-   La estimación de los **coeficientes** del modelo, tanto el intercepto como cada una de las variables explicativas. Estos números son los que forman parte de la fórmula de regresión.
+
+-   La **significación de los coeficientes**: junto con la estmación del coeficiente, se nos da el cálculo del error estándar y del estadístico $t$, que se usa para evaluar el p-valor, representado aquí por la columna `Pr(>|t|`)
+
+### Visualizando la regresión
+
+Como hemos guardado el resultado de la regresión en un objeto (que hemos llamado `mod_lm`), podemos usarlo, por ejemplo, para hacer gráficas.
+
+Empecemos por plotear como antes la elevación y la temperatura:
+
+
+
+```{r}
+plot(meteo$elevation, meteo$Tavg)
+```
+
+
+
+ahora podemos añadir la ecuación de regresión usando la función `abline()`. Esta función tiene como argumento un objeto de regresión, y nos devuelve la linea recta calculada mediante la regresión:
+
+
+
+```{r}
+plot(meteo$elevation, meteo$Tavg) +
+    abline(mod_lm)
+```
+
+
+
+En contra de lo que cabría esperar, si ploteamos directamente el objeto de la regresión no nos dará la gráfica de arriba, sino que nos da una serie de gráficos sobre los residuos, que veremos más adelante.
+
+
+
+```{r}
+plot(mod_lm)
+```
+
+
+
+> **Sobre la visualización de los datos** </br> </br> Ya hemos comentado varias veces la importancia de visualizar nuestros datos antes de extraer ninguna conclusión de ellos. Hay una cierta tendencia a considerar que una simple visualización no aporta demasiado, ya que sólo podemos llegar a conclusiones cualitativas, mientras que un análisis de correlación o regresión es *estadística* y por tanto nos proporcionan información numérica que podemos cuantificar (¿es la variable significativa?). Sin embargo, no debemos NUNCA interpretar los resultados de un análisis sin visualizar los datos. <br><br> Un ejemplo de esto es el cuarteto de Anscombe, creado en 1973 por el estadístico británico Francis Anscombe. Se trata de cuatro datasets que contienen cada uno una variable `x` y una `y`. Podemos acceder a ellos mediante el paquete `datasets`, con la instrucción `library(datasets)` y tecleando a continuación `anscombe`<br><br> Para comprobar qué tiene de particular este dataset, realizad lo siguiente: <br><br> 1. Calculad la media y desviación típica de todas las `x`, y de todas las `y` <br> 2. Calculad la correlación entre `x` e `y` para los cuatro datasets <br> 3. Ajustad un modelo lineal para cada par de `x` e `y` <br> 4. Representad visualmente cada pareja de `x` e `y` <br><br> ¿Qué observamos? <br> <br> </span>
+
+### Haciendo predicciones a partir de nuestro modelo
+
+Uno de los objetivos principales de la regresión es conocer la ecuación que relaciona la variable dependiente con la independiente, de manera que podamos predecir, para cualquier valor de $x$, cual sería el valor de $y$ esperado.
+
+Para hacer predicciones, podríamos simplemente construir una nueva variable usando los coeficientes obtenidos de la regresión:
+
+
+
+```{r}
+coef(mod_lm)
+
+predicciones <- 21.923433 - 0.005711*meteo$elevation
+predicciones
+```
+
+
+
+Sin embargo, `R` incluye la función `predict()` que hace esto por nosotros automáticamente, lo cual es muy útil sobre todo en el caso de regresiones múltiples. `predict()` necesita que le demos dos inputs:
+
+-   un objeto de regresión (en este caso `mod_lm`)
+-   una tabla o data frame que contenga todas y cada una de las variables explicativas usadas para ajustar el modelo
+
+Lo que hace `predict()` es, para cada fila de la tabla que le indiquemos, calcular el valor de $y$ usando los valores de las diferentes $x$ para esa fila y los coeficientes estimados por el modelo. En el caso de la regresión simple, `mod_lm` calculará el valor de temperatura media para cada valor de altitud que contenga la tabla:
+
+
+
+```{r}
+predict(mod_lm, meteo)
+```
+
+
+
+Incluso podemos guardar estas predicciones como una columna más de `meteo`:
+
+
+
+```{r}
+meteo$pred <-  predict(mod_lm, meteo)
+
+head(meteo)
+```
+
+
+
+Ahora podríamos hacer un gráfico que compare los valores predichos y los observados:
+
+
+
+```{r}
+plot(meteo$Tavg, meteo$pred)
+```
+
+
+
+Lo interesante de la función `predict()` es que no hace falta aplicarla a la misma tabla de datos que hemos usado para ajustar el modelo, sino que si tenemos una serie de datos nueva (de otras estaciones, u otras fechas) también podemos calcular el valor predicho por el modelo. En este caso, para cualquier punto del que tengamos la altitud, podemos determinar la temperatura media. Abramos el otro fichero que teníamos disponible en el campus virtual, llamado `meteo_nuevo.txt`:
+
+
+
+```{r}
+meteo2 <- read_delim("./data/meteo/meteo_nuevo.txt", "\t")
+meteo2
+
+
+```
+
+
+
+Vemos que es una tabla que contiene valores de altitud y distancia al mediterráneo, pero no contiene de hecho valores de temperatura. En base al modelo que ajustamos antes, podemos generarlos con `predict()`:
+
+
+
+```{r}
+meteo2$temp <- predict(mod_lm, meteo2)
+meteo2
+```
+
+
+
+Esta opción es muy interesante, ya que cuando generamos una ecuación de regresión, raramente queremos aplicarla sobre los datos ya observados, sino que querremos usarla para predecir valores en aquellos lugares donde no tengamos medidas.
+
+> **Consejo:**</br></br>Debemos ser responsables, sin embargo, de no extrapolar más allá de lo lógico: si el modelo de regresión se ha ajustado con datos del valle del Ebro, ¿tiene sentido aplicarlos en Galicia?
+
+## Regresión lineal múltiple
+
+De la misma manera que ajustamos una regresión lineal simple, podemos ajustar una múltiple, simplemente añadiendo más variables independientes a la derecha de la fórmula, después del `~`:
+
+
+
+```{r}
+mod_mult <- lm(Tavg ~ d_atl + d_medit + elevation, data = meteo)
+mod_mult
+```
+
+
+
+A efectos prácticos, el modelo múltiple y el simple son prácticamente iguales, aunque en este caso la función `summary` nos da la significación de cada una de las variables:
+
+
+
+```{r}
+summary(mod_mult)
+```
+
+
+
+Vemos que la R2 del modelo ha mejorado de forma sustancial. Pero recordemos que se considera el efecto de una variable como no significativo si el p-valor asociado a ella es mayor de 0.05. Eso quiere decir que el riesgo de rechazar la hipótesis nula (el riesgo de asumir una relación cuando no la hay) es demasiado alto, y por tanto no la rechazamos. En este caso, vemos que ni la distancia al Mediterráneo ni la distancia al Atlántico resultan significativas. Según lo visto en clase, sería mejor eliminarlas, pero por otro lado nos hacen subir el R2 de manera muy clara. Probemos a quitar sólo una de ellas:
+
+
+
+```{r}
+mod_mult2 <- lm(Tavg ~ d_medit + elevation, data = meteo)
+summary(mod_mult2)
+```
+
+
+
+¡Ahora sí que la distancia al Mediterráneo resulta significativa, y la R2 del modelo (0.82) sigue siendo muy superior a la del modelo simple (0.74). Lo curioso es que si hubiéramos eliminado `d_medit`, también sería significativa `d_atl` (podéis hacer la prueba) ¿Qué puede estar pasando?
+
+Lo que estamos viendo es un ejemplo de multicolinealidad. Como la distancia al Mediterráneo y al Atlántico están muy relacionadas (si aumenta una, disminuye la otra), si introducimos las dos en el modelo este no es capaz de distinguir el efecto de cada una de ellas, y concluye que no tienen efecto. De hecho, veamos como de correlacionadas están estas dos variables:
+
+
+
+```{r}
+cor(meteo$d_atl, meteo$d_medit)
+```
+
+
+
+Por tanto, dejaremos sólo una de ellas en el modelo, en este caso la distancia al Mediterráneo. Lo interesante es que podemos predecir temperaturas en nuestra tabla de nuevos valores, usando el modelo de regresión múltiple:
+
+
+
+```{r}
+predict(mod_mult2, meteo2)
+```
+
+
+
+Esto funcionará siempre que la tabla que proporcionemos contenga todas y cada una de las variables explicativas del modelo. Si intentamos predecir con el modelo que contiene `d_atl`, recibiremos este mensaje de error:
+
+
+
+```{r, error = TRUE}
+predict(mod_mult, meteo2)
+```
+
+
+
+## Testando las asunciones del modelo
+
+Hemos visto que los modelos lineales deben cumplir básicamente cuatro criterios:
+
+### Linealidad
+
+la linealidad entre predictores y variable dependiente se puede evaluar gráficamente. En este caso, la relación entre la cota y la temperatura parece claramente lineal, como ya habíamos visto antes:
+
+
+
+```{r}
+plot(meteo$elevation, meteo$Tavg)
+```
+
+
+
+### Independencia
+
+Las observaciones deben ser independientes unas de otras (por eso se llaman variables independientes). Aunque una parte importante de la evaluación de la independencia la podemos inferir si conocemos bien la muestra, la gráfica de predichos y residuos nos puede dar también información importante. Ambos los podemos extraer del objeto `lm` que hayamos guardado, usando las funciones `fitted()` y `residuals()`, respectivamente:
+
+
+
+```{r}
+predichos <- fitted(mod_lm)
+residuos <- residuals(mod_lm)
+
+plot(predichos, residuos)
+```
+
+
+
+No parece presentar mayores problemas.
+
+### Homocedasticidad
+
+Otro importante criterio que debe seguir un modelo lineal es el de ser homocedástico. Esto quiere decir que los residuos son independientes a los valores de la variable explicativa. O dicho de otra manera, que la varianza del error es constante a lo largo de las observaciones. Lo podemos ver con la misma gráfica de antes:
+
+
+
+```{r}
+plot(predichos, residuos)
+```
+
+
+
+### Normalidad
+
+Para evaluar la normalidad de los residuos podemos usar varias gráficas:
+
+-   Histogramas
+
+Usaremos la función `hist()`, sobre los residuos del modelo (que se obtienen con la función `residuals()`):
+
+
+
+```{r}
+hist(residuals(mod_lm))
+```
+
+
+
+-   Boxplot
+
+Mediante la función `boxplot()` podemos construir un diagrama de cajas con cualquier variable (en este caso, recordad que se debe hacer sobre los residuos):
+
+
+
+```{r}
+boxplot(residuals(mod_lm), col = "steelblue")
+```
+
+
+
+-   QQplot
+
+
+
+```{r}
+qqnorm(residuals(mod_lm), pch = 1, frame = FALSE)
+qqline(residuals(mod_lm), col = "steelblue", lwd = 2)
+```
+
+
+
+Todas estas gráficas parecen estar razonablemente bien. Si queremos una evaluación más cuantitativa, también podemos usar tests para saber si los residuos están normalmente distribuidos o no. Un ejemplo es el test de Shapiro-Wilk:
+
+
+
+```{r}
+shapiro.test(residuals(mod_lm))
+```
+
+
+
+En este caso, la hipótesis nula del test de Shapiro-Wilk es que la distribución de la variable testada es normal. Por lo tanto, si el resultado del test es no significativo quiere decir que no podemos rechazar la hipótesis nula, es decir, que no podemos rechazar que la distribución sea normal (en definitiva, que sí que es normal).
+
+Por supuesto, esta lógica funciona al contrario: si el resultado del test de Shapiro-Wilk es significativo, quiere decir que la variable que estamos testando (en este caso los residuos), no siguen una distribución normal.
+
+> **Sobre los tests de normalidad** </br></br> Además del test de Shapiro-Wilk existen otros tests para evaluar de manera estadística si una variable sigue una distribución normal. Aunque se pueden usar para tomar decisiones respecto a un modelo, hay que hacerlo sabiendo que la mayoría de estos tests son muy estrictos. Es decir, que incluso una ligera desviación respecto de la normalidad resultará en significación del test. Debemos tener sentido común para decidir si esto invalida nuestro modelo o no, como hemos visto durante las clases teóricas:
+
+Por otro lado, como hemos indicado antes, algunas de las gráficas de evaluación de los supuestos del modelo nos los da directamente R mediante el ploteo del objeto `lm`:
+
+
+
+```{r}
+plot(mod_lm)
+```
+
+
+
+En concreto nos interesan los dos primeros: un scatterplot de residuos vs. predichos, y un qqplot con los residuos. Con ellos podemos testar al menos 3 de las 4 asunciones.
+
+## Regresión usando variables espacialmente continuas
+
+Hemos visto que la función `predict()` permite calcular la variable dependiente en función de las variables explicativas. Pero aún más, si tenemos un mapa continuo con los valores de las variables explicativas, `predict()` nos permitirá generar un raster continuo de predicciones espacializadas. Veamos un ejemplo.
+
+En este caso, tenemos una serie de rasters de una zona de estudio, y que corresponden con las variables que hemos usado antes para ajustar el modelo: altitud, distancia al Atlántico y distancia al Mediterráneo. Lo primero es cargar los tres rasters, para lo que necesitaremos la librería `terra` y su función `rast()`:
+
+
+
+```{r, warning=TRUE}
+library(terra)
+elevation <- rast("./data/meteo/meteo_espacial/rasters_meteo/elevation.txt")
+d_atl <- rast("./data/meteo/meteo_espacial/rasters_meteo/d_atl.txt")
+d_medit <- rast("./data/meteo/meteo_espacial/rasters_meteo/d_medit.txt")
+```
+
+
+
+Podemos visualizarlos de manera sencilla con `plot()`:
+
+
+
+```{r}
+plot(elevation)
+plot(d_atl)
+plot(d_medit)
+```
+
+
+
+Ahora vamos a guardar esos 3 rasters en un único objeto, como si fuera un raster multibanda. Este objeto se conoce como `stack`. Para crearlo usaremos la función `c()`:
+
+
+
+```{r}
+rasters <- c(elevation, d_atl, d_medit)
+
+```
+
+
+
+Como los componentes del `stack` tienen los mismos nombres que usamos para ajustar el modelo, podemos realizar predicciones usando los valores continuos de los rasters. Cuando tecleemos `predict()` R reconocerá que el input son rasters, y usará la función `predict()` del paquete `terra`. La función `predict()`del paquete `terra`se diferencia en el número y orden de los argumentos. Primero hay que proporcionarle el `SpatRaster` que contiene las variables, y después el modelo ajustado - al revés de lo que hacíamos antes.
+
+
+
+```{r}
+pred_continua <- predict(rasters, mod_lm)
+```
+
+
+
+Ahora ya podemos representar las predicciones, que en este caso, como el input era un raster, será también un raster:
+
+
+
+```{r}
+plot(pred_continua)
+
+```
+
+
+
+Por supuesto, el procedimiento funcionaría exactamente igual con un modelo de regresión múltiple:
+
+
+
+```{r}
+pred_cont_multiple <- predict(rasters, mod_mult2)
+plot(pred_cont_multiple)
+```
+
