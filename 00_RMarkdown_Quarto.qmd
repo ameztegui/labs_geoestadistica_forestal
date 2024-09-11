@@ -1,14 +1,4 @@
----
-format: 
-    html:
-        theme: cerulean
-        toc: true
-editor_options: 
-  chunk_output_type: console
----
-
-# Introducción a Quarto y RMarkdown {#sec-Quarto} 
-
+# Introducción a Quarto y RMarkdown {#sec-Quarto}
 
 ## Introducción. Objetivo.
 
@@ -185,12 +175,12 @@ El resultado de este código sería:
 > **Editor Visual de Quarto en RStudio** </br> </br> Cuando abrimos un documento Quarto en RStudio, veremos que arriba se nos muestran 2 pestañas: "Source" y "Visual". La primera nos permite visualizar el documento con el texto en formato Markdown. Es decir, veremos el texto formateado de la manera que hemos visto hasta ahora, y sólo veremos el resultado cuando ejecutemos el fichero. En la segunda opción, "Visual", RStudio nos ofrece una interfaz visual WYSIWYG, donde puedes utilizar los botones de la barra de menú para formatar el texto, insertar imágenes, tablas, referencias cruzadas, etc. o puedes utilizar el atajo de teclado ⌘ + / o Ctrl + / para insertar casi cualquier cosa. </br> </br>\
 > Lo más importante es que, aunque el editor visual muestra el contenido con formato, en realidad guarda el contenido en Markdown sin formato y puedes alternar entre el editor visual y el de código fuente para ver y editar el contenido con cualquiera de las dos herramientas. Aunque al principio es lógico usar el editor visual, mi consejo es acostumbrarse a editar el documento de la forma tradicional, o al menos a alternar ambos, ya que eso nos dará un mayor control sobre lo que hacemos, y nos permitirá aprender el lenguaje Markdown, lo que puede ser útil para otras situaciones.
 
-::: exercise
-**EJERCICIO:**</br>
+::: {#exercise style="background-color: #fcfaee; border-left: solid 7px #e0cb52; padding: 12px;"}
+**EJERCICIO:**
 
-1.  Descargad el fichero comprimido "series.zip", abrid `series.qmd`, que contiene el código de arriba, y ejecutadlo. Comprobad que el resultado corresponde con lo que esperabais.
+1.  Descargad el fichero comprimido "series.zip", y abrid `series.qmd`, que contiene el código de arriba, y ejecutadlo. Comprobad que el resultado corresponde con lo que esperabais.
 
-2.  Usando lo que habéis aprendido hasta ahora, cread un nuevo fichero Quarto, y generad un documento **corto** que contenga texto formateado, similar a `series.qmd`. El tema es libre, pero incluid al menos algo de texto en negrita, en cursiva, algunas cabeceras, una lista y un enlace. Guardadlo como ejercicio_quarto.qmd y ejecutadlo.
+2.  Usando lo que habéis aprendido hasta ahora, cread un **nuevo fichero Quarto**, y generad un documento que contenga texto formateado, similar a `series.qmd`. El tema es libre, pero incluid al menos algo de texto en negrita, en cursiva, algunas cabeceras, una lista y un enlace. Guardadlo como ejercicio_quarto.qmd y ejecutadlo.
 :::
 
 ## Usando código en Quarto (chunks)
@@ -330,8 +320,8 @@ kable(iris[1:5, ],
 -   [tables](https://cran.r-project.org/web/packages/tables/)
 -   [ascii](http://eusebe.github.io/ascii/)
 
-::: exercise
-**EJERCICIO:**</br>
+::: {style="background-color: #fcfaee; border-left: solid 7px #e0cb52; padding: 12px;"}
+**EJERCICIO:**
 
 Ahora que sabéis como producir un documento Quarto completo, quiero que **créeis uno** usando el dataset `mtcars`que viene cargado por defecto en R. Este dataset contiene datos de consumo de combustible y otras 10 variables de diseño y prestaciones de 32 modelos de coche. Tiene por tanto 32 filas y 11 columnas. Teclea `?mtcars` en la consola para saber más del dataset y de las variables que contiene.
 :::
