@@ -270,6 +270,55 @@ Esto funcionará siempre que la tabla que proporcionemos contenga todas y cada u
 predict(mod_mult, meteo2)
 ```
 
+
+## Regresión usando variables espacialmente continuas
+
+Hemos visto que la función `predict()` permite calcular la variable dependiente en función de las variables explicativas. Pero aún más, si tenemos un mapa continuo con los valores de las variables explicativas, `predict()` nos permitirá generar un raster continuo de predicciones espacializadas. Veamos un ejemplo.
+
+En este caso, tenemos una serie de rasters de una zona de estudio, y que corresponden con las variables que hemos usado antes para ajustar el modelo: altitud, distancia al Atlántico y distancia al Mediterráneo. Lo primero es cargar los tres rasters, para lo que necesitaremos la librería `terra` y su función `rast()`:
+
+```{r, warning=TRUE}
+library(terra)
+elevation <- rast("./data/meteo/meteo_espacial/rasters_meteo/elevation.txt")
+d_atl <- rast("./data/meteo/meteo_espacial/rasters_meteo/d_atl.txt")
+d_medit <- rast("./data/meteo/meteo_espacial/rasters_meteo/d_medit.txt")
+```
+
+Podemos visualizarlos de manera sencilla con `plot()`:
+
+```{r}
+plot(elevation)
+plot(d_atl)
+plot(d_medit)
+```
+
+Ahora vamos a guardar esos 3 rasters en un único objeto, como si fuera un raster multibanda. Este objeto se conoce como `stack`. Para crearlo usaremos la función `c()`:
+
+```{r}
+rasters <- c(elevation, d_atl, d_medit)
+
+```
+
+Como los componentes del `stack` tienen los mismos nombres que usamos para ajustar el modelo, podemos realizar predicciones usando los valores continuos de los rasters. Cuando tecleemos `predict()` R reconocerá que el input son rasters, y usará la función `predict()` del paquete `terra`. La función `predict()`del paquete `terra`se diferencia en el número y orden de los argumentos. Primero hay que proporcionarle el `SpatRaster` que contiene las variables, y después el modelo ajustado - al revés de lo que hacíamos antes.
+
+```{r}
+pred_continua <- predict(rasters, mod_lm)
+```
+
+Ahora ya podemos representar las predicciones, que en este caso, como el input era un raster, será también un raster:
+
+```{r}
+plot(pred_continua)
+
+```
+
+Por supuesto, el procedimiento funcionaría exactamente igual con un modelo de regresión múltiple:
+
+```{r}
+pred_cont_multiple <- predict(rasters, mod_mult2)
+plot(pred_cont_multiple)
+```
+
 ## Testando las asunciones del modelo
 
 Hemos visto que los modelos lineales deben cumplir básicamente cuatro criterios:
@@ -349,51 +398,3 @@ plot(mod_lm)
 ```
 
 En concreto nos interesan los dos primeros: un scatterplot de residuos vs. predichos, y un qqplot con los residuos. Con ellos podemos testar al menos 3 de las 4 asunciones.
-
-## Regresión usando variables espacialmente continuas
-
-Hemos visto que la función `predict()` permite calcular la variable dependiente en función de las variables explicativas. Pero aún más, si tenemos un mapa continuo con los valores de las variables explicativas, `predict()` nos permitirá generar un raster continuo de predicciones espacializadas. Veamos un ejemplo.
-
-En este caso, tenemos una serie de rasters de una zona de estudio, y que corresponden con las variables que hemos usado antes para ajustar el modelo: altitud, distancia al Atlántico y distancia al Mediterráneo. Lo primero es cargar los tres rasters, para lo que necesitaremos la librería `terra` y su función `rast()`:
-
-```{r, warning=TRUE}
-library(terra)
-elevation <- rast("./data/meteo/meteo_espacial/rasters_meteo/elevation.txt")
-d_atl <- rast("./data/meteo/meteo_espacial/rasters_meteo/d_atl.txt")
-d_medit <- rast("./data/meteo/meteo_espacial/rasters_meteo/d_medit.txt")
-```
-
-Podemos visualizarlos de manera sencilla con `plot()`:
-
-```{r}
-plot(elevation)
-plot(d_atl)
-plot(d_medit)
-```
-
-Ahora vamos a guardar esos 3 rasters en un único objeto, como si fuera un raster multibanda. Este objeto se conoce como `stack`. Para crearlo usaremos la función `c()`:
-
-```{r}
-rasters <- c(elevation, d_atl, d_medit)
-
-```
-
-Como los componentes del `stack` tienen los mismos nombres que usamos para ajustar el modelo, podemos realizar predicciones usando los valores continuos de los rasters. Cuando tecleemos `predict()` R reconocerá que el input son rasters, y usará la función `predict()` del paquete `terra`. La función `predict()`del paquete `terra`se diferencia en el número y orden de los argumentos. Primero hay que proporcionarle el `SpatRaster` que contiene las variables, y después el modelo ajustado - al revés de lo que hacíamos antes.
-
-```{r}
-pred_continua <- predict(rasters, mod_lm)
-```
-
-Ahora ya podemos representar las predicciones, que en este caso, como el input era un raster, será también un raster:
-
-```{r}
-plot(pred_continua)
-
-```
-
-Por supuesto, el procedimiento funcionaría exactamente igual con un modelo de regresión múltiple:
-
-```{r}
-pred_cont_multiple <- predict(rasters, mod_mult2)
-plot(pred_cont_multiple)
-```
