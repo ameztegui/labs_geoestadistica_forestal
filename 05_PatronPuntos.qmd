@@ -7,7 +7,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-# Análisis de patrón de puntos en R {#sec-PointPattern} 
+# Análisis de patrón de puntos en R {#sec-PointPattern}
 
 ## Introducción
 
@@ -310,8 +310,6 @@ Estos números son el número de puntos por metro cuadrado en cada clase de elev
 ```{r}
 plot(intensity(Q_tes, image=TRUE))
 plot(bei, pch=20, add=TRUE)
-
-
 ```
 
 Y también podemos realizar un test estadístico de este conteo:
@@ -589,13 +587,20 @@ Vamos a ajustar un análisis de densidad en kernel (ventana móvil para las espe
 plot(density(split(finland)))
 ```
 
-La proporción relativa de la intensidad de cada especie se puede calcular, para hacer que las intensidades estén todas en la misma escala y se puedan comparar los valores:
+Sin embargo esta gráfica cambia la escala para cada especie, de manera que el mismo tono de amarillo es una probabilidad de presencia de 0.02 para aspen pero de 0.40 para el pino. Podemos uniformizar las escalas, por ejemplo, para que varíen entre 0 y 0.5:
 
 ```{r}
-plot(relrisk(finland), zlim = c(0, 1))
+plot(density(split(finland)), zlim = c(0, 0.5))
 ```
 
-Ahora los valores son más comparables entre especies, y vemos de manera muy clara la abundancia de pinos, y los pocos chopos (aspen) que hay. Basado en los mapas de densidad, ¿véis alguna especie que se asocie con otra? ¿Y algún tipo de proceso de segregación entre especies?
+```{r}
+#| eval: false
+#| echo: false
+    
+plot(relrisk(finland))
+```
+
+Ahora los valores son más comparables entre especies, y vemos de manera muy clara la abundancia de pinos, y los pocos chopos (aspen) que hay (de hecho sólo hay 1).
 
 ### Efectos de segundo orden (dependientes de la distancia)
 

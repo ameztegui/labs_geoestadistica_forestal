@@ -7,7 +7,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-# Regresión lineal en R {#sec-RegLin} 
+# Regresión lineal en R {#sec-RegLin}
 
 ## Antes de ajustar la regresión...
 
@@ -269,7 +269,6 @@ Esto funcionará siempre que la tabla que proporcionemos contenga todas y cada u
 ```{r, error = TRUE}
 predict(mod_mult, meteo2)
 ```
-
 
 ## Regresión usando variables espacialmente continuas
 

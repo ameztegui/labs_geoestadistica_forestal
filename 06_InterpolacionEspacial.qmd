@@ -7,7 +7,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-# Interpolación espacial {#sec-Interpolation} 
+# Interpolación espacial {#sec-Interpolation}
 
 ## Introducción y objetivo
 
@@ -92,13 +92,32 @@ Sin embargo, este objeto no tiene el formato `SpatRaster`, sino que es un objeto
 idw
 ```
 
-Para poder visualizar el resultado debemos convertirlo a `SpatRaster`:
+En este caso, como el método es determinístico, el campo de la varianza sólo contiene valores de `NA` .
+
+```{r} idw$var1.var}
+```
+
+Podemos plotear directamente este objeto de clase `stars` usando la función de siempre: `plot()`:
+
+```{r}
+plot(idw)
+```
+
+Sin embargo, si queremos convertirlo en un raster como los que hemos trabajado hasta ahora, tenemos que hacer una pequeña conversión. De esta manera, podremos usarlo en una función `tmap()` o añadirle puntos encima, etc.
+
+Para la conversión podemos hacer:
 
 ```{r}
 idw_raster <- rast(as(idw, "Raster"))
 ```
 
-Ahora podemos visualizar fácilmente los resultados de la interpolación con `plot()`:
+Ahora se ha convertido en un objeto `raster` normal, que contiene dos capas:
+
+```{r}
+idw_raster
+```
+
+Y podemos visualizar los resultados de la interpolación como hemos hecho siempre con `plot()`:
 
 ```{r}
 plot(idw_raster$var1.pred)
@@ -115,16 +134,16 @@ points(estaciones, pch = 19, cex = 0.8)
 Con esto ya habríamos completado la interpolación espacial usando el método IDW. Podríamos jugar con varios de los parámetros de la función: el número máximo de vecinos a considerar (`nmax`), o el exponente a usar en la fórmula (`idp`). Por ejemplo, si usamos un exponente alto:
 
 ```{r}
-idw_raster2 <- idw(formula = Tmed_MES ~ 1, locations = estaciones, newdata = grid, idp = 15)
-plot(idw_raster2)
+idw_15 <- idw(formula = Tmed_MES ~ 1, locations = estaciones, newdata = grid, idp = 15)
+plot(idw_15)
 ```
 
 Y si usamos uno muy bajo:
 
 ```{r}
 
-idw_raster3 <- idw(formula = Tmed_MES ~ 1, locations = estaciones, newdata = grid, idp = 0.0001)
-plot(idw_raster3)
+idw_0 <- idw(formula = Tmed_MES ~ 1, locations = estaciones, newdata = grid, idp = 0.0001)
+plot(idw_0)
 ```
 
 Esto es todo lo que necesitamos saber sobre la interpolación mediante IDW. Este es uno de los métodos más usados, debido a que es simple y en la mayor parte de los casos funciona muy bien. Sin embargo, la elección del exponente no deja de ser subjetiva, y como acabamos de ver puede tener un efecto muy grande en las predicciones. Hay un segundo tipo de interpolaciones que usan la información espacial de los puntos (información de 1r y 2º orden) para derivar modelos probabilísticos con los valores predichos. Son los llamados métodos geoestadísticos.
@@ -153,14 +172,22 @@ Mediante el argumento `formula` podemos definir el tipo de kriging a aplicar (lo
 Creemos por tanto el variograma empírico:
 
 ```{r}
-ve <- variogram(Tmed_MES ~ 1, estaciones)
+ve <- variogram(object = Tmed_MES ~ 1, data = estaciones)
 ```
 
 Y podemos visualizarlo:
 
 ```{r}
-plot(ve, plot.numbers = T)
+plot(ve)
 
+```
+
+El argumento `width` controlará el tamaño de los bins que usemos:
+
+```{r}
+ve <- variogram(object = Tmed_MES ~ 1, data = estaciones,
+                width = 5000)
+plot(ve)
 ```
 
 ### Determinar los parámetros del semivariograma teórico
@@ -171,7 +198,7 @@ También podemos inspeccionar el objeto `ve` que acabamos de crear, para determi
 ve
 ```
 
-El *nugget* será el mínimo valor de `gamma` (en este caso, 0.3919), el *sill* se alcanza cuando *gamma* se estabiliza (3.27518), y el *range* será la distancia a la que se alcanza el *sill* (51476.26). Estos números los emplearemos en el siguiente paso, cuando ajustemos el semivariograma teórico.
+El *nugget* será el mínimo valor de `gamma` (en este caso, 0.3943), el *sill* se alcanza cuando *gamma* se estabiliza (3.3992), y el *range* será la distancia a la que se alcanza el *sill* (52480.916). Estos números los emplearemos en el siguiente paso, cuando ajustemos el semivariograma teórico.
 
 ### Ajustar el semivariograma teórico
 
@@ -184,7 +211,7 @@ show.vgms()
 En este caso vamos a seleccionar la curva de tipo "Exp", y la aplicaremos con la función `fit.variogram()`:
 
 ```{r}
-vt <- fit.variogram(ve, vgm(psill = 3.27518, model = "Exp", range = 51476.26, nugget = 0.3919))
+vt <- fit.variogram(ve, vgm(psill = 3.3992, model = "Exp", range = 52480.916, nugget = 0.3943))
 vt
 ```
 
@@ -203,13 +230,28 @@ A partir de aquí el procedimiento es similar al que hemos visto para *IDW*: deb
 ```{r}
 
 k <- krige(Tmed_MES ~ 1, locations = estaciones, newdata = grid, model = vt)
+k
 ```
 
-El objeto generado (`k`) contiene mucha información, pero nos interesa los valores de temperatura predichos para cada punto (columna `var1.pred`), y la varianza (precisión) de las predicciones (columna `var1.var`). Igual que antes, debemos transformar este objeto a uno de tipo `SpatRaster`
+El objeto generado (`k`) contiene, igual que antes, 2 dimensiones: las predicciones (columna `var1.pred`), y la varianza (precisión) de las predicciones (columna `var1.var`), que en este caso sí contiene valores. Podemos plotear los resultados, y por defecto nos mostrará el valor de la predicción:
+
+```{r}
+plot(k)
+```
+
+Si queremos especificar la varianza, también lo podemos hacer:
+
+```{r}
+plot(k["var1.var"])
+```
+
+Vemos que la varianza es mínima - de hecho 0 - en los puntos, y se hace mayor en las zonas sin densidad de puntos.
+
+Igual que antes, podemos transformar este objeto a uno de tipo `SpatRaster` para hacerlo más integrable con otro tipo de visualizaciones:
 
 ```{r}
 k2 <- rast(as(k, "Raster"))
-
+k2
 ```
 
 Veamos el aspecto de la interpolación generada:
@@ -232,7 +274,7 @@ plot(k2$var1.var, main = "Varianza")
 points(estaciones, pch = 19, cex = 0.8) 
 ```
 
-Vemos que el error es mínimo en cada una de las observaciones, y mayor en las zonas donde hay espacios grandes sin datos de estaciones.
+Vemos, como comentábamos antes, que el error es mínimo en cada una de las observaciones, y mayor en las zonas donde hay espacios grandes sin datos de estaciones.
 
 Existe una función que automatiza todo el proceso de ajuste del modelo de kriging, de manera que no hay que determinar los parámetros, la forma, etc. manualmente. Si estáis pensando que podía haber explicado este método desde el principio, tened en cuenta que es importante entender cómo se genera el proceso antes de realizarlo de manera automática. La función en cuestión es `autoKrige()`, del paquete `automap`:
 
@@ -259,7 +301,7 @@ Esto es todo lo que necesitamos saber de la interpolación mediante kriging. El 
 
 El modelo de kriging que hemos usado hasta ahora es un kriging ordinario, lo que se indica al ajustar la función `krige()`, indicando `Tmed_MES ~ 1`. Para seleccionar otro tipo de kriging, podemos cambiar la notación de esa fórmula, de acuerdo a lo siguiente:
 
--   Kriging simple: `Z ~ 1` (requiere definir el parámetro `beta`
+-   Kriging simple: `Z ~ 1` (requiere definir el parámetro `beta` )
 -   Kriging ordinario: `Z ~ 1`
 -   Kriging universal: `Z ~ x + y`
 
@@ -287,39 +329,45 @@ Tras haber interpolado en base a dos métodos (IDW y kriging) se hace necesario 
 
 La validación cruzada consiste en comparar, para cada valor de la muestra (cada observación) la diferencia entre el valor observado y el predicho por el modelo. Sin embargo, no podemos incluir el punto u observación que queremos evaluar, ya que si no la predicción sería exactamente igual a la observación. Por ello, lo que se hace es ir excluyendo una a una las observaciones, y se determina cuál sería el valor predicho para ese punto por un modelo elaborado con todos los demás puntos. Esto se hace de manera repetitiva - iterativa - con todos los puntos de la muestra, y al final tendremos una serie de valores (residuos) de la diferencia entre el valor observado y el predicho.
 
-`R` nos pone fácil realizar la validación cruzada, a través de la función `krige.cv()`, del paquete `gstat`. Dicha función requiere como entrada un objeto de tipo `gstat` en el argumento `model`:
+`R` nos pone fácil realizar la validación cruzada, a través de la función `krige.cv()`, del paquete `gstat`. Dicha función permite como entrada un objeto de tipo `gstat` en el argumento `model`, que es lo que determinará el tipo de interpolación que hacemos. Así, si no indicamos nada en `model`, realizará una interpolación por IDW:
 
 ```{r}
 idw_cv <- krige.cv(formula = Tmed_MES ~ 1, locations = estaciones) 
 
 ```
 
-Una vez ajustado, podemos acceder a los datos:
+Vemos que tarda más que antes, ya que tiene que hacer numerosas interpolaciones. Una vez ajustado, podemos acceder a los datos:
 
 ```{r}
 idw_cv
 ```
 
-Y por tanto representar el gráfico de valores observados y predichos:
+Vemos que contiene los valor predichos, los observados, y el residuo. Esto nos permite representar el gráfico de valores observados y predichos:
 
 ```{r}
-plot(idw_cv$observed, idw_cv$var1.pred, main = "Observed vs. predicted for IDW") +
+plot(idw_cv$observed, idw_cv$var1.pred) +
 abline(0,1)
 ```
 
-Esto mismo lo podemos hacer para el modelo de interpolado mediante ordinary kriging:
+Esto mismo lo podemos hacer para el modelo de interpolado mediante ordinary kriging, simplemente indicando el modelo de variograma que queremos (`model = vt`)
 
 ```{r}
 ok_cv <- krige.cv(formula = Tmed_MES ~ 1, locations = estaciones,  model = vt)
-plot(ok_cv$observed, ok_cv$var1.pred, main = "Observed vs. predicted for Ordinary kriging") +
-abline(0,1)
+
 ```
 
-... o el de universal kriging
+```{r}
+plot(ok_cv$observed, ok_cv$var1.pred, 
+     main = "Observed vs. predicted for Ordinary kriging") +
+    abline(0,1)
+```
+
+... o el de universal kriging, donde además de `model` debemos especificar la fórmula correspondiente:
 
 ```{r}
 uk_cv <- krige.cv(Tmed_MES~x+y, locations = estaciones,  model = vt)
-plot(uk_cv$observed, uk_cv$var1.pred, main = "Observed vs. predicted for Universal kriging") +
+plot(uk_cv$observed, uk_cv$var1.pred, 
+     main = "Observed vs. predicted for Universal kriging") +
 abline(0,1)
 ```
 
@@ -425,3 +473,7 @@ knitr::kable(metricas)
 ```
 
 En este caso, todos los indicadores parecen favorecer el kriging: los residuos son más bajos, las métricas de error también, y la correlación entre valores observados y predichos es ligeramente mejor. Por tanto, consideraremos que esta interpolación es más adecuada que la de IDW. En concreto, el *universal kriging* parece ser el método que produce las mejores predicciones (aunque por poco, los tres métodos son bastante similares).
+
+## Conclusiones
+
+Con esto hemos visto cómo producir interpolaciones con diversas métricas, y cómo evaluar la calidad de la interpolación generada. El kriging acostumbra a ser el método más robusto, pero también es computacionalmente más exigente. La decisión final dependerá del objetivo, la precisión requerida, y la disponibilidad de tiempo y de capacidad de computación. En [este enlace](https://r-lidar.github.io/lidRbook/dtm.html#sec-dtm-pros-cons) podéis ver una discusión sobre los pros y contras de cada método usando como ejemplo el procesado de ficheros LiDAR para generar un MDT (es materia que se cubre en la asignatura "Tecnologies Digitals 2: Arbre i rodal" del Màster en Enginyeria de Forests). En el ejemplo con el que hemos trabajado, sin embargo, un IDW muestra ser suficientemente preciso.

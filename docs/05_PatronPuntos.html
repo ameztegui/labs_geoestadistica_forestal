@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.353">
+<meta name="generator" content="quarto-1.3.450">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -92,7 +92,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
     "search-detached-cancel-button-title": "Cancel",
-    "search-submit-button-title": "Submit"
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
   }
 }</script>
 
@@ -113,7 +114,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./03_DatosEspaciales.html">UNIDAD 2: GEOESTADÍSTICA Y ANÁLISIS ESPACIAL</a></li><li class="breadcrumb-item"><a href="./05_PatronPuntos.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Análisis de patrón de puntos en R</span></a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
-      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
         <i class="bi bi-search"></i>
       </button>
     </div>
@@ -127,7 +128,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div class="sidebar-title mb-0 py-0">
       <a href="./">Apuntes y ejercicios de geoestadística para forestales</a> 
         <div class="sidebar-tools-main">
-    <a href="https://github.com/ameztegui/labs_geoestadistica_forestal" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <a href="https://github.com/ameztegui/labs_geoestadistica_forestal" rel="" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
 </div>
     </div>
       </div>
@@ -731,8 +732,8 @@ lo  rho[lo](X)            Lower limit of pointwise 95%% confidence interval
 Default plot formula:  .~X
 where "." stands for 'rho', 'ave', 'hi', 'lo'
 Columns 'hi' and 'lo' will be plotted as shading (by default)
-Recommended range of argument X: [0.00087115, 0.32846]
-Available range of argument X: [0.00087115, 0.32846]</code></pre>
+Recommended range of argument X: [0.00085551, 0.32846]
+Available range of argument X: [0.00085551, 0.32846]</code></pre>
 </div>
 </div>
 <p>La salida de la función <code>rhohat()</code> no es muy clara, pero podemos plotearla:</p>
@@ -1108,39 +1109,31 @@ Unit of length: 1 meters</code></pre>
 <p><img src="05_PatronPuntos_files/figure-html/unnamed-chunk-59-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>La proporción relativa de la intensidad de cada especie se puede calcular, para hacer que las intensidades estén todas en la misma escala y se puedan comparar los valores:</p>
+<p>Sin embargo esta gráfica cambia la escala para cada especie, de manera que el mismo tono de amarillo es una probabilidad de presencia de 0.02 para aspen pero de 0.40 para el pino. Podemos uniformizar las escalas, por ejemplo, para que varíen entre 0 y 0.5:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb117"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">relrisk</span>(finland), <span class="at">zlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: Negative Likelihood Cross-Validation criterion was minimised at
-left-hand end of interval [0.155, 7.07]; use arguments 'hmin', 'hmax' to
-specify a wider interval for bandwidth 'sigma'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: Numerical underflow detected: sigma is probably too small</code></pre>
-</div>
+<div class="sourceCode cell-code" id="cb117"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(<span class="fu">split</span>(finland)), <span class="at">zlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="05_PatronPuntos_files/figure-html/unnamed-chunk-60-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>Ahora los valores son más comparables entre especies, y vemos de manera muy clara la abundancia de pinos, y los pocos chopos (aspen) que hay. Basado en los mapas de densidad, ¿véis alguna especie que se asocie con otra? ¿Y algún tipo de proceso de segregación entre especies?</p>
+<p>Ahora los valores son más comparables entre especies, y vemos de manera muy clara la abundancia de pinos, y los pocos chopos (aspen) que hay (de hecho sólo hay 1).</p>
 </section>
 <section id="efectos-de-segundo-orden-dependientes-de-la-distancia" class="level3" data-number="8.6.6">
 <h3 data-number="8.6.6" class="anchored" data-anchor-id="efectos-de-segundo-orden-dependientes-de-la-distancia"><span class="header-section-number">8.6.6</span> Efectos de segundo orden (dependientes de la distancia)</h3>
 <p>Igual que en los eventos de puntos sin marcas, podemos testar las asociaciones entre los distintos tipos de eventos de manera más formal mediante las funciones <span class="math inline">\(G\)</span>, <span class="math inline">\(F\)</span>, <span class="math inline">\(K\)</span> y <span class="math inline">\(L\)</span>. Para cada una de las funciones vistas antes (<code>Gest</code>, <code>Fest</code>, <code>Kest</code> y <code>Lest</code>) existe su variante de tipo cruzado (cross-type), que compara las distribuciones para dos valores de la variable de marca.</p>
 <p>Por ejemplo, para correr un análisis de función G y ver si hay indepencia entre las ubicaciones de pinos y abedules podemos hacer:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb120"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb120-1"><a href="#cb120-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">Gcross</span>(finland, <span class="at">i =</span> <span class="st">"birch"</span>, <span class="at">j =</span> <span class="st">"rowan"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb118"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb118-1"><a href="#cb118-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">Gcross</span>(finland, <span class="at">i =</span> <span class="st">"birch"</span>, <span class="at">j =</span> <span class="st">"rowan"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="05_PatronPuntos_files/figure-html/unnamed-chunk-61-1.png" class="img-fluid" width="672"></p>
+<p><img src="05_PatronPuntos_files/figure-html/unnamed-chunk-62-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>La interpretación es similar a la que hemos visto hasta ahora, de manera que los valores por debajo de la curva teórica indica segregación entre las especies, mientras que valores por encima indican agrupación.</p>
 <p>Nótese que debemos especificar los niveles de la muestra a comparar, si no tomará por defecto los dos primeros (ya que las comparaciones sólo pueden hacerse dos a dos)</p>
 <p>También podemos construir los intervalos de confianza de manera análoga:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb121"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb121-1"><a href="#cb121-1" aria-hidden="true" tabindex="-1"></a> G <span class="ot">&lt;-</span> <span class="fu">envelope</span>(finland, Gcross, <span class="at">i=</span> <span class="st">"birch"</span>, <span class="at">j =</span> <span class="st">"rowan"</span>,</span>
-<span id="cb121-2"><a href="#cb121-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">nsim =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb119"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb119-1"><a href="#cb119-1" aria-hidden="true" tabindex="-1"></a> G <span class="ot">&lt;-</span> <span class="fu">envelope</span>(finland, Gcross, <span class="at">i=</span> <span class="st">"birch"</span>, <span class="at">j =</span> <span class="st">"rowan"</span>,</span>
+<span id="cb119-2"><a href="#cb119-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">nsim =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Generating 10 simulations of CSR  ...
 1, 2, 3, 4, 5, 6, 7, 8, 9, 
@@ -1148,15 +1141,15 @@ specify a wider interval for bandwidth 'sigma'</code></pre>
 
 Done.</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb123"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb123-1"><a href="#cb123-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(G)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb121"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb121-1"><a href="#cb121-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(G)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="05_PatronPuntos_files/figure-html/unnamed-chunk-62-1.png" class="img-fluid" width="672"></p>
+<p><img src="05_PatronPuntos_files/figure-html/unnamed-chunk-63-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>El resto de funciones asociadas a las propiedades de segundo orden pueden construirse de forma análoga:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb124"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb124-1"><a href="#cb124-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Función K</span></span>
-<span id="cb124-2"><a href="#cb124-2" aria-hidden="true" tabindex="-1"></a> K <span class="ot">&lt;-</span> <span class="fu">envelope</span>(finland, Kcross, <span class="at">i=</span> <span class="st">"birch"</span>, <span class="at">j =</span> <span class="st">"rowan"</span>,<span class="at">nsim =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb122"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb122-1"><a href="#cb122-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Función K</span></span>
+<span id="cb122-2"><a href="#cb122-2" aria-hidden="true" tabindex="-1"></a> K <span class="ot">&lt;-</span> <span class="fu">envelope</span>(finland, Kcross, <span class="at">i=</span> <span class="st">"birch"</span>, <span class="at">j =</span> <span class="st">"rowan"</span>,<span class="at">nsim =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Generating 10 simulations of CSR  ...
 1, 2, 3, 4, 5, 6, 7, 8, 9, 
@@ -1164,12 +1157,12 @@ Done.</code></pre>
 
 Done.</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb126"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb126-1"><a href="#cb126-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(K)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb124"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb124-1"><a href="#cb124-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(K)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="05_PatronPuntos_files/figure-html/unnamed-chunk-63-1.png" class="img-fluid" width="672"></p>
+<p><img src="05_PatronPuntos_files/figure-html/unnamed-chunk-64-1.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb127"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb127-1"><a href="#cb127-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Función L</span></span>
-<span id="cb127-2"><a href="#cb127-2" aria-hidden="true" tabindex="-1"></a>L <span class="ot">&lt;-</span> <span class="fu">envelope</span>(finland, Lcross, <span class="at">i=</span> <span class="st">"birch"</span>, <span class="at">j =</span> <span class="st">"rowan"</span>, <span class="at">nsim =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb125"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb125-1"><a href="#cb125-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Función L</span></span>
+<span id="cb125-2"><a href="#cb125-2" aria-hidden="true" tabindex="-1"></a>L <span class="ot">&lt;-</span> <span class="fu">envelope</span>(finland, Lcross, <span class="at">i=</span> <span class="st">"birch"</span>, <span class="at">j =</span> <span class="st">"rowan"</span>, <span class="at">nsim =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Generating 10 simulations of CSR  ...
 1, 2, 3, 4, 5, 6, 7, 8, 9, 
@@ -1177,14 +1170,14 @@ Done.</code></pre>
 
 Done.</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb129"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb129-1"><a href="#cb129-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(L)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb127"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb127-1"><a href="#cb127-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(L)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="05_PatronPuntos_files/figure-html/unnamed-chunk-63-2.png" class="img-fluid" width="672"></p>
+<p><img src="05_PatronPuntos_files/figure-html/unnamed-chunk-64-2.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb130"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb130-1"><a href="#cb130-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Función de correlación de pares</span></span>
-<span id="cb130-2"><a href="#cb130-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">pcfcross</span>(finland))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb128"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb128-1"><a href="#cb128-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Función de correlación de pares</span></span>
+<span id="cb128-2"><a href="#cb128-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">pcfcross</span>(finland))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="05_PatronPuntos_files/figure-html/unnamed-chunk-63-3.png" class="img-fluid" width="672"></p>
+<p><img src="05_PatronPuntos_files/figure-html/unnamed-chunk-64-3.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>

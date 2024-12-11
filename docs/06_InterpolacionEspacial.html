@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.353">
+<meta name="generator" content="quarto-1.3.450">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -92,7 +92,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
     "search-detached-cancel-button-title": "Cancel",
-    "search-submit-button-title": "Submit"
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
   }
 }</script>
 
@@ -111,7 +112,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./03_DatosEspaciales.html">UNIDAD 2: GEOESTADÍSTICA Y ANÁLISIS ESPACIAL</a></li><li class="breadcrumb-item"><a href="./06_InterpolacionEspacial.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Interpolación espacial</span></a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
-      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
         <i class="bi bi-search"></i>
       </button>
     </div>
@@ -125,7 +126,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div class="sidebar-title mb-0 py-0">
       <a href="./">Apuntes y ejercicios de geoestadística para forestales</a> 
         <div class="sidebar-tools-main">
-    <a href="https://github.com/ameztegui/labs_geoestadistica_forestal" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <a href="https://github.com/ameztegui/labs_geoestadistica_forestal" rel="" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
 </div>
     </div>
       </div>
@@ -264,6 +265,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#validación-cruzada" id="toc-validación-cruzada" class="nav-link" data-scroll-target="#validación-cruzada"><span class="header-section-number">9.4.1</span> Validación cruzada</a></li>
   <li><a href="#métricas-de-calidad" id="toc-métricas-de-calidad" class="nav-link" data-scroll-target="#métricas-de-calidad"><span class="header-section-number">9.4.2</span> Métricas de calidad</a></li>
   </ul></li>
+  <li><a href="#conclusiones" id="toc-conclusiones" class="nav-link" data-scroll-target="#conclusiones"><span class="header-section-number">9.5</span> Conclusiones</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/ameztegui/labs_geoestadistica_forestal/edit/main/06_InterpolacionEspacial.qmd" class="toc-action">Edit this page</a></p><p><a href="https://github.com/ameztegui/labs_geoestadistica_forestal/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
@@ -407,48 +409,54 @@ x    1 243  574966  1000 ETRS89 / UTM zone 30N [x]
 y    1 121 4635365 -1000 ETRS89 / UTM zone 30N [y]</code></pre>
 </div>
 </div>
-<p>Para poder visualizar el resultado debemos convertirlo a <code>SpatRaster</code>:</p>
+<p>En este caso, como el método es determinístico, el campo de la varianza sólo contiene valores de <code>NA</code> .</p>
+<p><code>shj idw$var1.var}</code></p>
+<p>Podemos plotear directamente este objeto de clase <code>stars</code> usando la función de siempre: <code>plot()</code>:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>idw_raster <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="fu">as</span>(idw, <span class="st">"Raster"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>Ahora podemos visualizar fácilmente los resultados de la interpolación con <code>plot()</code>:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(idw_raster<span class="sc">$</span>var1.pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(idw)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>Y añadir los puntos observados:</p>
+<p>Sin embargo, si queremos convertirlo en un raster como los que hemos trabajado hasta ahora, tenemos que hacer una pequeña conversión. De esta manera, podremos usarlo en una función <code>tmap()</code> o añadirle puntos encima, etc.</p>
+<p>Para la conversión podemos hacer:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(idw_raster<span class="sc">$</span>var1.pred)</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(estaciones, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">cex =</span> <span class="fl">0.8</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>idw_raster <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="fu">as</span>(idw, <span class="st">"Raster"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co">#text(estaciones, label= "Tmed_MES", cex = 0.8, pos = 2)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>Con esto ya habríamos completado la interpolación espacial usando el método IDW. Podríamos jugar con varios de los parámetros de la función: el número máximo de vecinos a considerar (<code>nmax</code>), o el exponente a usar en la fórmula (<code>idp</code>). Por ejemplo, si usamos un exponente alto:</p>
+<p>Ahora se ha convertido en un objeto <code>raster</code> normal, que contiene dos capas:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>idw_raster2 <span class="ot">&lt;-</span> <span class="fu">idw</span>(<span class="at">formula =</span> Tmed_MES <span class="sc">~</span> <span class="dv">1</span>, <span class="at">locations =</span> estaciones, <span class="at">newdata =</span> grid, <span class="at">idp =</span> <span class="dv">15</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in asMethod(object): complete map seems to be NA's -- no selection was
-made</code></pre>
-</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>idw_raster</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[inverse distance weighted interpolation]</code></pre>
+<pre><code>class       : SpatRaster 
+dimensions  : 121, 243, 2  (nrow, ncol, nlyr)
+resolution  : 1000, 1000  (x, y)
+extent      : 574966, 817966, 4514365, 4635365  (xmin, xmax, ymin, ymax)
+coord. ref. : ETRS89 / UTM zone 30N (EPSG:25830) 
+source(s)   : memory
+names       : var1.pred, var1.var 
+min values  :  15.81822,      NaN 
+max values  :  23.46503,      NaN </code></pre>
 </div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in asMethod(object): complete map seems to be NA's -- no selection was
-made</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(idw_raster2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Y podemos visualizar los resultados de la interpolación como hemos hecho siempre con <code>plot()</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(idw_raster<span class="sc">$</span>var1.pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>Y si usamos uno muy bajo:</p>
+<p>Y añadir los puntos observados:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>idw_raster3 <span class="ot">&lt;-</span> <span class="fu">idw</span>(<span class="at">formula =</span> Tmed_MES <span class="sc">~</span> <span class="dv">1</span>, <span class="at">locations =</span> estaciones, <span class="at">newdata =</span> grid, <span class="at">idp =</span> <span class="fl">0.0001</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(idw_raster<span class="sc">$</span>var1.pred)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(estaciones, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">cex =</span> <span class="fl">0.8</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co">#text(estaciones, label= "Tmed_MES", cex = 0.8, pos = 2)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Con esto ya habríamos completado la interpolación espacial usando el método IDW. Podríamos jugar con varios de los parámetros de la función: el número máximo de vecinos a considerar (<code>nmax</code>), o el exponente a usar en la fórmula (<code>idp</code>). Por ejemplo, si usamos un exponente alto:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>idw_15 <span class="ot">&lt;-</span> <span class="fu">idw</span>(<span class="at">formula =</span> Tmed_MES <span class="sc">~</span> <span class="dv">1</span>, <span class="at">locations =</span> estaciones, <span class="at">newdata =</span> grid, <span class="at">idp =</span> <span class="dv">15</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in asMethod(object): complete map seems to be NA's -- no selection was
 made</code></pre>
@@ -460,9 +468,28 @@ made</code></pre>
 <pre><code>Warning in asMethod(object): complete map seems to be NA's -- no selection was
 made</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(idw_raster3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(idw_15)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Y si usamos uno muy bajo:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>idw_0 <span class="ot">&lt;-</span> <span class="fu">idw</span>(<span class="at">formula =</span> Tmed_MES <span class="sc">~</span> <span class="dv">1</span>, <span class="at">locations =</span> estaciones, <span class="at">newdata =</span> grid, <span class="at">idp =</span> <span class="fl">0.0001</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in asMethod(object): complete map seems to be NA's -- no selection was
+made</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[inverse distance weighted interpolation]</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in asMethod(object): complete map seems to be NA's -- no selection was
+made</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(idw_0)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Esto es todo lo que necesitamos saber sobre la interpolación mediante IDW. Este es uno de los métodos más usados, debido a que es simple y en la mayor parte de los casos funciona muy bien. Sin embargo, la elección del exponente no deja de ser subjetiva, y como acabamos de ver puede tener un efecto muy grande en las predicciones. Hay un segundo tipo de interpolaciones que usan la información espacial de los puntos (información de 1r y 2º orden) para derivar modelos probabilísticos con los valores predichos. Son los llamados métodos geoestadísticos.</p>
@@ -487,13 +514,22 @@ made</code></pre>
 <p>Mediante el argumento <code>formula</code> podemos definir el tipo de kriging a aplicar (los más típicos son <strong>ordinary kriging</strong> y <strong>universal kriging</strong>). En este ejemplo implementaremos un <strong>ordinary kriging</strong>, por lo que la fórmula será del tipo (<code>&lt;variable&gt; ~ 1</code>). No lo veremos aquí, pero en caso de querer interpilar usando el <em>universal kriging</em> la fórmula sería: <code>&lt;variable&gt; ~ x + y</code>.</p>
 <p>Creemos por tanto el variograma empírico:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>ve <span class="ot">&lt;-</span> <span class="fu">variogram</span>(Tmed_MES <span class="sc">~</span> <span class="dv">1</span>, estaciones)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>ve <span class="ot">&lt;-</span> <span class="fu">variogram</span>(<span class="at">object =</span> Tmed_MES <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> estaciones)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Y podemos visualizarlo:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ve, <span class="at">plot.numbers =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ve)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>El argumento <code>width</code> controlará el tamaño de los bins que usemos:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>ve <span class="ot">&lt;-</span> <span class="fu">variogram</span>(<span class="at">object =</span> Tmed_MES <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> estaciones,</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">width =</span> <span class="dv">5000</span>)</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ve)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -501,52 +537,56 @@ made</code></pre>
 <h3 data-number="9.3.2" class="anchored" data-anchor-id="determinar-los-parámetros-del-semivariograma-teórico"><span class="header-section-number">9.3.2</span> Determinar los parámetros del semivariograma teórico</h3>
 <p>También podemos inspeccionar el objeto <code>ve</code> que acabamos de crear, para determinar los valores de <em>nugget</em>, <em>sill</em> y <em>rank</em> del semivariograma teórico que tendremos que ajustar:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>ve</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>ve</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    np      dist     gamma dir.hor dir.ver   id
-1   13  4070.885 0.4638462       0       0 var1
-2   39  9498.495 0.3919231       0       0 var1
-3   59 15232.436 1.4343432       0       0 var1
-4   95 21122.346 1.7738026       0       0 var1
-5  102 27317.811 1.5700490       0       0 var1
-6  121 33297.136 2.1739463       0       0 var1
-7  140 39370.461 2.2399821       0       0 var1
-8  144 45611.788 2.6321094       0       0 var1
-9  165 51476.263 3.2751818       0       0 var1
-10 159 57335.944 3.0017846       0       0 var1
-11 168 63491.985 2.6178571       0       0 var1
-12 173 69434.692 2.9230780       0       0 var1
-13 170 75387.154 2.9578529       0       0 var1
-14 175 81904.971 3.3147429       0       0 var1
-15 181 87630.419 3.7498757       0       0 var1</code></pre>
+1    8  3189.638 0.3714063       0       0 var1
+2   30  8053.946 0.3220000       0       0 var1
+3   43 12759.100 1.0726163       0       0 var1
+4   57 17936.323 1.8665132       0       0 var1
+5   85 22441.727 1.4648235       0       0 var1
+6   81 27765.558 1.6893673       0       0 var1
+7   98 32534.298 2.0248852       0       0 var1
+8  109 37612.050 2.3637844       0       0 var1
+9  117 42341.761 2.6563996       0       0 var1
+10 127 47668.552 2.4657185       0       0 var1
+11 136 52480.916 3.3991728       0       0 var1
+12 132 57292.995 2.9894318       0       0 var1
+13 139 62460.906 2.8742446       0       0 var1
+14 146 67414.808 2.7391781       0       0 var1
+15 145 72570.436 2.9318707       0       0 var1
+16 124 77344.077 3.3316835       0       0 var1
+17 157 82586.379 2.9459156       0       0 var1
+18 151 87497.836 3.8211755       0       0 var1
+19  19 90325.544 3.9195395       0       0 var1</code></pre>
 </div>
 </div>
-<p>El <em>nugget</em> será el mínimo valor de <code>gamma</code> (en este caso, 0.3919), el <em>sill</em> se alcanza cuando <em>gamma</em> se estabiliza (3.27518), y el <em>range</em> será la distancia a la que se alcanza el <em>sill</em> (51476.26). Estos números los emplearemos en el siguiente paso, cuando ajustemos el semivariograma teórico.</p>
+<p>El <em>nugget</em> será el mínimo valor de <code>gamma</code> (en este caso, 0.3943), el <em>sill</em> se alcanza cuando <em>gamma</em> se estabiliza (3.3992), y el <em>range</em> será la distancia a la que se alcanza el <em>sill</em> (52480.916). Estos números los emplearemos en el siguiente paso, cuando ajustemos el semivariograma teórico.</p>
 </section>
 <section id="ajustar-el-semivariograma-teórico" class="level3" data-number="9.3.3">
 <h3 data-number="9.3.3" class="anchored" data-anchor-id="ajustar-el-semivariograma-teórico"><span class="header-section-number">9.3.3</span> Ajustar el semivariograma teórico</h3>
 <p>Para este paso debemos modelizar una curva que ajuste lo mejor posible los valores del semivariograma empírico. Para ello, debemos seleccionar la forma que queremos que tenga el semivariograma, y asignarle los parámetros que hemos definido antes. Podemos acceder al catálogo de formas disponibles mediante:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show.vgms</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show.vgms</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
+<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>En este caso vamos a seleccionar la curva de tipo “Exp”, y la aplicaremos con la función <code>fit.variogram()</code>:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>vt <span class="ot">&lt;-</span> <span class="fu">fit.variogram</span>(ve, <span class="fu">vgm</span>(<span class="at">psill =</span> <span class="fl">3.27518</span>, <span class="at">model =</span> <span class="st">"Exp"</span>, <span class="at">range =</span> <span class="fl">51476.26</span>, <span class="at">nugget =</span> <span class="fl">0.3919</span>))</span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>vt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>vt <span class="ot">&lt;-</span> <span class="fu">fit.variogram</span>(ve, <span class="fu">vgm</span>(<span class="at">psill =</span> <span class="fl">3.3992</span>, <span class="at">model =</span> <span class="st">"Exp"</span>, <span class="at">range =</span> <span class="fl">52480.916</span>, <span class="at">nugget =</span> <span class="fl">0.3943</span>))</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>vt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>  model       psill    range
-1   Nug 0.009002151     0.00
-2   Exp 3.943178089 43441.23</code></pre>
+<pre><code>  model    psill    range
+1   Nug 0.000000     0.00
+2   Exp 3.957497 43325.59</code></pre>
 </div>
 </div>
 <p>Ahora podemos plotearlo, a ver si realmente ajusta bien:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ve, <span class="at">pl =</span> T, <span class="at">model =</span> vt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ve, <span class="at">pl =</span> T, <span class="at">model =</span> vt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
+<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Vemos que, efectivamente, el ajuste es bastante bueno, por lo que nos conformamos con el semivariograma teórico ajustado.</p>
@@ -555,7 +595,7 @@ made</code></pre>
 <h3 data-number="9.3.4" class="anchored" data-anchor-id="aplicar-el-modelo-de-kriging-a-los-datos"><span class="header-section-number">9.3.4</span> Aplicar el modelo de kriging a los datos:</h3>
 <p>A partir de aquí el procedimiento es similar al que hemos visto para <em>IDW</em>: debemos crear un raster vacío con la extensión del área a analizar, y después le asignaremos los valores generados por el kriging. Como antes ya hemos generado el objeto <code>grd</code>, no necesitamos volver a hacerlo, y podemos generar la interpolación, de forma similar a la que hemos visto antes, usando la función <code>krige()</code>:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>k <span class="ot">&lt;-</span> <span class="fu">krige</span>(Tmed_MES <span class="sc">~</span> <span class="dv">1</span>, <span class="at">locations =</span> estaciones, <span class="at">newdata =</span> grid, <span class="at">model =</span> vt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>k <span class="ot">&lt;-</span> <span class="fu">krige</span>(Tmed_MES <span class="sc">~</span> <span class="dv">1</span>, <span class="at">locations =</span> estaciones, <span class="at">newdata =</span> grid, <span class="at">model =</span> vt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in asMethod(object): complete map seems to be NA's -- no selection was
 made</code></pre>
@@ -567,39 +607,78 @@ made</code></pre>
 <pre><code>Warning in asMethod(object): complete map seems to be NA's -- no selection was
 made</code></pre>
 </div>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>k</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>stars object with 2 dimensions and 2 attributes
+attribute(s):
+                   Min.    1st Qu.     Median       Mean   3rd Qu.      Max.
+var1.pred  15.838643541 17.9220405 20.1211162 19.5900002 21.061067 23.420031
+var1.var    0.003102869  0.6709149  0.9144648  0.9501347  1.213168  2.680639
+dimension(s):
+  from  to  offset delta                refsys x/y
+x    1 243  574966  1000 ETRS89 / UTM zone 30N [x]
+y    1 121 4635365 -1000 ETRS89 / UTM zone 30N [y]</code></pre>
 </div>
-<p>El objeto generado (<code>k</code>) contiene mucha información, pero nos interesa los valores de temperatura predichos para cada punto (columna <code>var1.pred</code>), y la varianza (precisión) de las predicciones (columna <code>var1.var</code>). Igual que antes, debemos transformar este objeto a uno de tipo <code>SpatRaster</code></p>
+</div>
+<p>El objeto generado (<code>k</code>) contiene, igual que antes, 2 dimensiones: las predicciones (columna <code>var1.pred</code>), y la varianza (precisión) de las predicciones (columna <code>var1.var</code>), que en este caso sí contiene valores. Podemos plotear los resultados, y por defecto nos mostrará el valor de la predicción:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>k2 <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="fu">as</span>(k, <span class="st">"Raster"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>Veamos el aspecto de la interpolación generada:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(k2<span class="sc">$</span>var1.pred, <span class="at">main =</span> <span class="st">"Predicción"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<p>Incluso podemos representar encima los puntos observados:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(k2<span class="sc">$</span>var1.pred, <span class="at">main =</span> <span class="st">"Predicció"</span>)</span>
-<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(estaciones, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">cex =</span> <span class="fl">0.8</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<p>Echemos ahora un vistazo a la precisión de las predicciones:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(k2<span class="sc">$</span>var1.var, <span class="at">main =</span> <span class="st">"Varianza"</span>)</span>
-<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(estaciones, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">cex =</span> <span class="fl">0.8</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(k)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>Vemos que el error es mínimo en cada una de las observaciones, y mayor en las zonas donde hay espacios grandes sin datos de estaciones.</p>
+<p>Si queremos especificar la varianza, también lo podemos hacer:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(k[<span class="st">"var1.var"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Vemos que la varianza es mínima - de hecho 0 - en los puntos, y se hace mayor en las zonas sin densidad de puntos.</p>
+<p>Igual que antes, podemos transformar este objeto a uno de tipo <code>SpatRaster</code> para hacerlo más integrable con otro tipo de visualizaciones:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>k2 <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="fu">as</span>(k, <span class="st">"Raster"</span>))</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>k2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>class       : SpatRaster 
+dimensions  : 121, 243, 2  (nrow, ncol, nlyr)
+resolution  : 1000, 1000  (x, y)
+extent      : 574966, 817966, 4514365, 4635365  (xmin, xmax, ymin, ymax)
+coord. ref. : ETRS89 / UTM zone 30N (EPSG:25830) 
+source(s)   : memory
+names       : var1.pred,    var1.var 
+min values  :  15.83864, 0.003102869 
+max values  :  23.42003, 2.680639443 </code></pre>
+</div>
+</div>
+<p>Veamos el aspecto de la interpolación generada:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(k2<span class="sc">$</span>var1.pred, <span class="at">main =</span> <span class="st">"Predicción"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Incluso podemos representar encima los puntos observados:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(k2<span class="sc">$</span>var1.pred, <span class="at">main =</span> <span class="st">"Predicció"</span>)</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(estaciones, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">cex =</span> <span class="fl">0.8</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Echemos ahora un vistazo a la precisión de las predicciones:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(k2<span class="sc">$</span>var1.var, <span class="at">main =</span> <span class="st">"Varianza"</span>)</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(estaciones, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">cex =</span> <span class="fl">0.8</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Vemos, como comentábamos antes, que el error es mínimo en cada una de las observaciones, y mayor en las zonas donde hay espacios grandes sin datos de estaciones.</p>
 <p>Existe una función que automatiza todo el proceso de ajuste del modelo de kriging, de manera que no hay que determinar los parámetros, la forma, etc. manualmente. Si estáis pensando que podía haber explicado este método desde el principio, tened en cuenta que es importante entender cómo se genera el proceso antes de realizarlo de manera automática. La función en cuestión es <code>autoKrige()</code>, del paquete <code>automap</code>:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(automap)</span>
-<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>autok <span class="ot">&lt;-</span> <span class="fu">autoKrige</span>(Tmed_MES <span class="sc">~</span> <span class="dv">1</span>, estaciones,  grid)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(automap)</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>autok <span class="ot">&lt;-</span> <span class="fu">autoKrige</span>(Tmed_MES <span class="sc">~</span> <span class="dv">1</span>, estaciones,  grid)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in asMethod(object): complete map seems to be NA's -- no selection was
 made</code></pre>
@@ -611,7 +690,7 @@ made</code></pre>
 <pre><code>Warning in asMethod(object): complete map seems to be NA's -- no selection was
 made</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>autok<span class="sc">$</span>var_model</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>autok<span class="sc">$</span>var_model</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  model     psill    range kappa
 1   Nug 0.1569758     0.00   0.0
@@ -620,9 +699,9 @@ made</code></pre>
 </div>
 <p>Además, nos genera un output muy adecuado con sólo usar la función <code>plot()</code></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(autok)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(autok)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid" width="672"></p>
+<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <div style="background: #F5F5DC">
@@ -634,16 +713,16 @@ made</code></pre>
 <h3 data-number="9.3.5" class="anchored" data-anchor-id="otros-ajustes-de-kriging"><span class="header-section-number">9.3.5</span> Otros ajustes de kriging</h3>
 <p>El modelo de kriging que hemos usado hasta ahora es un kriging ordinario, lo que se indica al ajustar la función <code>krige()</code>, indicando <code>Tmed_MES ~ 1</code>. Para seleccionar otro tipo de kriging, podemos cambiar la notación de esa fórmula, de acuerdo a lo siguiente:</p>
 <ul>
-<li>Kriging simple: <code>Z ~ 1</code> (requiere definir el parámetro <code>beta</code></li>
+<li>Kriging simple: <code>Z ~ 1</code> (requiere definir el parámetro <code>beta</code> )</li>
 <li>Kriging ordinario: <code>Z ~ 1</code></li>
 <li>Kriging universal: <code>Z ~ x + y</code></li>
 </ul>
 <p>Veamos por ejemplo cual sería el resultado de un ajuste por kriging universal, el método más común:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>estaciones<span class="sc">$</span>x <span class="ot">&lt;-</span> <span class="fu">st_coordinates</span>(estaciones)[,<span class="dv">1</span>]</span>
-<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>estaciones<span class="sc">$</span>y <span class="ot">&lt;-</span> <span class="fu">st_coordinates</span>(estaciones)[,<span class="dv">2</span>]</span>
-<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>uk <span class="ot">&lt;-</span> <span class="fu">krige</span>(Tmed_MES<span class="sc">~</span> x <span class="sc">+</span> y, <span class="at">locations =</span> estaciones, <span class="at">newdata =</span> grid, <span class="at">model =</span> vt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>estaciones<span class="sc">$</span>x <span class="ot">&lt;-</span> <span class="fu">st_coordinates</span>(estaciones)[,<span class="dv">1</span>]</span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>estaciones<span class="sc">$</span>y <span class="ot">&lt;-</span> <span class="fu">st_coordinates</span>(estaciones)[,<span class="dv">2</span>]</span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a>uk <span class="ot">&lt;-</span> <span class="fu">krige</span>(Tmed_MES<span class="sc">~</span> x <span class="sc">+</span> y, <span class="at">locations =</span> estaciones, <span class="at">newdata =</span> grid, <span class="at">model =</span> vt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in asMethod(object): complete map seems to be NA's -- no selection was
 made</code></pre>
@@ -655,13 +734,13 @@ made</code></pre>
 <pre><code>Warning in asMethod(object): complete map seems to be NA's -- no selection was
 made</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>uk2 <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="fu">as</span>(uk, <span class="st">"Raster"</span>))</span>
-<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(uk2<span class="sc">$</span>var1.pred, <span class="at">main =</span> <span class="st">"Predicción por Universal kriging"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>uk2 <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="fu">as</span>(uk, <span class="st">"Raster"</span>))</span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(uk2<span class="sc">$</span>var1.pred, <span class="at">main =</span> <span class="st">"Predicción por Universal kriging"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid" width="672"></p>
+<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>auto_uk <span class="ot">&lt;-</span> <span class="fu">autoKrige</span>(Tmed_MES <span class="sc">~</span> x <span class="sc">+</span> y, estaciones,  grid)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>auto_uk <span class="ot">&lt;-</span> <span class="fu">autoKrige</span>(Tmed_MES <span class="sc">~</span> x <span class="sc">+</span> y, estaciones,  grid)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in asMethod(object): complete map seems to be NA's -- no selection was
 made</code></pre>
@@ -673,9 +752,9 @@ made</code></pre>
 <pre><code>Warning in asMethod(object): complete map seems to be NA's -- no selection was
 made</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(auto_uk)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(auto_uk)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-26-2.png" class="img-fluid" width="672"></p>
+<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-31-2.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -686,13 +765,13 @@ made</code></pre>
 <section id="validación-cruzada" class="level3" data-number="9.4.1">
 <h3 data-number="9.4.1" class="anchored" data-anchor-id="validación-cruzada"><span class="header-section-number">9.4.1</span> Validación cruzada</h3>
 <p>La validación cruzada consiste en comparar, para cada valor de la muestra (cada observación) la diferencia entre el valor observado y el predicho por el modelo. Sin embargo, no podemos incluir el punto u observación que queremos evaluar, ya que si no la predicción sería exactamente igual a la observación. Por ello, lo que se hace es ir excluyendo una a una las observaciones, y se determina cuál sería el valor predicho para ese punto por un modelo elaborado con todos los demás puntos. Esto se hace de manera repetitiva - iterativa - con todos los puntos de la muestra, y al final tendremos una serie de valores (residuos) de la diferencia entre el valor observado y el predicho.</p>
-<p><code>R</code> nos pone fácil realizar la validación cruzada, a través de la función <code>krige.cv()</code>, del paquete <code>gstat</code>. Dicha función requiere como entrada un objeto de tipo <code>gstat</code> en el argumento <code>model</code>:</p>
+<p><code>R</code> nos pone fácil realizar la validación cruzada, a través de la función <code>krige.cv()</code>, del paquete <code>gstat</code>. Dicha función permite como entrada un objeto de tipo <code>gstat</code> en el argumento <code>model</code>, que es lo que determinará el tipo de interpolación que hacemos. Así, si no indicamos nada en <code>model</code>, realizará una interpolación por IDW:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>idw_cv <span class="ot">&lt;-</span> <span class="fu">krige.cv</span>(<span class="at">formula =</span> Tmed_MES <span class="sc">~</span> <span class="dv">1</span>, <span class="at">locations =</span> estaciones) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>idw_cv <span class="ot">&lt;-</span> <span class="fu">krige.cv</span>(<span class="at">formula =</span> Tmed_MES <span class="sc">~</span> <span class="dv">1</span>, <span class="at">locations =</span> estaciones) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Una vez ajustado, podemos acceder a los datos:</p>
+<p>Vemos que tarda más que antes, ya que tiene que hacer numerosas interpolaciones. Una vez ajustado, podemos acceder a los datos:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>idw_cv</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a>idw_cv</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Simple feature collection with 90 features and 6 fields
 Geometry type: POINT
@@ -713,36 +792,40 @@ First 10 features:
 10  16.83975       NA    16.30 -0.5397491     NA   10 POINT (620133 4526863)</code></pre>
 </div>
 </div>
-<p>Y por tanto representar el gráfico de valores observados y predichos:</p>
+<p>Vemos que contiene los valor predichos, los observados, y el residuo. Esto nos permite representar el gráfico de valores observados y predichos:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(idw_cv<span class="sc">$</span>observed, idw_cv<span class="sc">$</span>var1.pred, <span class="at">main =</span> <span class="st">"Observed vs. predicted for IDW"</span>) <span class="sc">+</span></span>
-<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="dv">0</span>,<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(idw_cv<span class="sc">$</span>observed, idw_cv<span class="sc">$</span>var1.pred) <span class="sc">+</span></span>
+<span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="dv">0</span>,<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid" width="672"></p>
+<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-34-1.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>integer(0)</code></pre>
 </div>
 </div>
-<p>Esto mismo lo podemos hacer para el modelo de interpolado mediante ordinary kriging:</p>
+<p>Esto mismo lo podemos hacer para el modelo de interpolado mediante ordinary kriging, simplemente indicando el modelo de variograma que queremos (<code>model = vt</code>)</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>ok_cv <span class="ot">&lt;-</span> <span class="fu">krige.cv</span>(<span class="at">formula =</span> Tmed_MES <span class="sc">~</span> <span class="dv">1</span>, <span class="at">locations =</span> estaciones,  <span class="at">model =</span> vt)</span>
-<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ok_cv<span class="sc">$</span>observed, ok_cv<span class="sc">$</span>var1.pred, <span class="at">main =</span> <span class="st">"Observed vs. predicted for Ordinary kriging"</span>) <span class="sc">+</span></span>
-<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="dv">0</span>,<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb82"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a>ok_cv <span class="ot">&lt;-</span> <span class="fu">krige.cv</span>(<span class="at">formula =</span> Tmed_MES <span class="sc">~</span> <span class="dv">1</span>, <span class="at">locations =</span> estaciones,  <span class="at">model =</span> vt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ok_cv<span class="sc">$</span>observed, ok_cv<span class="sc">$</span>var1.pred, </span>
+<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Observed vs. predicted for Ordinary kriging"</span>) <span class="sc">+</span></span>
+<span id="cb83-3"><a href="#cb83-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">abline</span>(<span class="dv">0</span>,<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid" width="672"></p>
+<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-36-1.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>integer(0)</code></pre>
 </div>
 </div>
-<p>… o el de universal kriging</p>
+<p>… o el de universal kriging, donde además de <code>model</code> debemos especificar la fórmula correspondiente:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>uk_cv <span class="ot">&lt;-</span> <span class="fu">krige.cv</span>(Tmed_MES<span class="sc">~</span>x<span class="sc">+</span>y, <span class="at">locations =</span> estaciones,  <span class="at">model =</span> vt)</span>
-<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(uk_cv<span class="sc">$</span>observed, uk_cv<span class="sc">$</span>var1.pred, <span class="at">main =</span> <span class="st">"Observed vs. predicted for Universal kriging"</span>) <span class="sc">+</span></span>
-<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="dv">0</span>,<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a>uk_cv <span class="ot">&lt;-</span> <span class="fu">krige.cv</span>(Tmed_MES<span class="sc">~</span>x<span class="sc">+</span>y, <span class="at">locations =</span> estaciones,  <span class="at">model =</span> vt)</span>
+<span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(uk_cv<span class="sc">$</span>observed, uk_cv<span class="sc">$</span>var1.pred, </span>
+<span id="cb85-3"><a href="#cb85-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Observed vs. predicted for Universal kriging"</span>) <span class="sc">+</span></span>
+<span id="cb85-4"><a href="#cb85-4" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="dv">0</span>,<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid" width="672"></p>
+<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-37-1.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>integer(0)</code></pre>
@@ -757,20 +840,20 @@ First 10 features:
 </ul>
 <p>Lógicamente, cuanto mayor sea la correlación entre valores observados y predichos, mejor será el modelo ajustado. Podemos calcularlo para el IDW y el kriging:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="co"># IDW</span></span>
-<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(idw_cv<span class="sc">$</span>var1.pred, idw_cv<span class="sc">$</span>observed)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="co"># IDW</span></span>
+<span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(idw_cv<span class="sc">$</span>var1.pred, idw_cv<span class="sc">$</span>observed)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.8598952</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ordinary Krigging</span></span>
-<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(ok_cv<span class="sc">$</span>var1.pred, ok_cv<span class="sc">$</span>observed)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ordinary Krigging</span></span>
+<span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(ok_cv<span class="sc">$</span>var1.pred, ok_cv<span class="sc">$</span>observed)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.8713472</code></pre>
+<pre><code>[1] 0.8713259</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Universal Krigging</span></span>
-<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(uk_cv<span class="sc">$</span>var1.pred, uk_cv<span class="sc">$</span>observed)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Universal Krigging</span></span>
+<span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(uk_cv<span class="sc">$</span>var1.pred, uk_cv<span class="sc">$</span>observed)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.8774411</code></pre>
+<pre><code>[1] 0.8774583</code></pre>
 </div>
 </div>
 <p>Vemos que en todos los casos son muy altos, y son valores muy similares.</p>
@@ -779,35 +862,35 @@ First 10 features:
 </ul>
 <p>Tal y como vimos en la unidad relativa a la regresión lineal, nos interesa aquí que los residuos sean lo más pequeños posible (en valor absoluto) y que además tengan media próxima a cero. Podemos calcular la media:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="co">#IDW</span></span>
-<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(idw_cv<span class="sc">$</span>residual)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb93"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a><span class="co">#IDW</span></span>
+<span id="cb93-2"><a href="#cb93-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(idw_cv<span class="sc">$</span>residual)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] -0.07808131</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ordinary Kriging</span></span>
-<span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(ok_cv<span class="sc">$</span>residual)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb95"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ordinary Kriging</span></span>
+<span id="cb95-2"><a href="#cb95-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(ok_cv<span class="sc">$</span>residual)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] -0.02131264</code></pre>
+<pre><code>[1] -0.02155456</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Universal Kriging</span></span>
-<span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(uk_cv<span class="sc">$</span>residual)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb97"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Universal Kriging</span></span>
+<span id="cb97-2"><a href="#cb97-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(uk_cv<span class="sc">$</span>residual)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] -0.02044329</code></pre>
+<pre><code>[1] -0.02068641</code></pre>
 </div>
 </div>
 <p>…y además construir el boxplot o histograma</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(idw_cv<span class="sc">$</span>residual, <span class="at">main =</span> <span class="st">"Histograma de residuos para IDW"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb99"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(idw_cv<span class="sc">$</span>residual, <span class="at">main =</span> <span class="st">"Histograma de residuos para IDW"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-34-1.png" class="img-fluid" width="672"></p>
+<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-40-1.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb90"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(ok_cv<span class="sc">$</span>residual,  <span class="at">main =</span> <span class="st">"Histograma de residuos para ordinary kriging"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(ok_cv<span class="sc">$</span>residual,  <span class="at">main =</span> <span class="st">"Histograma de residuos para ordinary kriging"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-34-2.png" class="img-fluid" width="672"></p>
+<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-40-2.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(uk_cv<span class="sc">$</span>residual,  <span class="at">main =</span> <span class="st">"Histograma de residuos para universal kriging"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb101"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(uk_cv<span class="sc">$</span>residual,  <span class="at">main =</span> <span class="st">"Histograma de residuos para universal kriging"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-34-3.png" class="img-fluid" width="672"></p>
+<p><img src="06_InterpolacionEspacial_files/figure-html/unnamed-chunk-40-3.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Vemos también que parecen normales y centrados en el cero.</p>
@@ -816,20 +899,20 @@ First 10 features:
 </ul>
 <p>El MSPE es la media del cuadrado de los errores de predicción, es decir, de los residuos. Interesa por tanto que sea lo más pequeño posible:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb92"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Para IDW</span></span>
-<span id="cb92-2"><a href="#cb92-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(idw_cv<span class="sc">$</span>residual<span class="sc">^</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb102"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Para IDW</span></span>
+<span id="cb102-2"><a href="#cb102-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(idw_cv<span class="sc">$</span>residual<span class="sc">^</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1.254002</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Para ordinary Kriging</span></span>
-<span id="cb94-2"><a href="#cb94-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(ok_cv<span class="sc">$</span>residual<span class="sc">^</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb104"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb104-1"><a href="#cb104-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Para ordinary Kriging</span></span>
+<span id="cb104-2"><a href="#cb104-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(ok_cv<span class="sc">$</span>residual<span class="sc">^</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 1.030548</code></pre>
+<pre><code>[1] 1.030617</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb96"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Para universal Kriging</span></span>
-<span id="cb96-2"><a href="#cb96-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(uk_cv<span class="sc">$</span>residual<span class="sc">^</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb106"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb106-1"><a href="#cb106-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Para universal Kriging</span></span>
+<span id="cb106-2"><a href="#cb106-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(uk_cv<span class="sc">$</span>residual<span class="sc">^</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.98516</code></pre>
+<pre><code>[1] 0.9851296</code></pre>
 </div>
 </div>
 <ul>
@@ -837,20 +920,20 @@ First 10 features:
 </ul>
 <p>El RMSE es una medida muy común de <em>performance</em> de un modelo. Es la raíz del cociente entre la suma de los cuadrados de los residuos y el número de observaciones. Tiene la ventaja de que está en las mismas unidades que la variable respuesta, por lo que su valor es fácilmente interpretable como una especie de “error medio” en las predicciones:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb98"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb98-1"><a href="#cb98-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Para IDW</span></span>
-<span id="cb98-2"><a href="#cb98-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sqrt</span>(<span class="fu">sum</span>(idw_cv<span class="sc">$</span>residual<span class="sc">^</span><span class="dv">2</span>)<span class="sc">/</span><span class="fu">length</span>(idw_cv<span class="sc">$</span>residual))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb108"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb108-1"><a href="#cb108-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Para IDW</span></span>
+<span id="cb108-2"><a href="#cb108-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sqrt</span>(<span class="fu">sum</span>(idw_cv<span class="sc">$</span>residual<span class="sc">^</span><span class="dv">2</span>)<span class="sc">/</span><span class="fu">length</span>(idw_cv<span class="sc">$</span>residual))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1.119822</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Para ordinary kriging</span></span>
-<span id="cb100-2"><a href="#cb100-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sqrt</span>(<span class="fu">sum</span>(ok_cv<span class="sc">$</span>residual<span class="sc">^</span><span class="dv">2</span>)<span class="sc">/</span><span class="fu">length</span>(ok_cv<span class="sc">$</span>residual))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb110"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb110-1"><a href="#cb110-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Para ordinary kriging</span></span>
+<span id="cb110-2"><a href="#cb110-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sqrt</span>(<span class="fu">sum</span>(ok_cv<span class="sc">$</span>residual<span class="sc">^</span><span class="dv">2</span>)<span class="sc">/</span><span class="fu">length</span>(ok_cv<span class="sc">$</span>residual))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 1.015159</code></pre>
+<pre><code>[1] 1.015193</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb102"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Para universal kriging</span></span>
-<span id="cb102-2"><a href="#cb102-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sqrt</span>(<span class="fu">sum</span>(uk_cv<span class="sc">$</span>residual<span class="sc">^</span><span class="dv">2</span>)<span class="sc">/</span><span class="fu">length</span>(uk_cv<span class="sc">$</span>residual))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb112"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb112-1"><a href="#cb112-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Para universal kriging</span></span>
+<span id="cb112-2"><a href="#cb112-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sqrt</span>(<span class="fu">sum</span>(uk_cv<span class="sc">$</span>residual<span class="sc">^</span><span class="dv">2</span>)<span class="sc">/</span><span class="fu">length</span>(uk_cv<span class="sc">$</span>residual))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.9925523</code></pre>
+<pre><code>[1] 0.992537</code></pre>
 </div>
 </div>
 <p>Podemos incluso hacer una tabla resumen con los parámetros:</p>
@@ -871,31 +954,35 @@ First 10 features:
 <td style="text-align: left;">IDW</td>
 <td style="text-align: right;">0.8598952</td>
 <td style="text-align: right;">-0.0780813</td>
-<td style="text-align: right;">1.254002</td>
-<td style="text-align: right;">1.1198223</td>
+<td style="text-align: right;">1.2540020</td>
+<td style="text-align: right;">1.119822</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Ordinary kriging</td>
-<td style="text-align: right;">0.8713472</td>
-<td style="text-align: right;">-0.0213126</td>
-<td style="text-align: right;">1.030548</td>
-<td style="text-align: right;">1.0151591</td>
+<td style="text-align: right;">0.8713259</td>
+<td style="text-align: right;">-0.0215546</td>
+<td style="text-align: right;">1.0306172</td>
+<td style="text-align: right;">1.015193</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Universal kriging</td>
-<td style="text-align: right;">0.8774411</td>
-<td style="text-align: right;">-0.0204433</td>
-<td style="text-align: right;">0.985160</td>
-<td style="text-align: right;">0.9925523</td>
+<td style="text-align: right;">0.8774583</td>
+<td style="text-align: right;">-0.0206864</td>
+<td style="text-align: right;">0.9851296</td>
+<td style="text-align: right;">0.992537</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
 <p>En este caso, todos los indicadores parecen favorecer el kriging: los residuos son más bajos, las métricas de error también, y la correlación entre valores observados y predichos es ligeramente mejor. Por tanto, consideraremos que esta interpolación es más adecuada que la de IDW. En concreto, el <em>universal kriging</em> parece ser el método que produce las mejores predicciones (aunque por poco, los tres métodos son bastante similares).</p>
-
-
 </section>
+</section>
+<section id="conclusiones" class="level2" data-number="9.5">
+<h2 data-number="9.5" class="anchored" data-anchor-id="conclusiones"><span class="header-section-number">9.5</span> Conclusiones</h2>
+<p>Con esto hemos visto cómo producir interpolaciones con diversas métricas, y cómo evaluar la calidad de la interpolación generada. El kriging acostumbra a ser el método más robusto, pero también es computacionalmente más exigente. La decisión final dependerá del objetivo, la precisión requerida, y la disponibilidad de tiempo y de capacidad de computación. En <a href="https://r-lidar.github.io/lidRbook/dtm.html#sec-dtm-pros-cons">este enlace</a> podéis ver una discusión sobre los pros y contras de cada método usando como ejemplo el procesado de ficheros LiDAR para generar un MDT (es materia que se cubre en la asignatura “Tecnologies Digitals 2: Arbre i rodal” del Màster en Enginyeria de Forests). En el ejemplo con el que hemos trabajado, sin embargo, un IDW muestra ser suficientemente preciso.</p>
+
+
 </section>
 
 </main> <!-- /main -->
