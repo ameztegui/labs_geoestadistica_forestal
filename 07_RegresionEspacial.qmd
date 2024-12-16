@@ -7,7 +7,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-# Regresión espacial {#sec-SpatReg} 
+# Regresión espacial {#sec-SpatReg}
 
 ## Introducción. Regresión lineal y estructura espacial
 
@@ -29,7 +29,7 @@ provincias <- st_read('data/meteo/meteo_espacial/provincias_spain.shp')
 
 ```
 
-Vamos a ajustar un modelo de regresión lineal *normal*, como hacíamos en la primera unidad del curso. En este caso, usaremos como variable dependiente `T_MAX_abs`, la temperatura máxima absoluta del mes de junio en cada estación, y como variable explicativa, la elevación:
+Vamos a ajustar un modelo de regresión lineal *normal*, no espacial, como hacíamos en la primera unidad del curso. En este caso, usaremos como variable dependiente `T_MAX_abs`, la temperatura máxima absoluta del mes de junio en cada estación, y como variable explicativa, la elevación:
 
 ```{r}
 
@@ -64,32 +64,51 @@ tm_shape(estaciones) +
 
 ```
 
-También parece que puede haber cierta autocorrelación en los residuos. Vamos a comprobarlo de manera más cuantitativa. Recordemos, del tema de autocorrelación espacial, que primero debemos crear una lista de vecinos, y luego ya podemos calcular la autocorrelación:
+También parece que puede haber cierta autocorrelación en los residuos. Vamos a comprobarlo de manera más cuantitativa. Recordemos, del tema de autocorrelación espacial, que primero debemos crear una lista de vecinos, y luego ya podemos calcular la autocorrelación. En este caso usaremos los 10 vecinos más próximos:
 
 ```{r}
 veins <- st_knn(estaciones, k = 10)
 ```
 
-Una vez definidos los vecinos podemos ahora testar la autocorrelación de los residuos del modelo de regresión. Para ello usaremos la función `lm.morantest()`, que tiene como argumentos un modelo de regresión lineal y el listado de vecinos:
+Una vez definidos los vecinos podemos ahora testar la autocorrelación de los residuos del modelo de regresión. Para ello usaremos la función `lm.morantest()`, en vez de la típica que usábamos. Esta función tiene algunos detalles que la hacen más adecuada para testar la autocorrelación de residuos de un modelo, y tiene como argumentos un modelo de regresión lineal y los vecinos, que debemos transformar antes en un objeto de tipo "lista de vecinos" mediante la función `nb2listw()` :
 
 ```{r}
 list_veins <- nb2listw(veins)
-lm.morantest(mod_lm, nb2listw(veins))
+
+lm.morantest(mod_lm, list_veins)
 ```
 
-Vemos que aunque el valor de la I de Moran es bastante bajo `r round(lm.morantest(mod_lm, nb2listw(veins))$estimate[1],4)`, sí que resulta significativo, lo que indica que existe una cierta autocorrelación en los residuos. En consecuencia, podríamos decir que el modelo no cumple el principio de independencia de las observaciones, y deberíamos intentar tener en cuenta la estructura espacial de los datos en la regresión.
+Vemos que aunque el valor de la I de Moran es bastante bajo `r round(lm.morantest(mod_lm, nb2listw(veins))$estimate[1],4)`, sí que resulta significativo, lo que indica que existe una cierta autocorrelación en los residuos. En consecuencia, podríamos decir que el modelo no cumple el principio de independencia de las observaciones. Esto no implica necesariamente que debamos descartar el modelo, pero sí que deberíamos intentar tener en cuenta la estructura espacial de los datos en la regresión, para lo que podemos ajustar un modelo de regresión que tenga en cuenta la estructura espacial de los datos.
 
 ## Modelos de regresión espacial
 
-Aunque la presencia de autocorrelación en los residuos no necesariamente implica que debamos descartar el modelo, sí que podemos intentar ajustar un modelo de regresión que tenga en cuenta la estructura espacial de los datos. En realidad hay dos tipos de modelos, que difieren básicamente en cómo tratan la autocorrelación espacial de los residuos: un modelo de *error espacial* lo trata como si la agrupación espacial de los residuos fuera algo accidental, que se produce por azar o por variables que no hemos tenido en cuenta. Por otro lado, un modelo de *lag espacial* simplemente introduce la estructura espacial como un variable explicativa más en el modelo. A menudo la realidad es una combinación de los dos procesos - accidente y causa subyacente -. Podemos ajustar ambos tipos de modelo y tomar la decisión según cuál se ajusta mejor *a posteriori*.
+El hecho de que exista autocorrelación espacial en los residuos puede deberse a varias razones. Puede que nuestra variable respuesta realmente tenga dinámicas de dependencia espacial, pero también puede ser que la relación entre los residuos se deba a la manera en que se agregan las unidades espaciales (por ejemplo, si medimos por municipios, o por rodales) o a que no hemos considerado una variable importante que sí varía espacialmente (por ejemplo, las características del suelo).
+
+Existen en realidad dos tipos de modelos de regresión espacial, que difieren básicamente en cómo tratan la autocorrelación espacial de los residuos: un modelo de *error espacial* lo trata como si la agrupación espacial de los residuos fuera algo accidental, que se produce por azar o por variables que no hemos tenido en cuenta, y por tanto no asume que la variable *y* presente autocorrelación (pero sí los residuos).
+
+Por otro lado, un modelo de *lag espacial* sí asume que los valores de *y* en una posición *i* dependerán de los valores de *y* en el vecindario de *i*. Estos modelos simplemente introducen la estructura espacial como una variable explicativa más en el modelo (lo veremos más adelante).
+
+A menudo la realidad es una combinación de los dos procesos - accidente y causa subyacente -. Podemos ajustar ambos tipos de modelo y tomar la decisión según cuál se ajusta mejor *a posteriori*.
 
 ### Modelo de error espacial (Spatial error model)
 
-Vamos a ajustar en primer lugar un modelo de error espacial, que asume que no hay causalidad en la autocorrelación de los residuos. Este modelo se construye como:
+Vamos a ajustar en primer lugar un modelo de error espacial, que asume que no hay causalidad en la autocorrelación de los residuos, es decir, que sólo los residuos están correlacionados, pero no la variable de interés.
 
-$y_i= \beta_0 + \beta_1X_1+\lambda\omega_i\xi_i+\epsilon_i$
+![Fig.1. 3Estructura de un modelo de regresión espacial](images/spatial_error.png){fig-align="center"}
 
-donde el término $\lambda\omega_i\xi_i$ representa la parte "espacial" del error, que se extrae del error y se añade como una variable explicativa implícita.
+Si partimos de un modelo de regresión lineal convencional, que toma la forma:
+
+$y_i= \beta_0 + \beta_1X_1+\epsilon_i$
+
+el término $\epsilon_i$ puede partirse en dos partes, una que incluye la estructura espacial y otra que no:
+
+$\epsilon_i = λω_i\epsilon_i+u_i$
+
+por lo tanto:
+
+$y_i= \beta_0 + \beta_1X_1+\lambda\omega_i\epsilon_i+u_i$
+
+donde el término $\lambda\omega_i\epsilon_i$ representa la parte "espacial" del error, que se extrae del error general y se añade como una variable explicativa implícita. $\lambda$ es el coeficiente que multiplica a este error espacial, y si $\lambda=0$ entonces podemos concluir que no hay estructura espacial.
 
 Para ajustar este modelo usaremos la función `errorsarlm()`, del paquete `spatialreg`. Debemos definir la fórmula de la regresión que queremos ajustar, el dataset (`estaciones`), y el listado de los vecinos (`list_veins`)
 
@@ -105,11 +124,15 @@ Debajo de esta información sobre los coeficientes tenemos los valores de $\lamb
 
 ### Spatial lag model
 
-Ajustemos ahora un modelo de *lag* espacial. Este modelo añade una variable independiente adicional, que toma el valor de la media de los vecinos de cada observación. Esta variable no se mostrará en la salida de resultados "estándar", pero el modelo de spatial lag la incluye pero la deja en un segundo plano. De esta manera, no tratamos la variable dependiente como independiente en cada observación sino que añadimos un término que asume explícitamente que las observaciones son parcialmente dependiente de los vecinos.
+Ajustemos ahora un modelo de *lag* espacial. Este modelo sí asume que los valores de y presentan una estructura espacial real, de manera que los valores de $y_i$ dependerán de los valores de $y$ en los alrededores de $i$.
+
+![Fig.2 Estructura de un modelo de lag espacial](images/spatial_lag.png){fig-align="center"}
+
+Para ello, un modelo de *lag* espacial añade una variable independiente adicional, que toma el valor de la media de los vecinos de cada observación. De esta manera, no tratamos la variable dependiente como espacialmente independiente en cada observación, sino que añadimos un término que asume explícitamente que las observaciones son parcialmente dependientes de los vecinos.
 
 $y_i= \beta_0 + \beta_1X_1+\rho\omega_iy_i+\epsilon_i$
 
-Un valor positivo de $\rho$ indica que el valor de $y_i$ aumentará cuando lo hagan los vecinos de $x_i$.
+Un valor positivo de $\rho$ indica que el valor de $y_i$ aumentará cuando lo hagan los vecinos de $x_i$.Este parámetro $\rho$ no se mostrará en la salida de resultados "estándar", pero el modelo de spatial lag la incluye.
 
 Usaremos ahora la función `lagsarlm()`, también del paquete `spatialreg`, y con la misma notación que antes:
 
@@ -122,9 +145,9 @@ Al incluir ese término de *lag* espacial, vemos que tanto el test de LR como el
 
 ### Selección del mejor modelo
 
-Sin embargo, no siempre pasa esto. En numerosos casos, ni el modelo de *error espacial* ni el de *lag espacial* son capaces de eliminar la autocorrelación, a pesar de reducirla. En otros casos, al contrario, ambos modelos son capaces de considerar y eliminar la autocorrelación.
+Sin embargo, no siempre pasa esto. En numerosos casos, ni el modelo de *error espacial* ni el de *lag espacial* son capaces de eliminar la autocorrelación del todo, a pesar de reducirla. En otros casos, al contrario, ambos modelos son capaces de considerar y eliminar la autocorrelación.
 
-Para elegir cuál es el mejor de los dos modelos, podemos usar un multiplicador de Lagrange. Este valor nos indicará si una unidad dada (una estación meteorológica) está aún influenciada por las estaciones a su alrededor incluso después de tener en cuenta y corregir la autocorrelación espacial.En lineas generales, el modelo que presenta un valor mayor del test del Multiplicador de Lagrange es el modelo más adecuado.
+Para elegir cuál es el mejor de los dos modelos, podemos usar, además de la comparación de los valores de AIC, y de la comprobación de si eliminan la autocorrelación espacial de los residuos, el test del multiplicador de Lagrange. Este valor nos indicará si una unidad dada (una estación meteorológica) está aún influenciada por las estaciones a su alrededor incluso después de tener en cuenta y corregir la autocorrelación espacial.En lineas generales, el modelo que presenta un valor mayor del test del Multiplicador de Lagrange es el modelo más adecuado.
 
 Para ejecutar el test del multiplicador de Lagrange usaremos la función `lm.LMtests()`, del paquete `spatialreg`. A esta función le debemos proporcionar como argumentos el modelo original (el que no tiene en cuenta la estructura espacial), el nombre del listado de vecinos, y los tipos de modelos espaciales que queremos testar (en este caso `LMerr` para el modelo de error espacial, y `LMlag` para el lag espacial):
 
@@ -140,17 +163,35 @@ summary(test_Lagrange)
 
 En este caso se confirma lo que habíamos visto antes: a pesar de que el modelo de error espacial no soluciona del todo el problema de la autocorrelación, resulta un mejor modelo, y es preferible respecto al modelo de lag espacial.
 
+### Pasos a seguir ante la posibilidad de aplicar una regresión espacial
+
+En resumen, si queremos realizar una regresión con un set de datos en el que sospechamos que podemos tener autocorrelación espacial, estos son los principales pasos a seguir:
+
+1.  Como siempre, el primer paso es visualizar los datos (en este caso espacialmente), para ver si hay algún outlier o valores que falten, y para intuir la estructura espacial
+
+2.  Si se intuye estructura espacial, debemos construir un vecindario espacial apropiado y asignar pesos
+
+3.  Ajustar una regresión lineal (no espacial), que asume independencia de los residuos
+
+4.  Inspeccionar los residuos, y calcular su valor de I de Moran
+
+5.  Si observamos signos de dependencia espacial, ajustar modelos de error espacial y/o de lag espacial, y evaluar su idoneidad mediante el estadístico del multiplicador de Lagrange
+
+6.  Para ser realmente minuciosos, comprobar la sensibilidad de los principales resultados de las regresiones a diferentes supuestos de vecindad/ponderación.
+
 ## Geographically weighted regression
 
-Hemos visto que una tercera opción para tener en cuenta la estructura espacial de los datos es realizar una regresión ponderada geográficamente (geographically weighted regression). GWR es el término introducido por Fotheringham, Charlton y Brunsdon (1997, 2002) para describir una familia de modelos de regresión en los que se permite que los coeficientes varíen espacialmente. GWR funciona moviendo una ventana de búsqueda (kernel) de un punto de la muestra al siguiente, trabajando secuencialmente a través de todos los puntos existentes en el conjunto de datos. A continuación, se ajusta un modelo de regresión a todos los datos contenidos en la ventana identificada alrededor de cada punto, ponderando más los puntos de datos más cercanos al punto de muestra que los más alejados. Este proceso se repite para todos los puntos del conjunto de datos. Para un conjunto de datos de 150 observaciones, GWR ajustará 150 modelos de regresión ponderados. La diferencia de este método respecto a los anteriores es que no asume que la relación entre *y* y *x* es constante en toda la zona de estudio, e incluso permite que haya cambios de signo locales en la relación entre ambas. Por todo ello se suele considerar el método más flexible.
+Hemos visto que una tercera opción para tener en cuenta la estructura espacial de los datos es realizar una regresión ponderada geográficamente (geographically weighted regression). GWR es el término introducido por Fotheringham, Charlton y Brunsdon (1997, 2002) para describir una familia de modelos de regresión en los que se permite que los coeficientes varíen espacialmente. GWR funciona moviendo una ventana de búsqueda (kernel) de un punto de la muestra al siguiente, trabajando secuencialmente a través de todos los puntos existentes en el conjunto de datos. A continuación, se ajusta un modelo de regresión a todos los datos contenidos en la ventana identificada alrededor de cada punto, ponderando más los puntos de datos más cercanos al punto de muestra que los más alejados. Este proceso se repite para todos los puntos del conjunto de datos.
+
+Para un conjunto de datos de 150 observaciones, GWR ajustará 150 modelos de regresión ponderados. La diferencia de este método respecto a los anteriores es que no asume que la relación entre *y* y *x* es constante en toda la zona de estudio, e incluso permite que haya cambios de signo locales en la relación entre ambas. Por todo ello se suele considerar el método más flexible.
 
 ### Kernel fijo o variable
 
 Una cuestión clave es decidir entre dos opciones de kernels espaciales: un kernel fijo o un kernel adaptativo o variable. Intuitivamente, un **kernel fijo** implica el uso de un ancho de banda fijo para definir una región alrededor de cada uno los puntos de regresión, como se muestra en la Figura de abajo. La extensión del kernel viene determinada por la distancia al punto para el que se quiere ajustar la regresión, siendo el kernel idéntico en cualquier punto del espacio. Un **kernel adaptativo** implica el uso de un ancho de banda variable para definir una región alrededor de los puntos de regresión, tal y como se muestra abajo. La extensión del kernel viene determinada por el número de vecinos más próximos de un punto de regresión dado. Los kernel variables tienen anchos de banda mayores cuando los datos son escasos.
 
-![Fig.1 Ejemplo de kernel con amplitud de banda fija](https://gdsl-ul.github.io/san/figs/ch8/fixed_bandwidth.png)
+![Fig.3 Ejemplo de kernel con amplitud de banda fija](https://gdsl-ul.github.io/san/figs/ch8/fixed_bandwidth.png)
 
-![Fig.2 Ejemplo de kernel con amplitud de banda variable](https://gdsl-ul.github.io/san/figs/ch8/fixed_bandwidth.png)
+![Fig.4 Ejemplo de kernel con amplitud de banda variable](https://gdsl-ul.github.io/san/figs/ch8/fixed_bandwidth.png)
 
 ### Optimizando la amplitud de banda del kernel
 

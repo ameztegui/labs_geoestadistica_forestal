@@ -7,8 +7,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-# Autocorrelación espacial {#sec-Autocorrelacion} 
-
+# Autocorrelación espacial {#sec-Autocorrelacion}
 
 ## Introducción
 
