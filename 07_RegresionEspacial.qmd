@@ -224,25 +224,21 @@ Vemos que ahora no tenemos un sólo valor de los parámetros del modelo, como ha
 View(gwr.model$SDF@data)
 ```
 
-Podemos guardar los coeficientes estimados con nuestro dataset original (`estaciones`), para así poder plotear los valores:
+En este caso la salida de datos (el objeto `gwr.model$SDF`) es en realidad un objeto espacial, un *shape*. Pero en vez de ser de clase `sf`, como los que solemos usar, es de clase `sp`. Para incluirlo dentro del flujo de `tmaps` antes lo transformaremos a objeto de clase `sf` mediante la función `st_as_sf().` Además deberemos indicar que el sistema de referencia de coordenadas es el mismo que el de `estaciones`:
 
 ```{r}
-estaciones_gwr <- cbind(estaciones, gwr.model$SDF@data)
-```
+gwr_model_sf <- st_as_sf(gwr.model$SDF)
+st_crs(gwr_model_sf) <- st_crs(estaciones)
 
-Podemos por tanto visualizar los coeficientes estimados por el modelo y ver cómo varían espacialmente:
-
-```{r}
 tmap_mode("view")
-tm_shape(estaciones_gwr) +
-    tm_dots(col="ALTITUD.1")
+tm_shape(gwr_model_sf) +
+    tm_dots(col="ALTITUD")
 ```
 
 Vemos que, si bien la mayoría de los valores del coeficiente entre altitud y temperatura son negativos (lo que cabría esperar), algunos son incluso positivos. En concreto, los de la zona más norte del valle del Ebro, en la provincia de Zaragoza. Podemos plotear también los valores locales de R2
 
 ```{r}
-tmap_mode("view")
-tm_shape(estaciones_gwr) +
+tm_shape(gwr_model_sf) +
     tm_dots(col="localR2", palette = "viridis", style = "cont")
 ```
 
@@ -253,7 +249,8 @@ Vemos que los valores de R2 son razonablemente altos para la mayoría de los pun
 Los anchos de banda variables adaptan su tamaño a la densidad de puntos existente, de manera que se hacen más amplios en las zonas donde hay menos muestra y más estrechos en zonas con más densidad de puntos. Como antes, el primer paso es calcular el valor óptimo:
 
 ```{r}
-kernel_variable <- gwr.sel(T_MAX_abs ~ ALTITUD, data=estaciones, 
+kernel_variable <- gwr.sel(T_MAX_abs ~ ALTITUD, 
+                           data=estaciones, 
                            coords = st_coordinates(estaciones),
                            adapt=TRUE) 
 kernel_variable
@@ -268,25 +265,25 @@ gwr.model_var = gwr(T_MAX_abs ~ ALTITUD, data=estaciones, coords = st_coordinate
 gwr.model_var
 ```
 
-Podemos guardar los coeficientes estimados con nuestro dataset original (`estaciones`), para así poder plotear los valores:
+Igual que antes, podemos visualizar los resultados del modelo, pero mejor los guardaremos como un shapefile de clase `sf`:
 
 ```{r}
-estaciones_gwr_var <- cbind(estaciones, gwr.model_var$SDF@data)
+gwr_model_var_sf <- st_as_sf(gwr.model_var$SDF)
+st_crs(gwr_model_var_sf) <- st_crs(estaciones)
+
 ```
 
 Volvamos a visualizar la distribución espacial de los valores estimados, coeficientes y R2 como antes:
 
 ```{r}
-tmap_mode("view")
-tm_shape(estaciones_gwr_var) +
-    tm_dots(col="ALTITUD.1")
+tm_shape(gwr_model_var_sf) +
+    tm_dots(col="ALTITUD")
 ```
 
 Quizá el contraste entre los valores negativos y positivos de los coeficientes sea incluso más marcado. Veamos si se ha mejorado la estimación de R2 de los puntos donde teníamos valores bajos:
 
 ```{r}
-tmap_mode("view")
-tm_shape(estaciones_gwr_var) +
+tm_shape(gwr_model_var_sf) +
     tm_dots(col="localR2", palette = "viridis", style = "cont")
 ```
 
