@@ -4,7 +4,7 @@ date: "Septiembre de 2024"
 
 # Presentación {.unnumbered}
 
-Bienvenidos a laos apuntes y tutoriales de la asignatura "Geoestadística y Técnicas de Observación Global". Esta asignatura se incluye en la doble titulación del Grado en Ingeniería Forestal y Grado en Conservación de la Naturaleza. Se trata de una asignatura en la que se enseñan técnicas y métodos para el análisis estadístico, modelización y predicción de procesos espaciales.
+Bienvenidos a los apuntes y tutoriales de la asignatura "Geoestadística y Técnicas de Observación Global". Esta asignatura se incluye en la doble titulación del Grado en Ingeniería Forestal y Grado en Conservación de la Naturaleza. Se trata de una asignatura en la que se enseñan técnicas y métodos para el análisis estadístico, modelización y predicción de procesos espaciales.
 
 ## ¿Qué es la geoestadística?
 
